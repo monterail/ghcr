@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "GitHub Code Reviews",
+  "description": "",
+  "version": "0.1.0",
+
+  // "permissions": [
+  //   "tabs", "https://github.com/*"
+  // ],
+
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*"],
+      "css": ["ghcr.css"],
+      "js": ["jquery.js", "ghcr.js"]
+    }
+  ]
+}

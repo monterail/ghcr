@@ -1,0 +1,10 @@
+.ghcr-done { background-color: #dfd !important;}
+.ghcr-pending { background-color: #F8EEC7 !important;}
+#ghcr-box {
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 11pt;
+  overflow: hidden;
+}
+#ghcr-box span { float: left;}
+#ghcr-box button { float: right; }
