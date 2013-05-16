@@ -5,9 +5,16 @@
   "description": "",
   "version": "0.1.0",
 
-  // "permissions": [
-  //   "tabs", "https://github.com/*"
-  // ],
+  "permissions": [
+    "webNavigation",
+    "background",
+    "tabs"
+  ],
+
+ "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": true
+  },
 
   "content_scripts": [
     {
