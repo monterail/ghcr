@@ -50,8 +50,7 @@ else if $(".full-commit").size() > 0
     $("#js-repo-pjax-container").prepend($box)
 
 
+chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
+  # console.log request, sender, sendResponse
+  console.log 'trigger render'
   render()
-
-
-
-
