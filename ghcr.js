@@ -2,7 +2,7 @@
 (function() {
   var RedisStore, Store, apiUrl, formatKey, getNamespace, render, user;
 
-  apiUrl = 'http://127.0.0.1:9393/ghcr';
+  apiUrl = 'http://webhooker.mh2.monterail.eu/ghcr';
 
   getNamespace = function() {
     var array;

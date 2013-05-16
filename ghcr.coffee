@@ -1,5 +1,5 @@
 # API URL
-apiUrl = 'http://127.0.0.1:9393/ghcr'
+apiUrl = 'http://webhooker.mh2.monterail.eu/ghcr'
 
 getNamespace = ->
   array = $('h1 a.js-current-repository').attr('href').split('/')
