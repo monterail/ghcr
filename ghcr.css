@@ -1,4 +1,4 @@
-.ghcr-done { background-color: #dfd !important;}
+.ghcr-accepted { background-color: #dfd !important;}
 .ghcr-pending { background-color: #F8EEC7 !important;}
 #ghcr-box {
   border-radius: 4px;
