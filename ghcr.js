@@ -133,45 +133,62 @@
         return _results;
       });
     },
-    commitPage: function(id) {
-      var author, render,
+    generateBtn: function(commit, btn) {
+      var $btn,
         _this = this;
-      author = $.trim($(".commit-meta .author-name").text());
-      render = function(commit) {
-        var $box, $btn, btnlbl, info, status;
-        if (commit == null) {
-          commit = {};
-        }
-        commit.status || (commit.status = "pending");
-        commit.id || (commit.id = id);
-        switch (commit.status) {
-          case "accepted":
-            status = "pending";
-            btnlbl = "Make pending";
-            console.log(commit.created_at);
-            info = "Commit accepted by <a href='https://github.com/" + commit.reviewer + "'>" + commit.reviewer + "<a/> at " + commit.updated_at;
-            break;
-          default:
-            status = "accepted";
-            btnlbl = "Accept";
-            info = "Code review pending";
-        }
-        $btn = $("<button class='minibutton'>" + btnlbl + "</button>").click(function() {
-          commit.status = status;
-          commit.reviewer = _this.user;
-          return _this.api.save(commit, function(data) {
-            render(data);
-            return _this.initPendingTab();
-          });
+      $btn = $("<button class='minibutton'>" + btn.label + "</button>").click(function() {
+        commit.status = btn.status;
+        commit.reviewer = _this.user;
+        return _this.api.save(commit, function(data) {
+          _this.renderMenu(data);
+          return _this.initPendingTab();
         });
-        $("#ghcr-box").remove();
-        $box = $("<div id='ghcr-box' class='ghcr-" + commit.status + "'><span>" + info + "</span> </div>");
-        if (_this.user !== author) {
-          $box.append($btn);
-        }
-        return $("#js-repo-pjax-container").prepend($box);
+      });
+      return $btn;
+    },
+    renderMenu: function(commit) {
+      var $box, acceptBtn, author, btn, info, rejectBtn;
+      if (commit == null) {
+        commit = {};
+      }
+      author = $.trim($(".commit-meta .author-name").text());
+      $("#ghcr-box").remove();
+      rejectBtn = {
+        label: 'Reject',
+        status: 'rejected'
       };
-      return this.api.commit(id, render);
+      acceptBtn = {
+        label: 'Accept',
+        status: 'accepted'
+      };
+      switch (commit.status) {
+        case "accepted":
+          btn = rejectBtn;
+          info = "Commit accepted by <a href='https://github.com/" + commit.reviewer + "'>" + commit.reviewer + "<a/> at " + commit.updated_at;
+          break;
+        case "rejected":
+          btn = acceptBtn;
+          info = "Commit rejected by <a href='https://github.com/" + commit.reviewer + "'>" + commit.reviewer + "<a/> at " + commit.updated_at;
+          break;
+        default:
+          info = "Code review pending";
+      }
+      $box = $("<div id='ghcr-box' class='ghcr-" + commit.status + "'><span>" + info + "</span> </div>");
+      if (commit.status === 'pending' && this.user !== author) {
+        $box.append(GHCR.generateBtn(commit, acceptBtn));
+        $box.append(GHCR.generateBtn(commit, rejectBtn));
+      } else if (commit.status !== 'pending') {
+        $box.append(GHCR.generateBtn(commit, btn));
+      }
+      return $("#js-repo-pjax-container").prepend($box);
+    },
+    commitPage: function(id) {
+      var _this = this;
+      return this.api.commit(id, function(commit) {
+        commit.id || (commit.id = id);
+        commit.status || (commit.status = "pending");
+        return _this.renderMenu(commit);
+      });
     }
   };
 
