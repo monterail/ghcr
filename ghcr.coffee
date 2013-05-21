@@ -104,7 +104,9 @@ GHCR =
         $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
         commit.status ||= "pending"
         $item.addClass("ghcr-#{commit.status}")
+
   commitPage: (id) ->
+    author = $.trim($(".commit-meta .author-name").text())
     render = (commit = {}) =>
       commit.status ||= "pending"
       commit.id ||= id
@@ -129,7 +131,7 @@ GHCR =
 
       $("#ghcr-box").remove()
       $box = $("<div id='ghcr-box' class='ghcr-#{commit.status}'><span>#{info}</span> </div>")
-      $box.append($btn)
+      $box.append($btn) if @user != author
       $("#js-repo-pjax-container").prepend($box)
 
     @api.commit id, render
