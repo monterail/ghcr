@@ -16,6 +16,3 @@ $ coffee -wc .
 
 * Check "Development" mode in Extensions tab in Chrome
 * Choose project's root directory in "Load unpacked extension" dialog
-
-## TODO
-* Shared remote redis backend instead of local storage
