@@ -129,10 +129,10 @@ GHCR =
     switch commit.status
       when "accepted"
         btn = rejectBtn
-        info = "Commit accepted by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{commit.updated_at}"
+        info = "Commit accepted by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
       when "rejected"
         btn = acceptBtn
-        info = "Commit rejected by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{commit.updated_at}"
+        info = "Commit rejected by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
       else # pending
         info = "Code review pending"
 
@@ -166,4 +166,3 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
         GHCR.commitsPage()
       when "commit" # Commit details page
         GHCR.commitPage(chunks[4])
-

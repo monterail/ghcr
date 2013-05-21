@@ -164,11 +164,11 @@
       switch (commit.status) {
         case "accepted":
           btn = rejectBtn;
-          info = "Commit accepted by <a href='https://github.com/" + commit.reviewer + "'>" + commit.reviewer + "<a/> at " + commit.updated_at;
+          info = "Commit accepted by <a href='https://github.com/" + commit.reviewer + "'>" + commit.reviewer + "<a/> at " + (strftime('%R, %d %b %Y', new Date(commit.updated_at)));
           break;
         case "rejected":
           btn = acceptBtn;
-          info = "Commit rejected by <a href='https://github.com/" + commit.reviewer + "'>" + commit.reviewer + "<a/> at " + commit.updated_at;
+          info = "Commit rejected by <a href='https://github.com/" + commit.reviewer + "'>" + commit.reviewer + "<a/> at " + (strftime('%R, %d %b %Y', new Date(commit.updated_at)));
           break;
         default:
           info = "Code review pending";
