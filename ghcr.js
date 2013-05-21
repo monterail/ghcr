@@ -134,8 +134,9 @@
       });
     },
     commitPage: function(id) {
-      var render,
+      var author, render,
         _this = this;
+      author = $.trim($(".commit-meta .author-name").text());
       render = function(commit) {
         var $box, $btn, btnlbl, info, status;
         if (commit == null) {
@@ -165,7 +166,9 @@
         });
         $("#ghcr-box").remove();
         $box = $("<div id='ghcr-box' class='ghcr-" + commit.status + "'><span>" + info + "</span> </div>");
-        $box.append($btn);
+        if (_this.user !== author) {
+          $box.append($btn);
+        }
         return $("#js-repo-pjax-container").prepend($box);
       };
       return this.api.commit(id, render);
