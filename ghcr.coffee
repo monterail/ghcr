@@ -11,11 +11,26 @@ API = (url, repo) ->
     $.get "#{url}/pending/count", {repo: repo, user: user}, cb, 'json'
 
 GHCR =
-  init: (apiUrl, repo) ->
+  init: (repo) ->
     @repo = repo
-    @api  = API(apiUrl, repo)
+    @api  = API(@getApiUrl(), repo)
     @user = $.trim($("#user-links .name").text())
     @initPendingTab()
+    @initSettings()
+
+  getApiUrl: ->
+    apiUrl = localStorage.getItem('ghcr:apiUrl')
+    if $.trim(apiUrl) == "" then 'http://localhost:9393/ghcr' else apiUrl
+
+  setApiUrl: ->
+    newApiUrl = prompt("Set ghcr api url:", @getApiUrl())
+    if $.trim(newApiUrl) == ""
+      @getApiUrl()
+    else
+      localStorage.setItem('ghcr:apiUrl', newApiUrl)
+      window.location.reload()
+      newApiUrl
+
   initPendingTab: ->
     @api.pendingCount @user, (res) =>
       $("a#ghcr-pending-tab").remove()
@@ -25,6 +40,16 @@ GHCR =
       $a = $("<a href='#ghcr-pending' id='ghcr-pending-tab' class='tabnav-tab'>Pending commits <span class='counter'>#{res.count}</span></a>").click () => @pending()
       $li.append($a)
       $ul.append($li)
+
+  initSettings: ->
+    $ul = $('span.tabnav-right ul.tabnav-tabs')
+    $li = $("<li/>")
+    $a = $("<a href='' class='tabnav-tab'>Set apiUrl</a>").click (e) =>
+      e.preventDefault()
+      @setApiUrl()
+    $li.append($a)
+    $ul.prepend($li)
+
   pending: ->
     @api.pending @user, (commits) =>
       $(".tabnav-tabs a").removeClass("selected")
@@ -112,9 +137,8 @@ GHCR =
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   chunks = window.location.pathname.split("/")
   repo = "#{chunks[1]}/#{chunks[2]}"
-  apiUrl = 'http://localhost:9393/ghcr'
 
-  GHCR.init(apiUrl, repo)
+  GHCR.init(repo)
 
   if window.location.hash == "#ghcr-pending"
     GHCR.pending()
