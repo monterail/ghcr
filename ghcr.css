@@ -1,3 +1,4 @@
+.ghcr-rejected { background-color: #fdd !important;}
 .ghcr-accepted { background-color: #dfd !important;}
 .ghcr-pending { background-color: #F8EEC7 !important;}
 #ghcr-box {

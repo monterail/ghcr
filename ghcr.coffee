@@ -105,36 +105,51 @@ GHCR =
         commit.status ||= "pending"
         $item.addClass("ghcr-#{commit.status}")
 
-  commitPage: (id) ->
+  generateBtn: (commit, btn) ->
+    $btn = $("<button class='minibutton'>#{btn.label}</button>").click () =>
+      commit.status = btn.status
+      commit.reviewer = @user
+      @api.save commit, (data) =>
+        @renderMenu(data)
+        @initPendingTab()
+    $btn
+
+  renderMenu: (commit = {}) ->
     author = $.trim($(".commit-meta .author-name").text())
-    render = (commit = {}) =>
+    $("#ghcr-box").remove()
+
+    rejectBtn =
+      label: 'Reject'
+      status: 'rejected'
+
+    acceptBtn =
+      label: 'Accept'
+      status: 'accepted'
+
+    switch commit.status
+      when "accepted"
+        btn = rejectBtn
+        info = "Commit accepted by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{commit.updated_at}"
+      when "rejected"
+        btn = acceptBtn
+        info = "Commit rejected by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{commit.updated_at}"
+      else # pending
+        info = "Code review pending"
+
+    $box = $("<div id='ghcr-box' class='ghcr-#{commit.status}'><span>#{info}</span> </div>")
+
+    if commit.status == 'pending' and @user != author
+      $box.append GHCR.generateBtn(commit, acceptBtn)
+      $box.append GHCR.generateBtn(commit, rejectBtn)
+    else if commit.status != 'pending'
+      $box.append GHCR.generateBtn(commit, btn)
+    $("#js-repo-pjax-container").prepend($box)
+
+  commitPage: (id) ->
+    @api.commit id, (commit) =>
+      commit.id     ||= id
       commit.status ||= "pending"
-      commit.id ||= id
-
-      switch commit.status
-        when "accepted"
-          status = "pending"
-          btnlbl = "Make pending"
-          console.log commit.created_at
-          info = "Commit accepted by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{commit.updated_at}"
-        else # pending
-          status = "accepted"
-          btnlbl = "Accept"
-          info = "Code review pending"
-
-      $btn = $("<button class='minibutton'>#{btnlbl}</button>").click () =>
-        commit.status = status
-        commit.reviewer = @user
-        @api.save commit, (data) =>
-          render(data)
-          @initPendingTab()
-
-      $("#ghcr-box").remove()
-      $box = $("<div id='ghcr-box' class='ghcr-#{commit.status}'><span>#{info}</span> </div>")
-      $box.append($btn) if @user != author
-      $("#js-repo-pjax-container").prepend($box)
-
-    @api.commit id, render
+      @renderMenu(commit)
 
 
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
