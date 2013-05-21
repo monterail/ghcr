@@ -33,17 +33,18 @@ GHCR =
 
   initPendingTab: ->
     @api.pendingCount @user, (res) =>
-      $("a#ghcr-pending-tab").remove()
+      $("li#ghcr-pending-tab").remove()
       $ul = $("li a.tabnav-tab:contains('Commits')").parent().parent()
-      $li = $("<li/>")
+      $li = $("<li id='ghcr-pending-tab' />")
       # js-selected-navigation-item tabnav-tab
-      $a = $("<a href='#ghcr-pending' id='ghcr-pending-tab' class='tabnav-tab'>Pending commits <span class='counter'>#{res.count}</span></a>").click () => @pending()
+      $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending commits <span class='counter'>#{res.count}</span></a>").click () => @pending()
       $li.append($a)
       $ul.append($li)
 
   initSettings: ->
+    $("li#ghcr-settings").remove()
     $ul = $('span.tabnav-right ul.tabnav-tabs')
-    $li = $("<li/>")
+    $li = $("<li id='ghcr-settings' />")
     $a = $("<a href='' class='tabnav-tab'>Set apiUrl</a>").click (e) =>
       e.preventDefault()
       @setApiUrl()

@@ -68,10 +68,10 @@
       var _this = this;
       return this.api.pendingCount(this.user, function(res) {
         var $a, $li, $ul;
-        $("a#ghcr-pending-tab").remove();
+        $("li#ghcr-pending-tab").remove();
         $ul = $("li a.tabnav-tab:contains('Commits')").parent().parent();
-        $li = $("<li/>");
-        $a = $("<a href='#ghcr-pending' id='ghcr-pending-tab' class='tabnav-tab'>Pending commits <span class='counter'>" + res.count + "</span></a>").click(function() {
+        $li = $("<li id='ghcr-pending-tab' />");
+        $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending commits <span class='counter'>" + res.count + "</span></a>").click(function() {
           return _this.pending();
         });
         $li.append($a);
@@ -81,8 +81,9 @@
     initSettings: function() {
       var $a, $li, $ul,
         _this = this;
+      $("li#ghcr-settings").remove();
       $ul = $('span.tabnav-right ul.tabnav-tabs');
-      $li = $("<li/>");
+      $li = $("<li id='ghcr-settings' />");
       $a = $("<a href='' class='tabnav-tab'>Set apiUrl</a>").click(function(e) {
         e.preventDefault();
         return _this.setApiUrl();
