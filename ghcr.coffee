@@ -137,12 +137,12 @@ GHCR =
         info = "Code review pending"
 
     $box = $("<div id='ghcr-box' class='ghcr-#{commit.status}'><span>#{info}</span> </div>")
-
-    if commit.status == 'pending' and @user != commit.author
-      $box.append GHCR.generateBtn(commit, acceptBtn)
-      $box.append GHCR.generateBtn(commit, rejectBtn)
-    else if commit.status != 'pending'
-      $box.append GHCR.generateBtn(commit, btn)
+    if @user != commit.author
+      if commit.status == 'pending'
+        $box.append GHCR.generateBtn(commit, acceptBtn)
+        $box.append GHCR.generateBtn(commit, rejectBtn)
+      else
+        $box.append GHCR.generateBtn(commit, btn)
     $("#js-repo-pjax-container").prepend($box)
 
   commitPage: (id) ->
