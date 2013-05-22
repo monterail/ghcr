@@ -147,11 +147,11 @@
       return $btn;
     },
     renderMenu: function(commit) {
-      var $box, acceptBtn, author, btn, info, rejectBtn;
+      var $box, acceptBtn, btn, info, rejectBtn;
       if (commit == null) {
         commit = {};
       }
-      author = $.trim($(".commit-meta .author-name").text());
+      commit.author = $.trim($(".commit-meta .author-name").text());
       $("#ghcr-box").remove();
       rejectBtn = {
         label: 'Reject',
@@ -174,7 +174,7 @@
           info = "Code review pending";
       }
       $box = $("<div id='ghcr-box' class='ghcr-" + commit.status + "'><span>" + info + "</span> </div>");
-      if (commit.status === 'pending' && this.user !== author) {
+      if (commit.status === 'pending' && this.user !== commit.author) {
         $box.append(GHCR.generateBtn(commit, acceptBtn));
         $box.append(GHCR.generateBtn(commit, rejectBtn));
       } else if (commit.status !== 'pending') {

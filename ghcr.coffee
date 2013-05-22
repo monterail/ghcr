@@ -115,7 +115,7 @@ GHCR =
     $btn
 
   renderMenu: (commit = {}) ->
-    author = $.trim($(".commit-meta .author-name").text())
+    commit.author = $.trim($(".commit-meta .author-name").text())
     $("#ghcr-box").remove()
 
     rejectBtn =
@@ -138,7 +138,7 @@ GHCR =
 
     $box = $("<div id='ghcr-box' class='ghcr-#{commit.status}'><span>#{info}</span> </div>")
 
-    if commit.status == 'pending' and @user != author
+    if commit.status == 'pending' and @user != commit.author
       $box.append GHCR.generateBtn(commit, acceptBtn)
       $box.append GHCR.generateBtn(commit, rejectBtn)
     else if commit.status != 'pending'
