@@ -32,6 +32,13 @@
           repo: repo,
           user: user
         }, cb, 'json');
+      },
+      notify: function(reviewer, action, cb) {
+        return $.post("" + url + "/notify", {
+          repo: repo,
+          action: action,
+          reviewer: reviewer
+        }, cb, 'json');
       }
     };
   };
@@ -42,7 +49,8 @@
       this.api = API(this.getApiUrl(), repo);
       this.user = $.trim($("#user-links .name").text());
       this.initPendingTab();
-      return this.initSettings();
+      this.initSettings();
+      return this.initNotify();
     },
     getApiUrl: function() {
       var apiUrl;
@@ -90,6 +98,39 @@
       });
       $li.append($a);
       return $ul.prepend($li);
+    },
+    initNotify: function() {
+      var $li, $ul,
+        _this = this;
+      $("li#ghcr-notify").remove();
+      $ul = $('ul.pagehead-actions');
+      $li = $("<li id='ghcr-notify' />");
+      return this.api.notify(this.user, 'status', function(data) {
+        var $a, action, btnlbl, enabled;
+        enabled = data['enabled'];
+        btnlbl = function(e) {
+          if (e) {
+            return "Unnotify";
+          } else {
+            return "Notify";
+          }
+        };
+        action = function(e) {
+          if (e) {
+            return "disable";
+          } else {
+            return "enable";
+          }
+        };
+        $a = $("<a href='' class='button minibutton'>" + (btnlbl(enabled)) + "</a>").click(function(e) {
+          e.preventDefault();
+          _this.api.notify(_this.user, action(enabled), null);
+          enabled = !enabled;
+          return $(e.target).text(btnlbl(enabled));
+        });
+        $li.append($a);
+        return $ul.prepend($li);
+      });
     },
     pending: function() {
       var _this = this;

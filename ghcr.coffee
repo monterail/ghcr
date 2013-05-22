@@ -9,6 +9,8 @@ API = (url, repo) ->
     $.get "#{url}/pending", {repo: repo, user: user}, cb, 'json'
   pendingCount: (user, cb) ->
     $.get "#{url}/pending/count", {repo: repo, user: user}, cb, 'json'
+  notify: (reviewer, action, cb) ->
+    $.post "#{url}/notify", {repo: repo, action: action, reviewer: reviewer}, cb, 'json'
 
 GHCR =
   init: (repo) ->
@@ -17,6 +19,7 @@ GHCR =
     @user = $.trim($("#user-links .name").text())
     @initPendingTab()
     @initSettings()
+    @initNotify()
 
   getApiUrl: ->
     apiUrl = localStorage.getItem('ghcr:apiUrl')
@@ -50,6 +53,25 @@ GHCR =
       @setApiUrl()
     $li.append($a)
     $ul.prepend($li)
+
+  initNotify: ->
+    $("li#ghcr-notify").remove()
+    $ul = $('ul.pagehead-actions')
+    $li = $("<li id='ghcr-notify' />")
+    @api.notify @user, 'status', (data) =>
+      enabled = data['enabled']
+      btnlbl = (e) ->
+        if e then "Unnotify" else "Notify"
+      action = (e) ->
+        if e then "disable" else "enable"
+      $a = $("<a href='' class='button minibutton'>#{btnlbl(enabled)}</a>").click (e) =>
+        e.preventDefault()
+        @api.notify @user, action(enabled), null
+        enabled = !enabled
+        $(e.target).text(btnlbl(enabled))
+
+      $li.append($a)
+      $ul.prepend($li)
 
   pending: ->
     @api.pending @user, (commits) =>
