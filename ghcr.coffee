@@ -76,7 +76,7 @@ GHCR =
   pending: ->
     @api.pending @user, (commits) =>
       $(".tabnav-tabs a").removeClass("selected")
-      $("#ghcr-pending-tab").addClass("selected")
+      $("#ghcr-pending-tab a").addClass("selected")
       $container = $("#js-repo-pjax-container")
       $container.html("""
         <h3 class="commit-group-heading">Pending commits</h3>
