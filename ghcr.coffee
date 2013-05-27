@@ -111,12 +111,13 @@ GHCR =
 
               <div class="authorship">
                 <span class="author-name"><a href="/#{commit.author.username}" rel="author">#{commit.author.username}</a></span>
-                authored <time class="js-relative-date" datetime="#{commit.timestamp}" title="2013-03-17 16:56:15">2 days before the day after tomorow</time>
+                authored <time class="js-relative-date" datetime="#{commit.timestamp}" title="#{commit.timestamp}"></time>
               </div>
             </div>
           </li>
         """))
 
+      $ol.find('time').timeago()
       $container.append($ol)
 
   commitsPage: ->
