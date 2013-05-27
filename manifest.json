@@ -21,7 +21,7 @@
     {
       "matches": ["https://github.com/*"],
       "css": ["ghcr.css"],
-      "js": ["jquery.js", "strftime-min.js", "ghcr.js"]
+      "js": ["lib/jquery.js", "lib/strftime-min.js", "lib/jquery.timeago.js", "ghcr.js"]
     }
   ]
 }
