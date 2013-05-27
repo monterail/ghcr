@@ -33,6 +33,18 @@
           user: user
         }, cb, 'json');
       },
+      rejected: function(user, cb) {
+        return $.get("" + url + "/rejected", {
+          repo: repo,
+          user: user
+        }, cb, 'json');
+      },
+      rejectedCount: function(user, cb) {
+        return $.get("" + url + "/rejected/count", {
+          repo: repo,
+          user: user
+        }, cb, 'json');
+      },
       notify: function(reviewer, action, cb) {
         return $.post("" + url + "/notify", {
           repo: repo,
@@ -49,6 +61,7 @@
       this.api = API(this.getApiUrl(), repo);
       this.user = $.trim($("#user-links .name").text());
       this.initPendingTab();
+      this.initRejectedTab();
       this.initSettings();
       return this.initNotify();
     },
@@ -77,7 +90,7 @@
       return this.api.pendingCount(this.user, function(res) {
         var $a, $li, $ul;
         $("li#ghcr-pending-tab").remove();
-        $ul = $("li a.tabnav-tab:contains('Commits')").parent().parent();
+        $ul = $("div.tabnav > ul.tabnav-tabs");
         $li = $("<li id='ghcr-pending-tab' />");
         $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending commits <span class='counter'>" + res.count + "</span></a>").click(function() {
           return _this.pending();
@@ -87,6 +100,20 @@
         if (res.count === 0) {
           return $('#ghcr-box button.next').remove();
         }
+      });
+    },
+    initRejectedTab: function() {
+      var _this = this;
+      return this.api.rejectedCount(this.user, function(res) {
+        var $a, $li, $ul;
+        $("li#ghcr-rejected-tab").remove();
+        $ul = $("div.tabnav > ul.tabnav-tabs");
+        $li = $("<li id='ghcr-rejected-tab' />");
+        $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected commits <span class='counter'>" + res.count + "</span></a>").click(function() {
+          return _this.rejected();
+        });
+        $li.append($a);
+        return $ul.append($li);
       });
     },
     initSettings: function() {
@@ -154,6 +181,25 @@
         return $container.append($ol);
       });
     },
+    rejected: function() {
+      var _this = this;
+      return this.api.rejected(this.user, function(commits) {
+        var $container, $ol, commit, diffUrl, treeUrl, _i, _len;
+        $(".tabnav-tabs a").removeClass("selected");
+        $("#ghcr-rejected-tab a").addClass("selected");
+        $container = $("#js-repo-pjax-container");
+        $container.html("<h3 class=\"commit-group-heading\">Reject commits</h3>");
+        $ol = $("<ol class='commit-group'/>");
+        for (_i = 0, _len = commits.length; _i < _len; _i++) {
+          commit = commits[_i];
+          diffUrl = "/" + _this.repo + "/commit/" + commit.id;
+          treeUrl = "/" + _this.repo + "/tree/" + commit.id;
+          $ol.append($("<li class=\"commit commit-group-item js-navigation-item js-details-container\">\n  <p class=\"commit-title  js-pjax-commit-title\">\n    <a href=\"" + diffUrl + "\" class=\"message\">" + commit.message + "</a>\n  </p>\n  <div class=\"commit-meta\">\n    <div class=\"commit-links\">\n      <span class=\"js-zeroclipboard zeroclipboard-button\" data-clipboard-text=\"" + commit.id + "\" data-copied-hint=\"copied!\" title=\"Copy SHA\">\n        <span class=\"octicon octicon-clippy\"></span>\n      </span>\n\n      <a href=\"" + diffUrl + "\" class=\"gobutton \">\n        <span class=\"sha\">" + (commit.id.substring(0, 10)) + "\n          <span class=\"octicon octicon-arrow-small-right\"></span>\n        </span>\n      </a>\n\n      <a href=\"" + treeUrl + "\" class=\"browse-button\" title=\"Browse the code at this point in the history\" rel=\"nofollow\">\n        Browse code <span class=\"octicon octicon-arrow-right\"></span>\n      </a>\n    </div>\n\n    <div class=\"authorship\">\n      <span class=\"author-name\"><a href=\"/" + commit.author.username + "\" rel=\"author\">" + commit.author.username + "</a></span>\n      authored <time class=\"js-relative-date\" datetime=\"" + commit.timestamp + "\" title=\"" + commit.timestamp + "\"></time>\n    </div>\n  </div>\n</li>"));
+        }
+        $ol.find('time').timeago();
+        return $container.append($ol);
+      });
+    },
     commitsPage: function() {
       var e, ids;
       ids = (function() {
@@ -203,6 +249,7 @@
           commit.reviewer = _this.user;
           return _this.api.save(commit, function(data) {
             _this.initPendingTab();
+            _this.initRejectedTab();
             return _this.renderMenu(data);
           });
         }
@@ -215,6 +262,7 @@
         commit = {};
       }
       commit.author = $.trim($(".commit-meta .author-name").text());
+      commit.message = $.trim($(".commit > .commit-title").text());
       $("#ghcr-box").remove();
       rejectBtn = {
         label: 'Reject',
@@ -294,6 +342,8 @@
     GHCR.init(repo);
     if (window.location.hash === "#ghcr-pending") {
       return GHCR.pending();
+    } else if (window.location.hash === "#ghcr-rejected") {
+      return GHCR.rejected();
     } else {
       switch (chunks[3]) {
         case "commits":
