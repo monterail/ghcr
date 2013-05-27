@@ -9,6 +9,10 @@ API = (url, repo) ->
     $.get "#{url}/pending", {repo: repo, user: user}, cb, 'json'
   pendingCount: (user, cb) ->
     $.get "#{url}/pending/count", {repo: repo, user: user}, cb, 'json'
+  rejected: (user, cb) ->
+    $.get "#{url}/rejected", {repo: repo, user: user}, cb, 'json'
+  rejectedCount: (user, cb) ->
+    $.get "#{url}/rejected/count", {repo: repo, user: user}, cb, 'json'
   notify: (reviewer, action, cb) ->
     $.post "#{url}/notify", {repo: repo, action: action, reviewer: reviewer}, cb, 'json'
 
@@ -18,6 +22,7 @@ GHCR =
     @api  = API(@getApiUrl(), repo)
     @user = $.trim($("#user-links .name").text())
     @initPendingTab()
+    @initRejectedTab()
     @initSettings()
     @initNotify()
 
@@ -37,13 +42,23 @@ GHCR =
   initPendingTab: ->
     @api.pendingCount @user, (res) =>
       $("li#ghcr-pending-tab").remove()
-      $ul = $("li a.tabnav-tab:contains('Commits')").parent().parent()
+      $ul = $("div.tabnav > ul.tabnav-tabs")
       $li = $("<li id='ghcr-pending-tab' />")
       # js-selected-navigation-item tabnav-tab
       $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending commits <span class='counter'>#{res.count}</span></a>").click () => @pending()
       $li.append($a)
       $ul.append($li)
       $('#ghcr-box button.next').remove() if res.count == 0
+
+  initRejectedTab: ->
+    @api.rejectedCount @user, (res) =>
+      $("li#ghcr-rejected-tab").remove()
+      $ul = $("div.tabnav > ul.tabnav-tabs")
+      $li = $("<li id='ghcr-rejected-tab' />")
+      # js-selected-navigation-item tabnav-tab
+      $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected commits <span class='counter'>#{res.count}</span></a>").click () => @rejected()
+      $li.append($a)
+      $ul.append($li)
 
   initSettings: ->
     $("li#ghcr-settings").remove()
@@ -121,6 +136,53 @@ GHCR =
       $ol.find('time').timeago()
       $container.append($ol)
 
+  rejected: ->
+    @api.rejected @user, (commits) =>
+      $(".tabnav-tabs a").removeClass("selected")
+      $("#ghcr-rejected-tab a").addClass("selected")
+      $container = $("#js-repo-pjax-container")
+      $container.html("""
+        <h3 class="commit-group-heading">Reject commits</h3>
+      """)
+      $ol = $("<ol class='commit-group'/>")
+
+      for commit in commits
+        diffUrl = "/#{@repo}/commit/#{commit.id}"
+        treeUrl = "/#{@repo}/tree/#{commit.id}"
+
+        $ol.append($("""
+          <li class="commit commit-group-item js-navigation-item js-details-container">
+            <p class="commit-title  js-pjax-commit-title">
+              <a href="#{diffUrl}" class="message">#{commit.message}</a>
+            </p>
+            <div class="commit-meta">
+              <div class="commit-links">
+                <span class="js-zeroclipboard zeroclipboard-button" data-clipboard-text="#{commit.id}" data-copied-hint="copied!" title="Copy SHA">
+                  <span class="octicon octicon-clippy"></span>
+                </span>
+
+                <a href="#{diffUrl}" class="gobutton ">
+                  <span class="sha">#{commit.id.substring(0,10)}
+                    <span class="octicon octicon-arrow-small-right"></span>
+                  </span>
+                </a>
+
+                <a href="#{treeUrl}" class="browse-button" title="Browse the code at this point in the history" rel="nofollow">
+                  Browse code <span class="octicon octicon-arrow-right"></span>
+                </a>
+              </div>
+
+              <div class="authorship">
+                <span class="author-name"><a href="/#{commit.author.username}" rel="author">#{commit.author.username}</a></span>
+                authored <time class="js-relative-date" datetime="#{commit.timestamp}" title="#{commit.timestamp}"></time>
+              </div>
+            </div>
+          </li>
+        """))
+
+      $ol.find('time').timeago()
+      $container.append($ol)
+
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
     @api.commits ids, (commits) ->
@@ -146,11 +208,13 @@ GHCR =
         commit.reviewer = @user
         @api.save commit, (data) =>
           @initPendingTab()
+          @initRejectedTab()
           @renderMenu(data)
     $btn
 
   renderMenu: (commit = {}) ->
-    commit.author = $.trim($(".commit-meta .author-name").text())
+    commit.author  = $.trim($(".commit-meta .author-name").text())
+    commit.message = $.trim($(".commit > .commit-title").text())
     $("#ghcr-box").remove()
 
     rejectBtn =
@@ -221,6 +285,8 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
 
   if window.location.hash == "#ghcr-pending"
     GHCR.pending()
+  else if window.location.hash == "#ghcr-rejected"
+    GHCR.rejected()
   else
     switch chunks[3]
       when "commits" # Commit History page
