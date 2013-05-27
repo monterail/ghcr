@@ -8,7 +8,8 @@
   "permissions": [
     "webNavigation",
     "background",
-    "tabs"
+    "tabs",
+    "<all_urls>"
   ],
 
  "background": {
