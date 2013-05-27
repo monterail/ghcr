@@ -189,7 +189,7 @@
       return $btn;
     },
     renderMenu: function(commit) {
-      var $box, acceptBtn, btn, info, rejectBtn;
+      var $box, acceptBtn, btn, info, rejectBtn, setStickyHeader, stickyHeader;
       if (commit == null) {
         commit = {};
       }
@@ -224,7 +224,30 @@
           $box.append(GHCR.generateBtn(commit, btn));
         }
       }
-      return $("#js-repo-pjax-container").prepend($box);
+      $("#js-repo-pjax-container").prepend($box);
+      stickyHeader = {
+        top: $box.offset().top,
+        width: $box.width()
+      };
+      setStickyHeader = function() {
+        if ($(window).scrollTop() > stickyHeader.top) {
+          return $("#ghcr-box").css({
+            position: "fixed",
+            top: "0px",
+            width: stickyHeader.width
+          });
+        } else {
+          return $("#ghcr-box").css({
+            position: "static",
+            top: "0px",
+            width: stickyHeader.width
+          });
+        }
+      };
+      setStickyHeader();
+      return $(window).scroll(function() {
+        return setStickyHeader();
+      });
     },
     commitPage: function(id) {
       var _this = this;

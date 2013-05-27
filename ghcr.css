@@ -6,6 +6,9 @@
   padding: 10px;
   font-size: 11pt;
   overflow: hidden;
+  top: 0;
+  z-index: 1000;
+  border: 1px solid #ccc;
 }
 #ghcr-box span { float: left;}
 #ghcr-box button { float: right; }
