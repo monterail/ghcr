@@ -43,6 +43,7 @@ GHCR =
       $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending commits <span class='counter'>#{res.count}</span></a>").click () => @pending()
       $li.append($a)
       $ul.append($li)
+      $('#ghcr-box button.next').remove() if res.count == 0
 
   initSettings: ->
     $("li#ghcr-settings").remove()
@@ -129,12 +130,23 @@ GHCR =
         $item.addClass("ghcr-#{commit.status}")
 
   generateBtn: (commit, btn) ->
-    $btn = $("<button class='minibutton'>#{btn.label}</button>").click () =>
-      commit.status = btn.status
-      commit.reviewer = @user
-      @api.save commit, (data) =>
-        @renderMenu(data)
-        @initPendingTab()
+    $btn = $("<button class='minibutton #{btn.status}'>#{btn.label}</button>").click () =>
+      if btn.status == 'next'
+        @api.pending @user, (commits) =>
+          currentId = window.location.pathname.split('/').reverse()[0]
+          nextCommit = commits[0]
+          commitSize = commits.length
+          for index in [0..(commitSize-1)]
+            if commits[index].id == currentId
+              nextCommit = commits[index+1] if index + 1 < commitSize
+              break
+          window.location = "/#{@repo}/commit/#{nextCommit.id}"
+      else
+        commit.status = btn.status
+        commit.reviewer = @user
+        @api.save commit, (data) =>
+          @initPendingTab()
+          @renderMenu(data)
     $btn
 
   renderMenu: (commit = {}) ->
@@ -149,6 +161,10 @@ GHCR =
       label: 'Accept'
       status: 'accepted'
 
+    nextPendingBtn =
+      label: 'Next Pending'
+      status: 'next'
+
     switch commit.status
       when "accepted"
         btn = rejectBtn
@@ -160,12 +176,16 @@ GHCR =
         info = "Code review pending"
 
     $box = $("<div id='ghcr-box' class='ghcr-#{commit.status}'><span>#{info}</span> </div>")
+    if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
+      $box.append GHCR.generateBtn(commit, nextPendingBtn)
+
     if @user != commit.author
       if commit.status == 'pending'
         $box.append GHCR.generateBtn(commit, acceptBtn)
         $box.append GHCR.generateBtn(commit, rejectBtn)
       else
         $box.append GHCR.generateBtn(commit, btn)
+
     $("#js-repo-pjax-container").prepend($box)
 
     # sticky header

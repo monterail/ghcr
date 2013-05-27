@@ -83,7 +83,10 @@
           return _this.pending();
         });
         $li.append($a);
-        return $ul.append($li);
+        $ul.append($li);
+        if (res.count === 0) {
+          return $('#ghcr-box button.next').remove();
+        }
       });
     },
     initSettings: function() {
@@ -178,18 +181,36 @@
     generateBtn: function(commit, btn) {
       var $btn,
         _this = this;
-      $btn = $("<button class='minibutton'>" + btn.label + "</button>").click(function() {
-        commit.status = btn.status;
-        commit.reviewer = _this.user;
-        return _this.api.save(commit, function(data) {
-          _this.renderMenu(data);
-          return _this.initPendingTab();
-        });
+      $btn = $("<button class='minibutton " + btn.status + "'>" + btn.label + "</button>").click(function() {
+        if (btn.status === 'next') {
+          return _this.api.pending(_this.user, function(commits) {
+            var commitSize, currentId, index, nextCommit, _i, _ref;
+            currentId = window.location.pathname.split('/').reverse()[0];
+            nextCommit = commits[0];
+            commitSize = commits.length;
+            for (index = _i = 0, _ref = commitSize - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; index = 0 <= _ref ? ++_i : --_i) {
+              if (commits[index].id === currentId) {
+                if (index + 1 < commitSize) {
+                  nextCommit = commits[index + 1];
+                }
+                break;
+              }
+            }
+            return window.location = "/" + _this.repo + "/commit/" + nextCommit.id;
+          });
+        } else {
+          commit.status = btn.status;
+          commit.reviewer = _this.user;
+          return _this.api.save(commit, function(data) {
+            _this.initPendingTab();
+            return _this.renderMenu(data);
+          });
+        }
       });
       return $btn;
     },
     renderMenu: function(commit) {
-      var $box, acceptBtn, btn, info, rejectBtn, setStickyHeader, stickyHeader;
+      var $box, acceptBtn, btn, info, nextPendingBtn, rejectBtn, setStickyHeader, stickyHeader;
       if (commit == null) {
         commit = {};
       }
@@ -202,6 +223,10 @@
       acceptBtn = {
         label: 'Accept',
         status: 'accepted'
+      };
+      nextPendingBtn = {
+        label: 'Next Pending',
+        status: 'next'
       };
       switch (commit.status) {
         case "accepted":
@@ -216,6 +241,9 @@
           info = "Code review pending";
       }
       $box = $("<div id='ghcr-box' class='ghcr-" + commit.status + "'><span>" + info + "</span> </div>");
+      if (parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0) {
+        $box.append(GHCR.generateBtn(commit, nextPendingBtn));
+      }
       if (this.user !== commit.author) {
         if (commit.status === 'pending') {
           $box.append(GHCR.generateBtn(commit, acceptBtn));
