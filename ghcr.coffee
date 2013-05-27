@@ -168,6 +168,24 @@ GHCR =
         $box.append GHCR.generateBtn(commit, btn)
     $("#js-repo-pjax-container").prepend($box)
 
+    # sticky header
+    stickyHeader =
+      top: $box.offset().top
+      width: $box.width()
+    setStickyHeader = ->
+      if $(window).scrollTop() > stickyHeader.top
+        $("#ghcr-box").css
+          position: "fixed"
+          top: "0px"
+          width: stickyHeader.width
+      else
+        $("#ghcr-box").css
+          position: "static"
+          top: "0px"
+          width: stickyHeader.width
+    setStickyHeader()
+    $(window).scroll -> setStickyHeader()
+
   commitPage: (id) ->
     @api.commit id, (commit) =>
       commit.id     ||= id
