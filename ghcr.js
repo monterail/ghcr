@@ -92,7 +92,7 @@
         $("li#ghcr-pending-tab").remove();
         $ul = $("div.tabnav > ul.tabnav-tabs");
         $li = $("<li id='ghcr-pending-tab' />");
-        $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending commits <span class='counter'>" + res.count + "</span></a>").click(function() {
+        $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending<span class='counter'>" + res.count + "</span></a>").click(function() {
           return _this.pending();
         });
         $li.append($a);
@@ -109,7 +109,7 @@
         $("li#ghcr-rejected-tab").remove();
         $ul = $("div.tabnav > ul.tabnav-tabs");
         $li = $("<li id='ghcr-rejected-tab' />");
-        $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected commits <span class='counter'>" + res.count + "</span></a>").click(function() {
+        $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected<span class='counter'>" + res.count + "</span></a>").click(function() {
           return _this.rejected();
         });
         $li.append($a);
@@ -188,7 +188,7 @@
         $(".tabnav-tabs a").removeClass("selected");
         $("#ghcr-rejected-tab a").addClass("selected");
         $container = $("#js-repo-pjax-container");
-        $container.html("<h3 class=\"commit-group-heading\">Reject commits</h3>");
+        $container.html("<h3 class=\"commit-group-heading\">Rejected commits</h3>");
         $ol = $("<ol class='commit-group'/>");
         for (_i = 0, _len = commits.length; _i < _len; _i++) {
           commit = commits[_i];

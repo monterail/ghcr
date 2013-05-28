@@ -45,7 +45,7 @@ GHCR =
       $ul = $("div.tabnav > ul.tabnav-tabs")
       $li = $("<li id='ghcr-pending-tab' />")
       # js-selected-navigation-item tabnav-tab
-      $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending commits <span class='counter'>#{res.count}</span></a>").click () => @pending()
+      $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending<span class='counter'>#{res.count}</span></a>").click () => @pending()
       $li.append($a)
       $ul.append($li)
       $('#ghcr-box button.next').remove() if res.count == 0
@@ -56,7 +56,7 @@ GHCR =
       $ul = $("div.tabnav > ul.tabnav-tabs")
       $li = $("<li id='ghcr-rejected-tab' />")
       # js-selected-navigation-item tabnav-tab
-      $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected commits <span class='counter'>#{res.count}</span></a>").click () => @rejected()
+      $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected<span class='counter'>#{res.count}</span></a>").click () => @rejected()
       $li.append($a)
       $ul.append($li)
 
@@ -142,7 +142,7 @@ GHCR =
       $("#ghcr-rejected-tab a").addClass("selected")
       $container = $("#js-repo-pjax-container")
       $container.html("""
-        <h3 class="commit-group-heading">Reject commits</h3>
+        <h3 class="commit-group-heading">Rejected commits</h3>
       """)
       $ol = $("<ol class='commit-group'/>")
 
