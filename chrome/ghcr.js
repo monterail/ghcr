@@ -169,40 +169,39 @@
     pending: function() {
       var _this = this;
       return this.api.pending(this.user, function(commits) {
-        var $container, $ol, commit, diffUrl, treeUrl, _i, _len;
+        var $container, $ol;
         $(".tabnav-tabs a").removeClass("selected");
         $("#ghcr-pending-tab a").addClass("selected");
         $container = $("#js-repo-pjax-container");
         $container.html("<h3 class=\"commit-group-heading\">Pending commits</h3>");
         $ol = $("<ol class='commit-group'/>");
-        for (_i = 0, _len = commits.length; _i < _len; _i++) {
-          commit = commits[_i];
-          diffUrl = "/" + _this.repo + "/commit/" + commit.id;
-          treeUrl = "/" + _this.repo + "/tree/" + commit.id;
-          $ol.append($("<li class=\"commit commit-group-item js-navigation-item js-details-container\">\n  <p class=\"commit-title  js-pjax-commit-title\">\n    <a href=\"" + diffUrl + "\" class=\"message\">" + commit.message + "</a>\n  </p>\n  <div class=\"commit-meta\">\n    <div class=\"commit-links\">\n      <span class=\"js-zeroclipboard zeroclipboard-button\" data-clipboard-text=\"" + commit.id + "\" data-copied-hint=\"copied!\" title=\"Copy SHA\">\n        <span class=\"octicon octicon-clippy\"></span>\n      </span>\n\n      <a href=\"" + diffUrl + "\" class=\"gobutton \">\n        <span class=\"sha\">" + (commit.id.substring(0, 10)) + "\n          <span class=\"octicon octicon-arrow-small-right\"></span>\n        </span>\n      </a>\n\n      <a href=\"" + treeUrl + "\" class=\"browse-button\" title=\"Browse the code at this point in the history\" rel=\"nofollow\">\n        Browse code <span class=\"octicon octicon-arrow-right\"></span>\n      </a>\n    </div>\n\n    <div class=\"authorship\">\n      <span class=\"author-name\"><a href=\"/" + commit.author.username + "\" rel=\"author\">" + commit.author.username + "</a></span>\n      authored <time class=\"js-relative-date\" datetime=\"" + commit.timestamp + "\" title=\"" + commit.timestamp + "\"></time>\n    </div>\n  </div>\n</li>"));
-        }
-        $ol.find('time').timeago();
+        _this.renderCommits($ol, commits);
         return $container.append($ol);
       });
     },
     rejected: function() {
       var _this = this;
       return this.api.rejected(this.user, function(commits) {
-        var $container, $ol, commit, diffUrl, treeUrl, _i, _len;
+        var $container, $ol;
         $(".tabnav-tabs a").removeClass("selected");
         $("#ghcr-rejected-tab a").addClass("selected");
         $container = $("#js-repo-pjax-container");
         $container.html("<h3 class=\"commit-group-heading\">Rejected commits</h3>");
         $ol = $("<ol class='commit-group'/>");
-        for (_i = 0, _len = commits.length; _i < _len; _i++) {
-          commit = commits[_i];
-          diffUrl = "/" + _this.repo + "/commit/" + commit.id;
-          treeUrl = "/" + _this.repo + "/tree/" + commit.id;
-          $ol.append($("<li class=\"commit commit-group-item js-navigation-item js-details-container\">\n  <p class=\"commit-title  js-pjax-commit-title\">\n    <a href=\"" + diffUrl + "\" class=\"message\">" + commit.message + "</a>\n  </p>\n  <div class=\"commit-meta\">\n    <div class=\"commit-links\">\n      <span class=\"js-zeroclipboard zeroclipboard-button\" data-clipboard-text=\"" + commit.id + "\" data-copied-hint=\"copied!\" title=\"Copy SHA\">\n        <span class=\"octicon octicon-clippy\"></span>\n      </span>\n\n      <a href=\"" + diffUrl + "\" class=\"gobutton \">\n        <span class=\"sha\">" + (commit.id.substring(0, 10)) + "\n          <span class=\"octicon octicon-arrow-small-right\"></span>\n        </span>\n      </a>\n\n      <a href=\"" + treeUrl + "\" class=\"browse-button\" title=\"Browse the code at this point in the history\" rel=\"nofollow\">\n        Browse code <span class=\"octicon octicon-arrow-right\"></span>\n      </a>\n    </div>\n\n    <div class=\"authorship\">\n      <span class=\"author-name\"><a href=\"/" + commit.author.username + "\" rel=\"author\">" + commit.author.username + "</a></span>\n      authored <time class=\"js-relative-date\" datetime=\"" + commit.timestamp + "\" title=\"" + commit.timestamp + "\"></time>\n    </div>\n  </div>\n</li>"));
-        }
-        $ol.find('time').timeago();
+        _this.renderCommits($ol, commits);
         return $container.append($ol);
       });
+    },
+    renderCommits: function($ol, commits) {
+      var authorNameHtml, commit, diffUrl, treeUrl, _i, _len;
+      for (_i = 0, _len = commits.length; _i < _len; _i++) {
+        commit = commits[_i];
+        diffUrl = "/" + this.repo + "/commit/" + commit.id;
+        treeUrl = "/" + this.repo + "/tree/" + commit.id;
+        authorNameHtml = commit.author.username ? "<a href=\"/" + commit.author.username + "\" rel=\"author\">" + commit.author.username + "</a>" : "<span rel=\"author\">" + commit.author.name + "</span>";
+        $ol.append($("<li class=\"commit commit-group-item js-navigation-item js-details-container\">\n  <p class=\"commit-title  js-pjax-commit-title\">\n    <a href=\"" + diffUrl + "\" class=\"message\">" + commit.message + "</a>\n  </p>\n  <div class=\"commit-meta\">\n    <div class=\"commit-links\">\n      <span class=\"js-zeroclipboard zeroclipboard-button\" data-clipboard-text=\"" + commit.id + "\" data-copied-hint=\"copied!\" title=\"Copy SHA\">\n        <span class=\"octicon octicon-clippy\"></span>\n      </span>\n\n      <a href=\"" + diffUrl + "\" class=\"gobutton \">\n        <span class=\"sha\">" + (commit.id.substring(0, 10)) + "\n          <span class=\"octicon octicon-arrow-small-right\"></span>\n        </span>\n      </a>\n\n      <a href=\"" + treeUrl + "\" class=\"browse-button\" title=\"Browse the code at this point in the history\" rel=\"nofollow\">\n        Browse code <span class=\"octicon octicon-arrow-right\"></span>\n      </a>\n    </div>\n\n    <div class=\"authorship\">\n      <span class=\"author-name\">" + authorNameHtml + "</span>\n      authored <time class=\"js-relative-date\" datetime=\"" + commit.timestamp + "\" title=\"" + commit.timestamp + "\"></time>\n    </div>\n  </div>\n</li>"));
+      }
+      return $ol.find('time').timeago();
     },
     commitsPage: function() {
       var e, ids;
@@ -265,7 +264,10 @@
       if (commit == null) {
         commit = {};
       }
-      commit.author = $.trim($(".commit-meta .author-name").text());
+      commit.author = {
+        name: $.trim($(".commit-meta .author-name > span").text()),
+        username: $.trim($(".commit-meta .author-name > a").text())
+      };
       commit.message = $.trim($(".commit > .commit-title").text());
       $("#ghcr-box").remove();
       rejectBtn = {
@@ -296,7 +298,7 @@
       if (parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0) {
         $box.append(GHCR.generateBtn(commit, nextPendingBtn));
       }
-      if (this.user !== commit.author) {
+      if ((commit.author.username || commit.author.name) !== this.user) {
         if (commit.status === 'pending') {
           $box.append(GHCR.generateBtn(commit, acceptBtn));
           $box.append(GHCR.generateBtn(commit, rejectBtn));
