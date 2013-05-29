@@ -100,42 +100,7 @@ GHCR =
         <h3 class="commit-group-heading">Pending commits</h3>
       """)
       $ol = $("<ol class='commit-group'/>")
-
-      for commit in commits
-        diffUrl = "/#{@repo}/commit/#{commit.id}"
-        treeUrl = "/#{@repo}/tree/#{commit.id}"
-
-        $ol.append($("""
-          <li class="commit commit-group-item js-navigation-item js-details-container">
-            <p class="commit-title  js-pjax-commit-title">
-              <a href="#{diffUrl}" class="message">#{commit.message}</a>
-            </p>
-            <div class="commit-meta">
-              <div class="commit-links">
-                <span class="js-zeroclipboard zeroclipboard-button" data-clipboard-text="#{commit.id}" data-copied-hint="copied!" title="Copy SHA">
-                  <span class="octicon octicon-clippy"></span>
-                </span>
-
-                <a href="#{diffUrl}" class="gobutton ">
-                  <span class="sha">#{commit.id.substring(0,10)}
-                    <span class="octicon octicon-arrow-small-right"></span>
-                  </span>
-                </a>
-
-                <a href="#{treeUrl}" class="browse-button" title="Browse the code at this point in the history" rel="nofollow">
-                  Browse code <span class="octicon octicon-arrow-right"></span>
-                </a>
-              </div>
-
-              <div class="authorship">
-                <span class="author-name"><a href="/#{commit.author.username}" rel="author">#{commit.author.username}</a></span>
-                authored <time class="js-relative-date" datetime="#{commit.timestamp}" title="#{commit.timestamp}"></time>
-              </div>
-            </div>
-          </li>
-        """))
-
-      $ol.find('time').timeago()
+      @renderCommits($ol, commits)
       $container.append($ol)
 
   rejected: ->
@@ -147,43 +112,49 @@ GHCR =
         <h3 class="commit-group-heading">Rejected commits</h3>
       """)
       $ol = $("<ol class='commit-group'/>")
-
-      for commit in commits
-        diffUrl = "/#{@repo}/commit/#{commit.id}"
-        treeUrl = "/#{@repo}/tree/#{commit.id}"
-
-        $ol.append($("""
-          <li class="commit commit-group-item js-navigation-item js-details-container">
-            <p class="commit-title  js-pjax-commit-title">
-              <a href="#{diffUrl}" class="message">#{commit.message}</a>
-            </p>
-            <div class="commit-meta">
-              <div class="commit-links">
-                <span class="js-zeroclipboard zeroclipboard-button" data-clipboard-text="#{commit.id}" data-copied-hint="copied!" title="Copy SHA">
-                  <span class="octicon octicon-clippy"></span>
-                </span>
-
-                <a href="#{diffUrl}" class="gobutton ">
-                  <span class="sha">#{commit.id.substring(0,10)}
-                    <span class="octicon octicon-arrow-small-right"></span>
-                  </span>
-                </a>
-
-                <a href="#{treeUrl}" class="browse-button" title="Browse the code at this point in the history" rel="nofollow">
-                  Browse code <span class="octicon octicon-arrow-right"></span>
-                </a>
-              </div>
-
-              <div class="authorship">
-                <span class="author-name"><a href="/#{commit.author.username}" rel="author">#{commit.author.username}</a></span>
-                authored <time class="js-relative-date" datetime="#{commit.timestamp}" title="#{commit.timestamp}"></time>
-              </div>
-            </div>
-          </li>
-        """))
-
-      $ol.find('time').timeago()
+      @renderCommits($ol, commits)
       $container.append($ol)
+
+  renderCommits: ($ol, commits) ->
+    for commit in commits
+      diffUrl = "/#{@repo}/commit/#{commit.id}"
+      treeUrl = "/#{@repo}/tree/#{commit.id}"
+
+      authorNameHtml = if commit.author.username
+        """<a href="/#{commit.author.username}" rel="author">#{commit.author.username}</a>"""
+      else
+        """<span rel="author">#{commit.author.name}</span>"""
+
+      $ol.append($("""
+        <li class="commit commit-group-item js-navigation-item js-details-container">
+          <p class="commit-title  js-pjax-commit-title">
+            <a href="#{diffUrl}" class="message">#{commit.message}</a>
+          </p>
+          <div class="commit-meta">
+            <div class="commit-links">
+              <span class="js-zeroclipboard zeroclipboard-button" data-clipboard-text="#{commit.id}" data-copied-hint="copied!" title="Copy SHA">
+                <span class="octicon octicon-clippy"></span>
+              </span>
+
+              <a href="#{diffUrl}" class="gobutton ">
+                <span class="sha">#{commit.id.substring(0,10)}
+                  <span class="octicon octicon-arrow-small-right"></span>
+                </span>
+              </a>
+
+              <a href="#{treeUrl}" class="browse-button" title="Browse the code at this point in the history" rel="nofollow">
+                Browse code <span class="octicon octicon-arrow-right"></span>
+              </a>
+            </div>
+
+            <div class="authorship">
+              <span class="author-name">#{authorNameHtml}</span>
+              authored <time class="js-relative-date" datetime="#{commit.timestamp}" title="#{commit.timestamp}"></time>
+            </div>
+          </div>
+        </li>
+      """))
+    $ol.find('time').timeago()
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
@@ -215,7 +186,9 @@ GHCR =
     $btn
 
   renderMenu: (commit = {}) ->
-    commit.author  = $.trim($(".commit-meta .author-name").text())
+    commit.author =
+      name:     $.trim($(".commit-meta .author-name > span").text())
+      username: $.trim($(".commit-meta .author-name > a").text())
     commit.message = $.trim($(".commit > .commit-title").text())
     $("#ghcr-box").remove()
 
@@ -245,7 +218,7 @@ GHCR =
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
-    if @user != commit.author
+    if (commit.author.username || commit.author.name) != @user
       if commit.status == 'pending'
         $box.append GHCR.generateBtn(commit, acceptBtn)
         $box.append GHCR.generateBtn(commit, rejectBtn)
