@@ -43,22 +43,24 @@ GHCR =
     @api.pendingCount @user, (res) =>
       $("li#ghcr-pending-tab").remove()
       $ul = $("div.tabnav > ul.tabnav-tabs")
-      $li = $("<li id='ghcr-pending-tab' />")
-      # js-selected-navigation-item tabnav-tab
-      $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending<span class='counter'>#{res.count}</span></a>").click () => @pending()
-      $li.append($a)
-      $ul.append($li)
-      $('#ghcr-box button.next').remove() if res.count == 0
+      if $ul.find("a.tabnav-tab:contains('Commits')").length
+        $li = $("<li id='ghcr-pending-tab' />")
+        # js-selected-navigation-item tabnav-tab
+        $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending<span class='counter'>#{res.count}</span></a>").click () => @pending()
+        $li.append($a)
+        $ul.append($li)
+        $('#ghcr-box button.next').remove() if res.count == 0
 
   initRejectedTab: ->
     @api.rejectedCount @user, (res) =>
       $("li#ghcr-rejected-tab").remove()
       $ul = $("div.tabnav > ul.tabnav-tabs")
-      $li = $("<li id='ghcr-rejected-tab' />")
-      # js-selected-navigation-item tabnav-tab
-      $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected<span class='counter'>#{res.count}</span></a>").click () => @rejected()
-      $li.append($a)
-      $ul.append($li)
+      if $ul.find("a.tabnav-tab:contains('Commits')").length
+        $li = $("<li id='ghcr-rejected-tab' />")
+        # js-selected-navigation-item tabnav-tab
+        $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected<span class='counter'>#{res.count}</span></a>").click () => @rejected()
+        $li.append($a)
+        $ul.append($li)
 
   initSettings: ->
     $("li#ghcr-settings").remove()
