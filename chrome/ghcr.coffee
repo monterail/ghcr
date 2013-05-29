@@ -42,7 +42,7 @@ GHCR =
   initPendingTab: ->
     @api.pendingCount @user, (res) =>
       $("li#ghcr-pending-tab").remove()
-      $ul = $("div.tabnav > ul.tabnav-tabs")
+      $ul = $("div.pagehead div.tabnav > ul.tabnav-tabs")
       if $ul.find("a.tabnav-tab:contains('Commits')").length
         $li = $("<li id='ghcr-pending-tab' />")
         # js-selected-navigation-item tabnav-tab
@@ -54,7 +54,7 @@ GHCR =
   initRejectedTab: ->
     @api.rejectedCount @user, (res) =>
       $("li#ghcr-rejected-tab").remove()
-      $ul = $("div.tabnav > ul.tabnav-tabs")
+      $ul = $("div.pagehead div.tabnav > ul.tabnav-tabs")
       if $ul.find("a.tabnav-tab:contains('Commits')").length
         $li = $("<li id='ghcr-rejected-tab' />")
         # js-selected-navigation-item tabnav-tab
