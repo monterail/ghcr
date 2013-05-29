@@ -90,7 +90,7 @@
       return this.api.pendingCount(this.user, function(res) {
         var $a, $li, $ul;
         $("li#ghcr-pending-tab").remove();
-        $ul = $("div.tabnav > ul.tabnav-tabs");
+        $ul = $("div.pagehead div.tabnav > ul.tabnav-tabs");
         if ($ul.find("a.tabnav-tab:contains('Commits')").length) {
           $li = $("<li id='ghcr-pending-tab' />");
           $a = $("<a href='#ghcr-pending'  class='tabnav-tab'>Pending<span class='counter'>" + res.count + "</span></a>").click(function() {
@@ -109,7 +109,7 @@
       return this.api.rejectedCount(this.user, function(res) {
         var $a, $li, $ul;
         $("li#ghcr-rejected-tab").remove();
-        $ul = $("div.tabnav > ul.tabnav-tabs");
+        $ul = $("div.pagehead div.tabnav > ul.tabnav-tabs");
         if ($ul.find("a.tabnav-tab:contains('Commits')").length) {
           $li = $("<li id='ghcr-rejected-tab' />");
           $a = $("<a href='#ghcr-rejected'  class='tabnav-tab'>Rejected<span class='counter'>" + res.count + "</span></a>").click(function() {
