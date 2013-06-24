@@ -124,14 +124,14 @@
       var $a, $li, $ul,
         _this = this;
       $("li#ghcr-settings").remove();
-      $ul = $('span.tabnav-right ul.tabnav-tabs');
-      $li = $("<li id='ghcr-settings' />");
-      $a = $("<a href='' class='tabnav-tab'>Set apiUrl</a>").click(function(e) {
+      $ul = $('.repo-nav-contents .repo-menu:last');
+      $li = $("<li class='tooltipped leftwards' id='ghcr-settings' original-title='Ghcr api url' />");
+      $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Ghcr api url</span></a>").click(function(e) {
         e.preventDefault();
         return _this.setApiUrl();
       });
       $li.append($a);
-      return $ul.prepend($li);
+      return $ul.append($li);
     },
     initNotify: function() {
       var $li, $ul,
