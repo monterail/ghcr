@@ -64,13 +64,13 @@ GHCR =
 
   initSettings: ->
     $("li#ghcr-settings").remove()
-    $ul = $('span.tabnav-right ul.tabnav-tabs')
-    $li = $("<li id='ghcr-settings' />")
-    $a = $("<a href='' class='tabnav-tab'>Set apiUrl</a>").click (e) =>
+    $ul = $('.repo-nav-contents .repo-menu:last')
+    $li = $("<li class='tooltipped leftwards' id='ghcr-settings' original-title='Ghcr api url' />")
+    $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Ghcr api url</span></a>").click (e) =>
       e.preventDefault()
       @setApiUrl()
     $li.append($a)
-    $ul.prepend($li)
+    $ul.append($li)
 
   initNotify: ->
     $("li#ghcr-notify").remove()
