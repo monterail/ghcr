@@ -23,4 +23,8 @@
     return ghcrRender(details);
   });
 
+  chrome.runtime.onStartup.addListener(function() {
+    return console.log('test');
+  });
+
 }).call(this);
