@@ -12,3 +12,6 @@ chrome.webNavigation.onCompleted.addListener (details) ->
 chrome.webNavigation.onHistoryStateUpdated.addListener (details) ->
   console.log 'onHistoryStateUpdated'
   ghcrRender(details)
+
+chrome.runtime.onStartup.addListener ->
+  console.log('browser startup')
