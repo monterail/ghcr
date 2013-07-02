@@ -1,0 +1,14 @@
+.ghcr-rejected { background-color: #fdd !important;}
+.ghcr-accepted { background-color: #dfd !important;}
+.ghcr-pending { background-color: #F8EEC7 !important;}
+#ghcr-box {
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 11pt;
+  overflow: hidden;
+  top: 0;
+  z-index: 1000;
+  border: 1px solid #ccc;
+}
+#ghcr-box span { float: left;}
+#ghcr-box button { float: right; }
