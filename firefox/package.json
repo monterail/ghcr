@@ -1,13 +1,14 @@
 {
-  "license": "",
-  "description": "Add-on for code review on Github",
-  "contributors": ["Ostrzy"],
-  "author": "Ostrzy",
-  "url": "", "dependencies": ["api-utils", "addon-kit"],
-  "version": "0.01",
-  "lib": "lib",
+  "name": "ghcr",
   "fullName": "Github Code Review",
+  "description": "Add-on for code review on Github",
+  "author": "Monterail.com (http://monterail.com)",
+  "contributors": ["Michał Duda <michal.duda@monterail.com>"],
+  "url": "",
+  "license": "MIT/X11",
+  "version": "0.1",
+  "dependencies": ["api-utils", "addon-kit"],
+  "lib": "lib",
   "main": "main",
-  "id": "jid0-XLjaeLmykqiEKaIyiBA8v9Sbl4o",
-  "name": "ghcr"
+  "id": "jid0-XLjaeLmykqiEKaIyiBA8v9Sbl4o"
 }
