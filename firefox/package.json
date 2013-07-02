@@ -1,9 +1,13 @@
 {
-  "name": "ghcr",
-  "fullName": "GitHub Code Reviews",
-  "id": "jid1-jBw9KgjogXv5gA",
-  "description": "",
-  "author": "Monterail.com",
-  "license": "MPL 2.0",
-  "version": "0.1"
+  "license": "",
+  "description": "Add-on for code review on Github",
+  "contributors": ["Ostrzy"],
+  "author": "Ostrzy",
+  "url": "", "dependencies": ["api-utils", "addon-kit"],
+  "version": "0.01",
+  "lib": "lib",
+  "fullName": "Github Code Review",
+  "main": "main",
+  "id": "jid0-XLjaeLmykqiEKaIyiBA8v9Sbl4o",
+  "name": "ghcr"
 }

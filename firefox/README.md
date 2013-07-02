@@ -1,9 +1,13 @@
 # GitHub Code Review Firefox Extension
 
-## Usage
+## Installation
+
+[Firefox addon page](https://addons.mozilla.org/pl/firefox/addon/github-code-review/)
+
+## Development
 
 Install [mozilla addons SDK](https://addons.mozilla.org/en-US/developers/docs/sdk/latest/dev-guide/tutorials/installation.html), activate `cfx` and type
 
-```bash
-cfx run
-```
+`cfx run`
+
+Be nice and test your code before pushing.
