@@ -1,10 +1,10 @@
 # GitHub Code Review Extension
 
-Currently available only for [chrome](chrome/README.md)
+Currently available for [chrome](chrome/README.md) and [firefox](firefox/README.md)
 
 ### Commit auto accept
 
-Simply add `accept shortSHA1 or longSHA1` in your commit message. 
+Simply add `accept shortSHA1 or longSHA1` in your commit message.
 
 Auto accept commit message example:
 
