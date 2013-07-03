@@ -13,15 +13,15 @@
   ],
 
  "background": {
-    "scripts": ["eventPage.js"],
+    "scripts": ["lib/main.js"],
     "persistent": false
   },
 
   "content_scripts": [
     {
       "matches": ["https://github.com/*"],
-      "css": ["ghcr.css"],
-      "js": ["lib/jquery.js", "lib/strftime-min.js", "lib/jquery.timeago.js", "ghcr.js"]
+      "css": ["data/ghcr.css"],
+      "js": ["data/lib/jquery.js", "data/lib/strftime-min.js", "data/lib/jquery.timeago.js", "data/ghcr.js"]
     }
   ]
 }
