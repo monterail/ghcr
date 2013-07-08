@@ -7,13 +7,18 @@ package_file =
 
 task 'build:chrome', 'Build chrome extension folder from source', ->
   compile("chrome")
+  zip("chrome")
+
+task 'release:chrome', 'Build and zip chrome extension folder from source', ->
+  compile("chrome")
+  zip("chrome")
 
 task 'build:firefox', 'Build firefox extension folder from source', ->
   compile("firefox")
 
 compile = (browser) ->
   copy = ->
-    exec "rm -rf #{build_path}"
+    exec "rm -rf #{build_path} #{build_path}.zip"
     exec "mkdir -p #{build_path}"
     exec "mkdir #{build_path}/lib #{build_path}/data"
     exec "cp -R shared/lib #{build_path}/data/"
@@ -50,3 +55,12 @@ compile = (browser) ->
       ghcrContents[index] = fileContents
       process_ghcr() if ghcrContents.length == ghcrFiles.length
   compile_singles()
+
+zip = (browser) ->
+  build_path = "builds/#{browser}"
+  exec "cd #{build_path}"
+  exec "zip -r #{build_path} #{browser}", (err, stdout, stderr) ->
+    throw err if err
+    out = stdout + stderr
+    console.log out if out.length
+    console.log "Zip #{build_path}.zip prepared"
