@@ -59,6 +59,7 @@ GHCR =
     $ul = $('ul.pagehead-actions')
     $li = $("<li id='ghcr-notify' />")
     @api.notify @user, 'status', (data) =>
+      return if $("li#ghcr-notify").length
       enabled = data['enabled']
       btnlbl = (e) ->
         if e then "Unnotify" else "Notify"
