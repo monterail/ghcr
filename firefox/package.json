@@ -3,7 +3,13 @@
   "fullName": "Github Code Review",
   "description": "Add-on for code review on Github",
   "author": "Monterail.com (http://monterail.com)",
-  "contributors": ["Michał Duda <michal.duda@monterail.com>"],
+  "contributors": [
+    "Dariusz Gertych <dariusz.gertych@monterail.com>",
+    "Michał Duda <michal.duda@monterail.com>",
+    "Tymon Tobolski <tymon.tobolski@monterail.com>",
+    "Janek Dudulski <jan.dudulski@monterail.com>",
+    "Michał Szajbe <michal.szajbe@monterail.com>"
+  ],
   "url": "",
   "license": "MIT/X11",
   "version": "0.1",
