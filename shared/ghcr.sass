@@ -1,18 +1,23 @@
-.ghcr-rejected
-  background-color: #fdd !important
+$commit-color--pending: #f7efc2
+$commit-color--accepted: #dfffda
+$commit-color--rejected: #fcdddd
 
-.ghcr-accepted
-  background-color: #dfd !important
+.ghcr__commit--pending
+  background: $commit-color--pending !important
 
-.ghcr-pending
-  background-color: #f8eec7 !important
+.ghcr__commit--accepted
+  background: $commit-color--accepted !important
 
-#ghcr-box
+.ghcr__commit--rejected
+  background: $commit-color--rejected !important
+
+.ghcr__status-bar
   top: 0
   z-index: 1000
   padding: 10px
-  border: 1px solid #ccc
+  border: 1px solid #cfcfcf
   border-radius: 4px
+  background: $commit-color--pending
   overflow: hidden
 
   span
@@ -20,3 +25,9 @@
 
   button
     float: right
+
+.ghcr__status-bar--accepted
+  background: $commit-color--accepted
+
+.ghcr__status-bar--rejected
+  background: $commit-color--rejected
