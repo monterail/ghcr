@@ -37,7 +37,7 @@ compile = (browser) ->
           console.log 'Compiled GHCR'
 
   compile_singles = ->
-    singles = ["#{browser}/main.coffee"]
+    singles = ["#{browser}/main.coffee", "#{build_path}/data/ghcr.sass"]
     singles.forEach (file) ->
       extension = (->
         ext = file.split '.'
