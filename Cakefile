@@ -48,7 +48,7 @@ compile = (browser) ->
   build_path = "builds/#{browser}"
   copy()
   ghcrFiles     = ["#{browser}/api", "shared/ghcr", "#{browser}/init"]
-  ghcrContents  = new Array
+  ghcrContents  = []
   for file, index in ghcrFiles then do (file, index) ->
     fs.readFile "#{file}.coffee", 'utf8', (err, fileContents) ->
       throw err if err
