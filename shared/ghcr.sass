@@ -1,23 +1,50 @@
-$commit-color--pending: #f7efc2
-$commit-color--accepted: #dfffda
-$commit-color--rejected: #fcdddd
+$commit-background: #f7fbfc
+$commit-background--pending: #fcfcdf
+$commit-background--accepted: #dfffda
+$commit-background--rejected: #efe0e2
+$commit-color--accepted: #25b03c
+$commit-color--rejected: #d91c29
+
+@mixin commit-background($color, $hover-only: false, $no-hover: false)
+  @if $hover-only != true
+    background: $color !important
+
+  @if $no-hover != true
+    &.navigation-focus
+      background: darken($color, 2%) !important
+
+@mixin insert-character($code, $color: inherit)
+  .commit-title .message::after
+    content: "\0000a0#{unquote($code)}"
+    font-weight: bold
+    text-decoration: none !important
+    text-shadow: 0 1px 0 #fff
+    color: $color
+
+.ghcr__commit
+  +commit-background($commit-background, $hover-only: true)
 
 .ghcr__commit--pending
-  background: $commit-color--pending !important
+  +commit-background($commit-background--pending)
 
 .ghcr__commit--accepted
-  background: $commit-color--accepted !important
+  +insert-character("\2714", $commit-color--accepted)
 
 .ghcr__commit--rejected
-  background: $commit-color--rejected !important
+  +commit-background($commit-background--rejected)
+  +insert-character("\2718", $commit-color--rejected)
+
+  &.commit-group-item,
+    &, & + .commit-group-item
+      border-top-color: #c8d6df !important
 
 .ghcr__status-bar
   top: 0
   z-index: 1000
   padding: 10px
-  border: 1px solid #cfcfcf
+  border: 1px solid #c8d7e0
   border-radius: 4px
-  background: $commit-color--pending
+  background: $commit-background--pending
   overflow: hidden
 
   span
@@ -27,7 +54,7 @@ $commit-color--rejected: #fcdddd
     float: right
 
 .ghcr__status-bar--accepted
-  background: $commit-color--accepted
+  background: $commit-background--accepted
 
 .ghcr__status-bar--rejected
-  background: $commit-color--rejected
+  background: $commit-background--rejected
