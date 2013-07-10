@@ -22,7 +22,7 @@ compile = (browser) ->
     exec "mkdir -p #{build_path}"
     exec "mkdir #{build_path}/lib #{build_path}/data"
     exec "cp -R shared/lib #{build_path}/data/"
-    exec "cp shared/ghcr.css #{build_path}/data/"
+    exec "cp shared/*.{css,sass,scss} #{build_path}/data/"
     exec "cp #{browser}/#{package_file[browser]} #{build_path}"
 
   process_ghcr = ->
@@ -38,8 +38,16 @@ compile = (browser) ->
 
   compile_singles = ->
     singles = ["#{browser}/main.coffee"]
-    for file in singles then do (file) ->
-      exec "coffee --compile --output #{build_path}/lib #{file} ", (err, stdout, stderr) ->
+    singles.forEach (file) ->
+      extension = (->
+        ext = file.split '.'
+        ext[Math.max 0, ext.length - 1]
+      )()
+      command = switch extension
+        when 'coffee' then "coffee --compile --output #{build_path}/lib #{file} "
+        when 'scss', 'sass' then "sass --no-cache #{file} >> #{build_path}/data/ghcr.css && rm #{file}"
+        else throw "Unknown extension: #{file}"
+      exec command, (err, stdout, stderr) ->
         throw err if err
         out = stdout + stderr
         console.log out if out.length
