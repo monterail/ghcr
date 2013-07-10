@@ -145,7 +145,7 @@ GHCR =
       for commit in commits
         $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
         commit.status ||= "pending"
-        $item.addClass("ghcr-#{commit.status}")
+        $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
   generateBtn: (commit, btn) ->
     $btn = $("<button class='minibutton #{btn.status}'>#{btn.label}</button>").click () =>
@@ -197,7 +197,7 @@ GHCR =
       else # pending
         info = "Code review pending"
 
-    $box = $("<div id='ghcr-box' class='ghcr-#{commit.status}'><span>#{info}</span> </div>")
+    $box = $("<div id='ghcr-box' class='ghcr__status-bar ghcr__status-bar--#{commit.status}'><span>#{info}</span></div>")
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
