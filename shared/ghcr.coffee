@@ -3,10 +3,11 @@ GHCR =
     @repo = repo
     @api  = API(@getApiUrl(), repo)
     @user = $.trim($("#user-links .name").text())
-    @initPendingTab()
-    @initRejectedTab()
-    @initSettings()
-    @initNotify()
+    # @initPendingTab()
+    # @initRejectedTab()
+    # @initSettings()
+    # @initNotify()
+    @initNav()
 
   getApiUrl: ->
     apiUrl = localStorage.getItem('ghcr:apiUrl')
@@ -20,6 +21,45 @@ GHCR =
       localStorage.setItem('ghcr:apiUrl', newApiUrl)
       window.location.reload()
       newApiUrl
+
+
+  initNav: ->
+    $cont = $('.repo-nav-contents')
+    $ul = $("#ghcr-nav")
+    unless $ul.length
+      $ul = $('<ul id="ghcr-nav" class="repo-menu"/>')
+      $cont.prepend('<div class="repo-menu-separator"></div>')
+      $cont.prepend($ul)
+
+    # Settings
+    unless $("li#ghcr-pending").length
+      $li = $("<li class='tooltipped leftwards' id='ghcr-pending' original-title='Pending' />")
+      $a = $("<a href='' class=''><span class='octicon'>P</span> <span class='full-word'>Pending</span></a>").click (e) =>
+        e.preventDefault()
+        # @setApiUrl()
+      $li.append($a)
+      $ul.append($li)
+      # $li.tipsy({gravity: "e"})
+
+    unless $("li#ghcr-rejected").length
+      $li = $("<li class='tooltipped leftwards' id='ghcr-rejected' original-title='Rejected' />")
+      $a = $("<a href='' class=''><span class='octicon'>R</span> <span class='full-word'>Rejected</span></a>").click (e) =>
+        e.preventDefault()
+        # @setApiUrl()
+      $li.append($a)
+      $ul.append($li)
+      # $li.tipsy({gravity: "e"})
+
+    unless $("li#ghcr-settings").length
+      $li = $("<li class='tooltipped leftwards' id='ghcr-settings' original-title='GHCR settings' />")
+      $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>GHCR settings</span></a>").click (e) =>
+        e.preventDefault()
+        @setApiUrl()
+      $li.append($a)
+      $ul.append($li)
+      # $li.tipsy({gravity: "e"})
+
+
 
   initPendingTab: ->
     @api.pendingCount @user, (res) =>
@@ -46,13 +86,13 @@ GHCR =
 
   initSettings: ->
     $("li#ghcr-settings").remove()
-    $ul = $('.repo-nav-contents .repo-menu:last')
+    $ul = $('.repo-nav-contents .repo-menu:first')
     $li = $("<li class='tooltipped leftwards' id='ghcr-settings' original-title='Ghcr api url' />")
     $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Ghcr api url</span></a>").click (e) =>
       e.preventDefault()
       @setApiUrl()
     $li.append($a)
-    $ul.append($li)
+    $ul.prepend($li)
 
   initNotify: ->
     $("li#ghcr-notify").remove()
