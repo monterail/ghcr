@@ -42,3 +42,9 @@ extension. Needed structure is created during build.
 To build any of the addon simply run `cake build:chrome` or `cake build:firefox`.
 Folder with compiled js will appear in `builds` folder and can be used
 to test on particular browser. For details check specific browser README.
+
+## Monterail API URL
+
+```
+http://monterail:Wy4L6s8T@webhooker.mh2.monterail.eu/ghcr
+```
