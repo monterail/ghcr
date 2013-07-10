@@ -148,7 +148,7 @@ GHCR =
         $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
   generateBtn: (commit, btn) ->
-    $btn = $("<button class='minibutton #{btn.status}'>#{btn.label}</button>").click () =>
+    $btn = $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
       if btn.status == 'next'
         @api.pending @user, (commits) =>
           currentId = window.location.pathname.split('/').reverse()[0]
@@ -190,10 +190,10 @@ GHCR =
     switch commit.status
       when "accepted"
         btn = rejectBtn
-        info = "Commit accepted by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
+        info = "Commit <b>accepted</b> by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
       when "rejected"
         btn = acceptBtn
-        info = "Commit rejected by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
+        info = "Commit <b>rejected</b> by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
       else # pending
         info = "Code review pending"
 
