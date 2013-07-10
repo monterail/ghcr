@@ -1,17 +1,19 @@
 API = (url, repo) ->
+  root = "#{url}/api/v1"
+
   commits: (ids, cb) ->
-    $.post "#{url}/commits", {repo: repo, ids: ids}, cb, 'json'
+    $.post "#{root}/commits", {repo: repo, ids: ids}, cb, 'json'
   commit: (id, cb) ->
-    $.getJSON "#{url}/commit", {repo: repo, id: id}, cb
+    $.getJSON "#{root}/commit", {repo: repo, id: id}, cb
   save: (data, cb) ->
-    $.post "#{url}/save", $.extend({}, data, {repo: repo}), cb
+    $.post "#{root}/save", $.extend({}, data, {repo: repo}), cb
   pending: (user, cb) ->
-    $.get "#{url}/pending", {repo: repo, user: user}, cb, 'json'
+    $.get "#{root}/pending", {repo: repo, user: user}, cb, 'json'
   pendingCount: (user, cb) ->
-    $.get "#{url}/pending/count", {repo: repo, user: user}, cb, 'json'
+    $.get "#{root}/pending/count", {repo: repo, user: user}, cb, 'json'
   rejected: (user, cb) ->
-    $.get "#{url}/rejected", {repo: repo, user: user}, cb, 'json'
+    $.get "#{root}/rejected", {repo: repo, user: user}, cb, 'json'
   rejectedCount: (user, cb) ->
-    $.get "#{url}/rejected/count", {repo: repo, user: user}, cb, 'json'
+    $.get "#{root}/rejected/count", {repo: repo, user: user}, cb, 'json'
   notify: (reviewer, action, cb) ->
-    $.post "#{url}/notify", {repo: repo, action: action, reviewer: reviewer}, cb, 'json'
+    $.post "#{root}/notify", {repo: repo, action: action, reviewer: reviewer}, cb, 'json'
