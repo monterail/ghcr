@@ -1,5 +1,5 @@
 {
-  "name": "ghcr-web",
+  "name": "ghcr",
   "version": "0.1.0",
   "repository": {
     "type": "git",
