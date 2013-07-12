@@ -43,6 +43,8 @@ To build any of the addon simply run `cake build:chrome` or `cake build:firefox`
 Folder with compiled js will appear in `builds` folder and can be used
 to test on particular browser. For details check specific browser README.
 
+You can use `cake watch` to continously build for chrome and firefox
+
 ## Monterail API URL
 
 ```
