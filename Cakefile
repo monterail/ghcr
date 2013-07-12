@@ -1,3 +1,5 @@
+require 'flour'
+
 fs     = require 'fs'
 {exec} = require 'child_process'
 
@@ -15,6 +17,11 @@ task 'release:chrome', 'Build and zip chrome extension folder from source', ->
 
 task 'build:firefox', 'Build firefox extension folder from source', ->
   compile("firefox")
+
+task 'watch', 'Automatically build all extensions', ->
+  watch ['**/*.coffee', '**/*.sass'], ->
+    invoke 'build:chrome'
+    invoke 'build:firefox'
 
 compile = (browser) ->
   copy = ->
