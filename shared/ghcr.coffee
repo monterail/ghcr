@@ -1,16 +1,41 @@
 GHCR =
-  init: (repo) ->
-    @repo = repo
-    @api  = API(@getApiUrl(), repo)
-    @user = $.trim($("#user-links .name").text())
-    @initPendingTab()
-    @initRejectedTab()
+  init: (@repo) ->
+    match = (/access_token=([^&+]+)/).exec(document.location.hash)
+    if match? && match[1]?
+      @setAuthToken(match[1])
+      @removeHash()
+
+    if @getAuthToken()?
+      @api = API(@getApiUrl(), repo, @getAuthToken())
+      @initPendingTab()
+      @initRejectedTab()
+
     @initSettings()
-    @initNotify()
+
+  removeHash: ->
+    scrollV = undefined
+    scrollH = undefined
+    loc = window.location
+    if "pushState" of history
+      history.pushState("", document.title, loc.pathname + loc.search) 
+    else
+      # Prevent scrolling by storing the page's current scroll offset
+      scrollV = document.body.scrollTop
+      scrollH = document.body.scrollLeft
+      loc.hash = ""
+      
+      # Restore the scroll offset, should be flicker free
+      document.body.scrollTop = scrollV
+      document.body.scrollLeft = scrollH
+
+  setAuthToken: (authToken) ->
+    $.cookie('ghcr_auth_token', authToken, path: '/')
+
+  getAuthToken: ->
+    $.cookie('ghcr_auth_token')
 
   getApiUrl: ->
-    apiUrl = localStorage.getItem('ghcr:apiUrl')
-    if $.trim(apiUrl) == "" then 'http://localhost:9393/ghcr' else apiUrl
+    "http://ghcr-staging.herokuapp.com/api/v1"
 
   setApiUrl: ->
     newApiUrl = prompt("Set ghcr api url:", @getApiUrl())
@@ -22,7 +47,7 @@ GHCR =
       newApiUrl
 
   initPendingTab: ->
-    @api.pendingCount @user, (res) =>
+    @api.count status: 'pending', created_by: @user, (res) =>
       $("li#ghcr-pending-tab").remove()
       $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
       if $ul.find("li.commits").length
@@ -34,7 +59,7 @@ GHCR =
         $('#ghcr-box button.next').remove() if res.count == 0
 
   initRejectedTab: ->
-    @api.rejectedCount @user, (res) =>
+    @api.count status: 'rejected', created_by: @user, (res) =>
       $("li#ghcr-rejected-tab").remove()
       $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
       if $ul.find("li.commits").length
@@ -47,32 +72,12 @@ GHCR =
   initSettings: ->
     $("li#ghcr-settings").remove()
     $ul = $('.repo-nav-contents .repo-menu:last')
-    $li = $("<li class='tooltipped leftwards' id='ghcr-settings' original-title='Ghcr api url' />")
-    $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Ghcr api url</span></a>").click (e) =>
+    $li = $("<li class='tooltipped leftwards' id='ghcr-settings' />")
+    $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Authorize GHCR</span></a>").click (e) =>
       e.preventDefault()
-      @setApiUrl()
+      API.authorize(@getApiUrl())
     $li.append($a)
     $ul.append($li)
-
-  initNotify: ->
-    $("li#ghcr-notify").remove()
-    $ul = $('ul.pagehead-actions')
-    $li = $("<li id='ghcr-notify' />")
-    @api.notify @user, 'status', (data) =>
-      return if $("li#ghcr-notify").length
-      enabled = data['enabled']
-      btnlbl = (e) ->
-        if e then "Unnotify" else "Notify"
-      action = (e) ->
-        if e then "disable" else "enable"
-      $a = $("<a href='' class='button minibutton'>#{btnlbl(enabled)}</a>").click (e) =>
-        e.preventDefault()
-        @api.notify @user, action(enabled), null
-        enabled = !enabled
-        $(e.target).text(btnlbl(enabled))
-
-      $li.append($a)
-      $ul.prepend($li)
 
   pending: ->
     @api.pending @user, (commits) =>
@@ -233,21 +238,3 @@ GHCR =
       commit.id     ||= id
       commit.status ||= "pending"
       @renderMenu(commit)
-
-
-chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
-  chunks = window.location.pathname.split("/")
-  repo = "#{chunks[1]}/#{chunks[2]}"
-
-  GHCR.init(repo)
-
-  if window.location.hash == "#ghcr-pending"
-    GHCR.pending()
-  else if window.location.hash == "#ghcr-rejected"
-    GHCR.rejected()
-  else
-    switch chunks[3]
-      when "commits" # Commit History page
-        GHCR.commitsPage()
-      when "commit" # Commit details page
-        GHCR.commitPage(chunks[4])

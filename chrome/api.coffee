@@ -1,17 +1,12 @@
-API = (url, repo) ->
-  commits: (ids, cb) ->
-    $.post "#{url}/commits", {repo: repo, ids: ids}, cb, 'json'
+API = (url, repo, access_token) ->
+  commits: (params, cb) ->
+    $.get "#{url}/#{repo}/commits", $.extend({access_token}, params), cb, 'json'
+  count: (params, cb) ->
+    $.get "#{url}/#{repo}/commits", $.extend({access_token}, params), cb, 'json'
   commit: (id, cb) ->
-    $.getJSON "#{url}/commit", {repo: repo, id: id}, cb
-  save: (data, cb) ->
-    $.post "#{url}/save", $.extend({}, data, {repo: repo}), cb
-  pending: (user, cb) ->
-    $.get "#{url}/pending", {repo: repo, user: user}, cb, 'json'
-  pendingCount: (user, cb) ->
-    $.get "#{url}/pending/count", {repo: repo, user: user}, cb, 'json'
-  rejected: (user, cb) ->
-    $.get "#{url}/rejected", {repo: repo, user: user}, cb, 'json'
-  rejectedCount: (user, cb) ->
-    $.get "#{url}/rejected/count", {repo: repo, user: user}, cb, 'json'
-  notify: (reviewer, action, cb) ->
-    $.post "#{url}/notify", {repo: repo, action: action, reviewer: reviewer}, cb, 'json'
+    $.get "#{url}/#{repo}/commit/#{id}", {auth_token}, cb, 'json'
+  save: (id, data, cb) ->
+    $.put "#{url}/#{repo}/#{id}", data, cb
+
+API.authorize = (url) ->
+  document.location = "#{url}/authorize?redirect_uri=#{document.location.href}"
