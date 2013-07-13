@@ -19,7 +19,13 @@ task 'build:firefox', 'Build firefox extension folder from source', ->
   compile("firefox")
 
 task 'watch', 'Automatically build all extensions', ->
-  watch ['**/*.coffee', '**/*.sass'], ->
+  watch "chrome/*.coffee", ->
+    invoke 'build:chrome'
+
+  watch "firefox/*.coffee", ->
+    invoke 'build:firefox'
+
+  watch ['shared/*.coffee', 'shared/*.sass'], ->
     invoke 'build:chrome'
     invoke 'build:firefox'
 
