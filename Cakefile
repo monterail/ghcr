@@ -40,9 +40,9 @@ compile = (browser) ->
   process_ghcr = ->
     ghcr_path = "#{build_path}/data/ghcr.coffee"
     fs.writeFile ghcr_path, ghcrContents.join('\n\n'), 'utf8', (err) ->
-      return console.log(stderr) if err
+      return console.log(err.message) if err
       exec "coffee --compile #{ghcr_path}", (err, stdout, stderr) ->
-        return console.log(stderr) if err
+        return console.log(err.message) if err
         out = stdout + stderr
         console.log out if out.length
         fs.unlink ghcr_path, ->
@@ -61,7 +61,7 @@ compile = (browser) ->
         else console.log("\nUnknown extension: #{file}\n")
       if command?
         exec command, (err, stdout, stderr) ->
-          return console.log(stderr) if err
+          return console.log(err.message) if err
           out = stdout + stderr
           console.log out if out.length
           console.log "Compiled #{file}"
@@ -72,7 +72,7 @@ compile = (browser) ->
   ghcrContents  = []
   for file, index in ghcrFiles then do (file, index) ->
     fs.readFile "#{file}.coffee", 'utf8', (err, fileContents) ->
-      return console.log(stderr) if err
+      return console.log(err.message) if err
       ghcrContents[index] = fileContents
       process_ghcr() if ghcrContents.length == ghcrFiles.length
   compile_singles()
@@ -81,7 +81,7 @@ zip = (browser) ->
   build_path = "builds/#{browser}"
   exec "cd #{build_path}"
   exec "zip -r #{build_path} #{browser}", (err, stdout, stderr) ->
-    return console.log(stderr) if err
+    return console.log(err.message) if err
     out = stdout + stderr
     console.log out if out.length
     console.log "Zip #{build_path}.zip prepared"
