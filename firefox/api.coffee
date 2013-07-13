@@ -1,22 +1,18 @@
-API = (url, repo) ->
+API = (url, repo, access_token) ->
   sendRequest: (type, url, data, cb) ->
     callMe = Math.random().toString(36).substring(7)
     self.port.on callMe, cb
     self.port.emit "request:#{type}", url, decodeURIComponent($.param(data)), callMe
 
-  commits: (ids, cb) ->
-    @sendRequest "post", "#{url}/commits", {repo: repo, ids: ids}, cb
+  commits: (params, cb) ->
+    @sendRequest "get", "#{url}/#{repo}/commits", $.extend({access_token}, params), cb
+  count: (params, cb) ->
+    @sendRequest "get", "#{url}/#{repo}/commits", $.extend({access_token}, params), cb
   commit: (id, cb) ->
-    @sendRequest "get", "#{url}/commit", {repo: repo, id: id}, cb
-  save: (data, cb) ->
-    @sendRequest "post", "#{url}/save", $.extend({}, data, {repo: repo}), cb
-  pending: (user, cb) ->
-    @sendRequest "get", "#{url}/pending", {repo: repo, user: user}, cb
-  pendingCount: (user, cb) ->
-    @sendRequest "get", "#{url}/pending/count", {repo: repo, user: user}, cb
-  rejected: (user, cb) ->
-    @sendRequest "get", "#{url}/rejected", {repo: repo, user: user}, cb
-  rejectedCount: (user, cb) ->
-    @sendRequest "get", "#{url}/rejected/count", {repo: repo, user: user}, cb
-  notify: (reviewer, action, cb) ->
-    @sendRequest "post", "#{url}/notify", {repo: repo, action: action, reviewer: reviewer}, cb
+    @sendRequest "get", "#{url}/#{repo}/commit/#{id}", {auth_token}, cb
+  save: (id, data, cb) ->
+    @sendRequest "put", "#{url}/#{repo}/#{id}", data, cb
+
+
+API.authorize = (url) ->
+  document.location = "#{url}/authorize?redirect_uri=#{document.location.href}"
