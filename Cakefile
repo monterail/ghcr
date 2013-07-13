@@ -9,7 +9,6 @@ package_file =
 
 task 'build:chrome', 'Build chrome extension folder from source', ->
   compile("chrome")
-  zip("chrome")
 
 task 'release:chrome', 'Build and zip chrome extension folder from source', ->
   compile("chrome")
