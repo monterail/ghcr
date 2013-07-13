@@ -8,6 +8,7 @@ tabs    = require("sdk/tabs")
 exports.main = ->
   scripts = [
     self.data.url("lib/jquery.js")
+    self.data.url("lib/jquery.cookie.js")
     self.data.url("lib/strftime-min.js")
     self.data.url("lib/jquery.timeago.js")
     self.data.url("ghcr.js")
@@ -37,3 +38,6 @@ exports.main = ->
 
       worker.port.on "request:post", (url, data, callMe) ->
         createRequest(url, data, callMe).post()
+
+      worker.port.on "request:put", (url, data, callMe) ->
+        createRequest(url, data, callMe).put()
