@@ -1,5 +1,5 @@
 GHCR =
-  init: (@repo) ->
+  init: (@repo, cb) ->
     match = (/access_token=([^&+]+)/).exec(document.location.hash)
     if match? && match[1]?
       @setAuthToken(match[1])
@@ -7,7 +7,9 @@ GHCR =
 
     if @getAuthToken()?
       @api = API(@getApiUrl(), repo, @getAuthToken())
-      @initTabs()
+      @initTabs(cb)
+    else
+      cb
 
     @initSettings()
 
@@ -48,11 +50,12 @@ GHCR =
   setUser: (username) ->
     @user = username
 
-  initTabs: ->
+  initTabs: (cb) ->
     @api.init (res) =>
       @setUser(res.user)
       @initPendingTab(res.pending_count)
       @initRejectedTab(res.rejected_count)
+      cb()
 
   initPendingTab: (count) ->
       $("li#ghcr-pending-tab").remove()
@@ -174,8 +177,7 @@ GHCR =
         commit.status = btn.status
         commit.reviewer = @user
         @api.save commit, (data) =>
-          @initPendingTab()
-          @initRejectedTab()
+          @initTabs =>
           @renderMenu(data)
     $btn
 
