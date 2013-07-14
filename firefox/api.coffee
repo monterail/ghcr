@@ -11,7 +11,7 @@ API = (url, repo, access_token) ->
   count: (params, cb) ->
     @sendRequest "get", "#{url}/#{repo}/commits/count", $.extend({access_token}, params), cb
   commit: (id, cb) ->
-    @sendRequest "get", "#{url}/#{repo}/commit/#{id}", {access_token}, cb
+    @sendRequest "get", "#{url}/#{repo}/commits/#{id}", {access_token}, cb
   rejected: (user, cb) ->
     @sendRequest 'get', "#{url}/#{repo}/commits", {access_token, status:"rejected", author:user}, cb
   pending: (user, cb) ->

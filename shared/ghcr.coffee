@@ -183,8 +183,8 @@ GHCR =
 
   renderMenu: (commit = {}) ->
     commit.author =
-      name:     $.trim($(".commit-meta .author-name > span").text())
-      username: $.trim($(".commit-meta .author-name > a").text())
+      name:     commit.author.name
+      username: commit.author.username
     commit.message = $.trim($(".commit > .commit-title").text())
     $("#ghcr-box").remove()
 
