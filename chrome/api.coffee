@@ -1,4 +1,6 @@
 API = (url, repo, access_token) ->
+  init: (cb) ->
+    $.get "#{url}/#{repo}/github/init", {access_token}, cb, 'json'
   commits: (params, cb) ->
     $.get "#{url}/#{repo}/commits", $.extend({access_token}, params), cb, 'json'
   count: (params, cb) ->

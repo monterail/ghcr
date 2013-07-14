@@ -4,6 +4,8 @@ API = (url, repo, access_token) ->
     self.port.on callMe, cb
     self.port.emit "request:#{type}", url, decodeURIComponent($.param(data)), callMe
 
+  init: (cb) ->
+    @sendRequest "get", "#{url}/#{repo}/github/init", {access_token}, cb
   commits: (params, cb) ->
     @sendRequest "get", "#{url}/#{repo}/commits", $.extend({access_token}, params), cb
   count: (params, cb) ->
