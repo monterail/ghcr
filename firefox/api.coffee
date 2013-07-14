@@ -7,7 +7,7 @@ API = (url, repo, access_token) ->
   commits: (params, cb) ->
     @sendRequest "get", "#{url}/#{repo}/commits", $.extend({access_token}, params), cb
   count: (params, cb) ->
-    @sendRequest "get", "#{url}/#{repo}/commits", $.extend({access_token}, params), cb
+    @sendRequest "get", "#{url}/#{repo}/commits/count", $.extend({access_token}, params), cb
   commit: (id, cb) ->
     @sendRequest "get", "#{url}/#{repo}/commit/#{id}", {auth_token}, cb
   save: (id, data, cb) ->
