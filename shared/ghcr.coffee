@@ -7,8 +7,7 @@ GHCR =
 
     if @getAuthToken()?
       @api = API(@getApiUrl(), repo, @getAuthToken())
-      @initPendingTab()
-      @initRejectedTab()
+      @initTabs()
 
     @initSettings()
 
@@ -46,26 +45,33 @@ GHCR =
       window.location.reload()
       newApiUrl
 
-  initPendingTab: ->
-    @api.count status: 'pending', author: "!#{@user}", (res) =>
+  setUser: (username) ->
+    @user = username
+
+  initTabs: ->
+    @api.init (res) =>
+      @setUser(res.user)
+      @initPendingTab(res.pending_count)
+      @initRejectedTab(res.rejected_count)
+
+  initPendingTab: (count) ->
       $("li#ghcr-pending-tab").remove()
       $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
       if $ul.find("li.commits").length
         $li = $("<li id='ghcr-pending-tab' />")
         # js-selected-navigation-item tabnav-tab
-        $a = $("<a href='#ghcr-pending'><span class='num'>#{res.count}</span> Pending</a>").click () => @pending()
+      $a = $("<a href='#ghcr-pending'><span class='num'>#{count}</span> Pending</a>").click () => @pending()
         $li.append($a)
         $ul.append($li)
-        $('#ghcr-box button.next').remove() if res.count == 0
+      $('#ghcr-box button.next').remove() if count == 0
 
-  initRejectedTab: ->
-    @api.count status: 'rejected', author: @user, (res) =>
+  initRejectedTab: (count) ->
       $("li#ghcr-rejected-tab").remove()
       $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
       if $ul.find("li.commits").length
         $li = $("<li id='ghcr-rejected-tab' />")
         # js-selected-navigation-item tabnav-tab
-        $a = $("<a href='#ghcr-rejected'><span class='num'>#{res.count}</span> Rejected</a>").click () => @rejected()
+      $a = $("<a href='#ghcr-rejected'><span class='num'>#{count}</span> Rejected</a>").click () => @rejected()
         $li.append($a)
         $ul.append($li)
 
