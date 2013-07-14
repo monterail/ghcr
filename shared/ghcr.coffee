@@ -47,7 +47,7 @@ GHCR =
       newApiUrl
 
   initPendingTab: ->
-    @api.count status: 'pending', created_by: @user, (res) =>
+    @api.count status: 'pending', author: "!#{@user}", (res) =>
       $("li#ghcr-pending-tab").remove()
       $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
       if $ul.find("li.commits").length
@@ -59,7 +59,7 @@ GHCR =
         $('#ghcr-box button.next').remove() if res.count == 0
 
   initRejectedTab: ->
-    @api.count status: 'rejected', created_by: @user, (res) =>
+    @api.count status: 'rejected', author: @user, (res) =>
       $("li#ghcr-rejected-tab").remove()
       $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
       if $ul.find("li.commits").length
