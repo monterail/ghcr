@@ -6,7 +6,7 @@ API = (url, repo, access_token) ->
   count: (params, cb) ->
     $.get "#{url}/#{repo}/commits/count", $.extend({access_token}, params), cb, 'json'
   commit: (id, cb) ->
-    $.get "#{url}/#{repo}/commit/#{id}", {auth_token}, cb, 'json'
+    $.get "#{url}/#{repo}/commit/#{id}", {access_token}, cb, 'json'
   save: (id, data, cb) ->
     $.put "#{url}/#{repo}/#{id}", data, cb
 
