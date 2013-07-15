@@ -221,7 +221,7 @@ GHCR =
       else
         $box.append GHCR.generateBtn(commit, btn)
 
-    $("#js-repo-pjax-container").prepend($box)
+    $(".repo-container").prepend($box)
 
     # sticky header
     stickyHeader =
