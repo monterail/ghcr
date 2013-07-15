@@ -40,6 +40,8 @@ extension. Needed structure is created during build.
 ### Building
 
 ```
+brew install graphicsmagick
+gem install sass
 npm install
 npm install -g grunt-cli
 grunt build   # build extensions along sourcemaps
