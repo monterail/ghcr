@@ -40,6 +40,7 @@ extension. Needed structure is created during build.
 ### Building
 
 ```
+npm install
 npm install -g grunt-cli
 grunt build   # build extensions along sourcemaps
 grunt release # build zip archives of extensions
