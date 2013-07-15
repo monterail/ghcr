@@ -9,6 +9,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-concat-sourcemap')
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-multiresize')
 
   grunt.config.init
     pkg: grunt.file.readJSON "package.json"
@@ -49,6 +50,16 @@ module.exports = (grunt) ->
       default:
         files: ['source/**']
         tasks: ['build']
+    multiresize:
+      default:
+        src: 'build/shared/icon256.png'
+        dest: [
+          'build/chrome/icon128.png',
+          'build/chrome/icon48.png',
+          'build/chrome/icon19.png',
+          'build/chrome/icon16.png',
+        ]
+        destSizes: ['128x128', '48x48', '19x19', '16x16']
 
   grunt.registerTask "build", "Build extension", ->
     rm "-rf", "build"
@@ -56,6 +67,7 @@ module.exports = (grunt) ->
     grunt.task.run "coffee"
     grunt.task.run "sass"
     grunt.task.run "concat_sourcemap"
+    grunt.task.run "multiresize"
 
   grunt.registerTask "release", "Release extension", ->
     grunt.task.run "build"
