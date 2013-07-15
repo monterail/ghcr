@@ -5,9 +5,12 @@
     "type": "git",
     "url": "https://github.com/monterail/ghcr-web.git"
   },
-  "dependencies": {
-    "coffee-script": "",
-    "flour": "",
-    "uglify-js": ""
+  "devDependencies": {
+    "shelljs": "~0.1.4",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-contrib-sass": "~0.4.1",
+    "grunt-concat-sourcemap": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.4"
   }
 }
