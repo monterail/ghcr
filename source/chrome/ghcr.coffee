@@ -11,8 +11,12 @@ API = (url, repo, access_token) ->
     $.get "#{url}/#{repo}/commits", {access_token, status:"rejected", author:user}, cb, 'json'
   pending: (user, cb) ->
     $.get "#{url}/#{repo}/commits", {access_token, status:"pending", author:"!#{user}"}, cb, 'json'
-  save: (id, data, cb) ->
-    $.put "#{url}/#{repo}/#{id}", data, cb
+  save: (commit, cb) ->
+    $.ajax
+      method: "PUT"
+      url: "#{url}/#{repo}/commits/#{commit.id}?access_token=#{access_token}"
+      data: commit
+      success: cb
 
 API.authorize = (url) ->
   document.location = "#{url}/authorize?redirect_uri=#{document.location.href}"

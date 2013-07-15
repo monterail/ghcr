@@ -178,7 +178,7 @@ GHCR =
         commit.reviewer = @user
         @api.save commit, (data) =>
           @initTabs =>
-          @renderMenu(data)
+            @renderMenu(data)
     $btn
 
   renderMenu: (commit = {}) ->
