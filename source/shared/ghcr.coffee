@@ -63,7 +63,7 @@ GHCR =
       if $ul.find("li.commits").length
         $li = $("<li id='ghcr-pending-tab' />")
         # js-selected-navigation-item tabnav-tab
-      $a = $("<a href='#ghcr-pending'><span class='num'>#{count}</span> Pending</a>").click () => @pending()
+        $a = $("<a href='#ghcr-pending'><span class='num'>#{count}</span> Pending</a>").click () => @pending()
         $li.append($a)
         $ul.append($li)
       $('#ghcr-box button.next').remove() if count == 0
@@ -74,7 +74,7 @@ GHCR =
       if $ul.find("li.commits").length
         $li = $("<li id='ghcr-rejected-tab' />")
         # js-selected-navigation-item tabnav-tab
-      $a = $("<a href='#ghcr-rejected'><span class='num'>#{count}</span> Rejected</a>").click () => @rejected()
+        $a = $("<a href='#ghcr-rejected'><span class='num'>#{count}</span> Rejected</a>").click () => @rejected()
         $li.append($a)
         $ul.append($li)
 

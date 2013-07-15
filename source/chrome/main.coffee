@@ -1,5 +1,3 @@
-console.log 'init evetPage'
-
 ghcrRender = (details) ->
   return false unless /^https?:\/\/(.*\.)?github\.com/.test(details.url)
   chrome.tabs.sendMessage details.tabId, {}, (response) ->
@@ -12,6 +10,3 @@ chrome.webNavigation.onCompleted.addListener (details) ->
 chrome.webNavigation.onHistoryStateUpdated.addListener (details) ->
   console.log 'onHistoryStateUpdated'
   ghcrRender(details)
-
-chrome.runtime.onStartup.addListener ->
-  console.log('browser startup')

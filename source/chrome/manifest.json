@@ -13,21 +13,19 @@
   ],
 
  "background": {
-    "scripts": ["lib/main.js"],
+    "scripts": ["main.js"],
     "persistent": false
   },
 
   "content_scripts": [
     {
       "matches": ["https://github.com/*"],
-      "css": ["data/ghcr.css"],
-      "js": [
-        "data/lib/jquery.js",
-        "data/lib/jquery.cookie.js",
-        "data/lib/strftime-min.js",
-        "data/lib/jquery.timeago.js",
-        "data/ghcr.js"
-      ]
+      "css": ["ghcr.css"],
+      "js": ["ghcr.js"]
     }
+  ],
+
+  "web_accessible_resources": [
+    "ghcr.js.map"
   ]
 }

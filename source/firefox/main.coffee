@@ -6,14 +6,6 @@ self    = require("sdk/self")
 tabs    = require("sdk/tabs")
 
 exports.main = ->
-  scripts = [
-    self.data.url("lib/jquery.js")
-    self.data.url("lib/jquery.cookie.js")
-    self.data.url("lib/strftime-min.js")
-    self.data.url("lib/jquery.timeago.js")
-    self.data.url("ghcr.js")
-  ]
-
   new Widget
     id: "ghcr",
     label: "GitHub Code Review",
@@ -21,7 +13,7 @@ exports.main = ->
 
   new PageMod
     include: "https://github.com/*"
-    contentScriptFile: scripts
+    contentScriptFile: [self.data.url("ghcr.js")]
     contentStyleFile: [self.data.url("ghcr.css")]
     onAttach: (worker) ->
       worker.port.emit("init")

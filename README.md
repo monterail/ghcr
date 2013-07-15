@@ -39,16 +39,11 @@ extension. Needed structure is created during build.
 
 ### Building
 
-To build any of the addon simply run `cake build:chrome` or `cake build:firefox`.
-Folder with compiled js will appear in `builds` folder and can be used
-to test on particular browser. For details check specific browser README.
-
-You can use `cake watch` to continously build for chrome and firefox.
-`Flour` node package is needed for this function and it can be installed
-simply by `npm install flour`.
-
-## Monterail API URL
-
 ```
-http://monterail:Wy4L6s8T@webhooker.mh2.monterail.eu/ghcr
+npm install -g grunt-cli
+grunt build   # build extensions along sourcemaps
+grunt release # build zip archives of extensions
+grunt watch   # continously build extensions
 ```
+
+You need Google Chrome 29 to view sourcemaps (currently dev)
