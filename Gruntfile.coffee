@@ -43,7 +43,7 @@ module.exports = (grunt) ->
       options: { compress: true },
       default: files:
         "build/chrome/ghcr.js": "build/chrome/ghcr.js"
-        "build/firefox/ghcr.js": "build/firefox/ghcr.js"
+        "build/firefox/lib/ghcr.js": "build/firefox/lib/ghcr.js"
     watch:
       options: { atBegin: true }
       default:
