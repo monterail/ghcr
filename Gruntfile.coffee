@@ -32,10 +32,10 @@ module.exports = (grunt) ->
           "build/shared/*.js",
           "build/chrome/ghcr.js"
         ]
-        "build/firefox/lib/ghcr.js": [
+        "build/firefox/data/ghcr.js": [
           "build/shared/vendor/*.js",
           "build/shared/*.js",
-          "build/firefox/lib/ghcr.js"
+          "build/firefox/data/ghcr.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
         "build/firefox/data/ghcr.css": ["build/shared/*.css"]
