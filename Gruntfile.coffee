@@ -56,6 +56,11 @@ module.exports = (grunt) ->
     grunt.task.run "coffee"
     grunt.task.run "sass"
     grunt.task.run "concat_sourcemap"
+    if process.env.RELOAD? or process.env.reload?
+      grunt.task.run "reload"
+
+  grunt.registerTask "reload", "Reload extension in browser", ->
+    exec "open 'http://reload.extensions'"
 
   grunt.registerTask "release", "Release extension", ->
     grunt.task.run "build"

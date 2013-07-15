@@ -47,4 +47,11 @@ grunt release # build zip archives of extensions
 grunt watch   # continously build extensions
 ```
 
+You can install [Extension Reloader](https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid) for Chrome and run following to automatically reload extension in browser:
+
+```
+reload=1 grunt build
+relaod=1 grunt watch
+```
+
 You need Google Chrome 29 to view sourcemaps (currently dev)
