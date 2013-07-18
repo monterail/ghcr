@@ -48,5 +48,5 @@ XHR.prototype.send = ->
   @onreadystatechange = ->
     if @readyState == 4 && @getResponseHeader("X-PJAX-VERSION")?
       setTimeout(init, 100)
-    legacyORSC.apply(this, arguments)
+    legacyORSC.apply(this, arguments) if legacyORSC?
   legacySend.apply(this, arguments)
