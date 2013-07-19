@@ -17,9 +17,9 @@ module.exports = (grunt) ->
       options: { join: true, sourceMap: true, bare: true }
       default: files:
         "build/shared/ghcr.js": ["build/shared/ghcr.coffee"]
-        "build/firefox/data/ghcr.js": ["build/firefox/ghcr.coffee"]
+        "build/firefox/data/ghcr.js": ["build/firefox/init.coffee"]
         "build/firefox/lib/main.js": ["build/firefox/main.coffee"]
-        "build/chrome/ghcr.js": ["build/chrome/ghcr.coffee"]
+        "build/chrome/init.js": ["build/chrome/init.coffee"]
         "build/chrome/main.js": ["build/chrome/main.coffee"]
     sass:
       options: { lineNumbers: true }
@@ -31,12 +31,12 @@ module.exports = (grunt) ->
         "build/chrome/ghcr.js": [
           "build/shared/vendor/*.js",
           "build/shared/*.js",
-          "build/chrome/ghcr.js"
+          "build/chrome/init.js"
         ]
         "build/firefox/data/ghcr.js": [
           "build/shared/vendor/*.js",
           "build/shared/*.js",
-          "build/firefox/data/ghcr.js"
+          "build/firefox/data/init.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
         "build/firefox/data/ghcr.css": ["build/shared/*.css"]
