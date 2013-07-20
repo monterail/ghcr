@@ -20,7 +20,7 @@ new class ChromeGHCR extends GHCR
   put: (url, data, access_token) ->
     new Promise (resolve, reject) ->
       $.ajax
-        method: "GET", url: url, data: data,
+        method: "PUT", url: url, data: data,
         success: resolve, error: reject,
         headers: { "Authorization": "Bearer #{access_token}" }
 
