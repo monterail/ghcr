@@ -4,6 +4,7 @@ new class ChromeGHCR extends GHCR
 
   constructor: ->
     super
+    @onLocationChange()
     chrome.runtime.onMessage.addListener =>
       @onLocationChange()
      
