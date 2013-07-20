@@ -3,7 +3,13 @@ class GHCR
   url: "http://ghcr-staging.herokuapp.com/api/v1"
 
   constructor: ->
-    @initSettings
+    observer = new MutationObserver =>
+      @onLocationChange()
+
+    observer.observe $('#js-repo-pjax-container')[0],
+      childList: true
+      
+    @onLocationChange()
 
   class API
 
@@ -24,8 +30,11 @@ class GHCR
   authorize: ->
     @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}"
 
-  onLocationChange: =>
+  onLocationChange: ->
     console.log('Location change')
+
+    @render()
+
     chunks = @browser.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
@@ -35,7 +44,7 @@ class GHCR
     
     if access_token = @browser.load('access_token')
       @api = new API(@browser, @url, @repo, access_token)
-      @initTabs()
+      @api.init().then (repo) => @render(repo)
 
       if chunks[3] == 'commits'
         if @hash() == 'ghcr-pending'
@@ -48,11 +57,13 @@ class GHCR
           commit.status ||= "pending"
           @renderMenu(commit)
 
-  initTabs: ->
-    @api.init().then (res) =>
-      @username = res.username
-      @initPendingTab(res.pending.length)
-      @initRejectedTab(res.rejected.length)
+  render: (repo) ->
+    @initSettings()
+
+    if repo?
+      @username = repo.username
+      @initPendingTab(repo.pending.length)
+      @initRejectedTab(repo.rejected.length)
 
   initPendingTab: (count) ->
       $("li#ghcr-pending-tab").remove()

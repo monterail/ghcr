@@ -20,7 +20,6 @@ module.exports = (grunt) ->
         "build/firefox/data/ghcr.js": ["build/firefox/init.coffee"]
         "build/firefox/lib/main.js": ["build/firefox/main.coffee"]
         "build/chrome/init.js": ["build/chrome/init.coffee"]
-        "build/chrome/main.js": ["build/chrome/main.coffee"]
     sass:
       options: { lineNumbers: true }
       default: files:
