@@ -5,6 +5,8 @@ class GHCR
   url: "http://ghcr-staging.herokuapp.com/api/v1"
 
   constructor: ->
+    @username = $('.header a.name').text().trim()
+
     # Authorization
     if match = (/access_token=([^&+]+)/).exec(@browser.hash())
       @browser.save('access_token', match[1])
@@ -30,8 +32,9 @@ class GHCR
     save: (id, commit) ->
       @browser.put "#{@url}/#{@repo}/commits/#{id}", commit, @access_token
 
-  authorize: ->
-    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}"
+  authorize: (state = "") ->
+    @browser.save('state', state)
+    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
 
   onLocationChange: ->
     @render()
@@ -41,29 +44,32 @@ class GHCR
 
     if access_token = @browser.load('access_token')
       @api = new API(@browser, @url, @repo, access_token)
+
       @api.init().then (repo) => @render(repo)
 
-      if chunks[3] == 'commits'
-        if @hash() == 'ghcr-pending'
-          @renderPending()
-        else if @hash() == 'ghcr-rejected'
-          @renderRejected()
-      else if chunks[3] == 'commit'
+      if chunks[3] == 'commit'
         @api.commit(chunks[4]).then (commit) =>
           commit.id     ||= id
           commit.status ||= "pending"
           @renderMenu(commit)
 
+      if @browser.load('state') == 'pending'
+        @browser.save('state', '')
+        @renderPending()
+
+      if @browser.load('state') == 'rejected'
+        @browser.save('state', '')
+        @renderRejected()
+
   render: (repo) ->
     $('#ghcr-box').remove()
 
     if repo?
-      @username = repo.username
       @initNav(repo.pending.length, repo.rejected.length)
     else
       @initNav()
 
-  initNav: (pendingCount, rejectedCount) ->
+  initNav: (pendingCount = 0, rejectedCount = 0) ->
     $cont = $('.repo-nav-contents')
     $('#ghcr-nav').remove()
     $ul = $('<ul id="ghcr-nav" class="repo-menu"/>')
@@ -72,7 +78,10 @@ class GHCR
     if pendingCount?
       $li = $("<li class='tooltipped leftwards' id='ghcr-pending' original-title='Pending' />")
       $a = $("<a href='#{@browser.path()}#ghcr-pending' class=''><span style='background-color: #69B633; padding: 2px 4px; color: white; border-radius: 3px'>#{pendingCount}</span> <span class='full-word'>pending</span></a>").click (e) =>
-        @renderPending()
+        if @api?
+          @renderPending()
+        else
+          @authorize('pending')
         e.preventDefault()
       $li.append($a)
       $ul.append($li)
@@ -80,17 +89,13 @@ class GHCR
     if rejectedCount?
       $li = $("<li class='tooltipped leftwards' id='ghcr-rejected' original-title='Rejected' />")
       $a = $("<a href='#{@browser.path()}#ghcr-rejected' class=''><span style='background-color: #B66933; padding: 2px 4px; color: white; border-radius: 3px'>#{rejectedCount}</span> <span class='full-word'>rejected</span></a>").click (e) =>
-        @renderRejected()
+        if @api?
+          @renderRejected()
+        else
+          @authorize('rejected')
         e.preventDefault()
       $li.append($a)
       $ul.append($li)
-
-    $li = $("<li class='tooltipped leftwards' id='ghcr-settings' original-title='GHCR settings' />")
-    $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Connect to GHCR</span></a>").click (e) =>
-      e.preventDefault()
-      @authorize()
-    $li.append($a)
-    $ul.prepend($li)
       
   renderPending: ->
     @api.commits(status: 'pending', author: "!#{@username}").then (commits) =>
