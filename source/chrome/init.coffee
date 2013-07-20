@@ -31,7 +31,7 @@ new class ChromeGHCR extends GHCR
         if "pushState" of history
           history.pushState("", document.title, loc.pathname + loc.search)
       else if value?
-        document.locatino.hash = value
+        document.location.hash = value
       else
         document.location.hash.substring(1)
 
