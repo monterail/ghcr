@@ -3,7 +3,8 @@ class GHCR
   constructor: ->
     @initSettings()
 
-  url: undefined
+  url: "http://ghcr-staging.herokuapp.com/api/v1"
+
   redirect: (url) -> throw "Method undefined"
   get: (url, data, access_token) -> throw "Method undefined"
   put: (url, data, access_token) -> throw "Method undefined"
