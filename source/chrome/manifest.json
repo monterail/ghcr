@@ -23,11 +23,6 @@
     "16": "icon16.png"
   },
 
- "background": {
-    "scripts": ["main.js"],
-    "persistent": false
-  },
-
   "content_scripts": [
     {
       "matches": ["https://github.com/*/*"],
