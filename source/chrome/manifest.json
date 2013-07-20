@@ -30,7 +30,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://github.com/*"],
+      "matches": ["https://github.com/*/*"],
       "css": ["ghcr.css"],
       "js": ["ghcr.js"]
     }
