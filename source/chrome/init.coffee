@@ -7,39 +7,41 @@ new class ChromeGHCR extends GHCR
     chrome.runtime.onMessage.addListener =>
       @onLocationChange()
      
-  redirect: (url) ->
-    document.location = url
+  browser: new class
 
-  get: (url, data, access_token) ->
-    new Promise (resolve, reject) ->
-      $.ajax
-        method: "GET", url: url, data: data,
-        success: resolve, error: reject,
-        headers: { "Authorization": "Bearer #{access_token}" }
+    redirect: (url) ->
+      document.location = url
 
-  put: (url, data, access_token) ->
-    new Promise (resolve, reject) ->
-      $.ajax
-        method: "PUT", url: url, data: data,
-        success: resolve, error: reject,
-        headers: { "Authorization": "Bearer #{access_token}" }
+    get: (url, data, access_token) ->
+      new Promise (resolve, reject) ->
+        $.ajax
+          method: "GET", url: url, data: data,
+          success: resolve, error: reject,
+          headers: { "Authorization": "Bearer #{access_token}" }
 
-  href: -> document.location.href
+    put: (url, data, access_token) ->
+      new Promise (resolve, reject) ->
+        $.ajax
+          method: "PUT", url: url, data: data,
+          success: resolve, error: reject,
+          headers: { "Authorization": "Bearer #{access_token}" }
 
-  path: -> document.location.pathname
+    href: -> document.location.href
 
-  hash: (value) ->
-    if value == ""
-      loc = window.location
-      if "pushState" of history
-        history.pushState("", document.title, loc.pathname + loc.search)
-    else if value?
-      document.locatino.hash = value
-    else
-      document.location.hash.substring(1)
+    path: -> document.location.pathname
 
-  save: (key, value) ->
-    $.cookie(key, value, path: '/')
+    hash: (value) ->
+      if value == ""
+        loc = window.location
+        if "pushState" of history
+          history.pushState("", document.title, loc.pathname + loc.search)
+      else if value?
+        document.locatino.hash = value
+      else
+        document.location.hash.substring(1)
 
-  load: (key) ->
-    $.cookie(key)
+    save: (key, value) ->
+      $.cookie(key, value, path: '/')
+
+    load: (key) ->
+      $.cookie(key)
