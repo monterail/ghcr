@@ -56,6 +56,7 @@ class GHCR
           @renderMenu(commit)
 
   render: (repo) ->
+    $('#ghcr-box').remove()
     @initSettings()
 
     if repo?
