@@ -32,7 +32,8 @@
     {
       "matches": ["https://github.com/*/*"],
       "css": ["ghcr.css"],
-      "js": ["ghcr.js"]
+      "js": ["ghcr.js"],
+      "run_at": "document_end"
     }
   ],
 
