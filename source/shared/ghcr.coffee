@@ -1,20 +1,9 @@
 class GHCR
 
   url: "http://ghcr-staging.herokuapp.com/api/v1"
-  constructor: initSettings
 
-  # Abstract methods
-  redirect: (url) ->
-  get: (url, data, access_token) ->
-  put: (url, data, access_token) ->
-  href: ->
-  path: ->
-  hash: (value) ->
-  save: (key, value) ->
-  load: (key) ->
-
-  authorize: ->
-    @redirect "#{@url}/authorize?redirect_uri=#{@href()}"
+  constructor: ->
+    @initSettings
 
   class API
 
@@ -35,17 +24,20 @@ class GHCR
     save: (id, commit) ->
       @browser.put "#{@url}/#{@repo}/commits/#{id}", commit, @access_token
 
+  authorize: ->
+    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}"
+
   onLocationChange: =>
     console.log('Location change')
-    chunks = @path().split("/")
+    chunks = @browser.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
-    if match = (/access_token=([^&+]+)/).exec(@hash())
-      @save('access_token', match[1])
-      @hash('')
+    if match = (/access_token=([^&+]+)/).exec(@browser.hash())
+      @browser.save('access_token', match[1])
+      @browser.hash('')
     
-    if access_token = @load('access_token')
-      @api = new API(@url, @repo, access_token)
+    if access_token = @browser.load('access_token')
+      @api = new API(@browser, @url, @repo, access_token)
       @initTabs()
 
       if chunks[3] == 'commits'
