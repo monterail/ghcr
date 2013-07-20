@@ -1,36 +1,39 @@
 class GHCR
 
-  constructor: ->
-    @initSettings()
-
   url: "http://ghcr-staging.herokuapp.com/api/v1"
+  constructor: initSettings
 
-  redirect: (url) -> throw "Method undefined"
-  get: (url, data, access_token) -> throw "Method undefined"
-  put: (url, data, access_token) -> throw "Method undefined"
-  href: -> throw "Method undefined"
-  path: -> throw "Method undefined"
-  hash: (value) -> throw "Method undefined"
-  save: (key, value) -> throw "Method undefined"
-  load: (key) -> throw "Method undefined"
+  # Abstract methods
+  redirect: (url) ->
+  get: (url, data, access_token) ->
+  put: (url, data, access_token) ->
+  href: ->
+  path: ->
+  hash: (value) ->
+  save: (key, value) ->
+  load: (key) ->
 
   authorize: ->
     @redirect "#{@url}/authorize?redirect_uri=#{@href()}"
 
-  init: ->
-    @get "#{@url}/#{@repo}/github/init", {}, @access_token
+  class API
 
-  commits: (params) ->
-    @get "#{@url}/#{@repo}/commits", params, @access_token
+    constructor: (@browser, @url, @repo, @access_token) ->
 
-  count: (params) ->
-    @get "#{@url}/#{@repo}/commits/count", params, @access_token
+    init: ->
+      @browser.get "#{@url}/#{@repo}/github/init", {}, @access_token
 
-  commit: (id, params = {}) ->
-    @get "#{@url}/#{@repo}/commits/#{id}", params, @access_token
+    commits: (params) ->
+      @browser.get "#{@url}/#{@repo}/commits", params, @access_token
 
-  save: (id, commit) ->
-    @put "#{@url}/#{@repo}/commits/#{id}", commit, @access_token
+    count: (params) ->
+      @browser.get "#{@url}/#{@repo}/commits/count", params, @access_token
+
+    commit: (id, params = {}) ->
+      @browser.get "#{@url}/#{@repo}/commits/#{id}", params, @access_token
+
+    save: (id, commit) ->
+      @browser.put "#{@url}/#{@repo}/commits/#{id}", commit, @access_token
 
   onLocationChange: =>
     console.log('Location change')
@@ -42,7 +45,7 @@ class GHCR
       @hash('')
     
     if access_token = @load('access_token')
-      @access_token = access_token
+      @api = new API(@url, @repo, access_token)
       @initTabs()
 
       if chunks[3] == 'commits'
@@ -51,13 +54,13 @@ class GHCR
         else if @hash() == 'ghcr-rejected'
           @renderRejected()
       else if chunks[3] == 'commit'
-        @commit(chunks[4]).then (commit) =>
+        @api.commit(chunks[4]).then (commit) =>
           commit.id     ||= id
           commit.status ||= "pending"
           @renderMenu(commit)
 
   initTabs: ->
-    @init().then (res) =>
+    @api.init().then (res) =>
       @username = res.user
       @initPendingTab(res.pending_count)
       @initRejectedTab(res.rejected_count)
@@ -94,7 +97,7 @@ class GHCR
     $ul.append($li)
 
   renderPending: ->
-    @commits(status: 'pending', author: "!#{@username}").then (commits) =>
+    @api.commits(status: 'pending', author: "!#{@username}").then (commits) =>
       $(".tabnav-tabs a").removeClass("selected")
       $("#ghcr-pending-tab a").addClass("selected")
       $container = $("#js-repo-pjax-container")
@@ -106,7 +109,7 @@ class GHCR
       $container.append($ol)
 
   renderRejected: ->
-    @commits(status: 'rejected', author: @username).then (commits) =>
+    @api.commits(status: 'rejected', author: @username).then (commits) =>
       $(".tabnav-tabs a").removeClass("selected")
       $("#ghcr-rejected-tab a").addClass("selected")
       $container = $("#js-repo-pjax-container")
@@ -160,7 +163,7 @@ class GHCR
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
-    @commits(ids).then (commits) =>
+    @api.commits(ids).then (commits) =>
       for commit in commits
         $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
         commit.status ||= "pending"
@@ -169,7 +172,7 @@ class GHCR
   generateBtn: (commit, btn) ->
     $btn = $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
       if btn.status == 'next'
-        @commits(author: "!#{@username}", status: 'pending').then (commits) =>
+        @api.commits(author: "!#{@username}", status: 'pending').then (commits) =>
           currentId = window.location.pathname.split('/').reverse()[0]
           nextCommit = commits[0]
           commitSize = commits.length
@@ -181,7 +184,7 @@ class GHCR
       else
         commit.status = btn.status
         commit.reviewer = @user
-        @save(commit.id, commit).then (data) =>
+        @api.save(commit.id, commit).then (data) =>
           @initTabs => @renderMenu(data)
     $btn
 
