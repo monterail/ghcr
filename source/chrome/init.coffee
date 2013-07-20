@@ -2,8 +2,6 @@ Promise = require('promise')
 
 new class ChromeGHCR extends GHCR
 
-  url: "http://ghcr-staging.herokuapp.com/api/v1"
-
   constructor: ->
     super
     chrome.runtime.onMessage.addListener =>
