@@ -1,14 +1,12 @@
+"use strict";
+
 class GHCR
 
   url: "http://ghcr-staging.herokuapp.com/api/v1"
 
   constructor: ->
-    observer = new MutationObserver =>
-      @onLocationChange()
-
-    observer.observe $('#js-repo-pjax-container')[0],
-      childList: true
-      
+    observer = new MutationObserver => @onLocationChange()
+    observer.observe $('#js-repo-pjax-container')[0], childList: true
     @onLocationChange()
 
   class API
@@ -170,7 +168,7 @@ class GHCR
         $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
   generateBtn: (commit, btn) ->
-    $btn = $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
+    $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
       if btn.status == 'next'
         @api.commits(author: "!#{@username}", status: 'pending').then (commits) =>
           currentId = window.location.pathname.split('/').reverse()[0]
@@ -183,16 +181,17 @@ class GHCR
           window.location = "/#{@repo}/commit/#{nextCommit.id}"
       else
         commit.status = btn.status
-        commit.reviewer = @user
+        commit.reviewer = @username
         @api.save(commit.id, commit).then (data) =>
-          @initTabs => @renderMenu(data)
-    $btn
+          @renderMenu(data)
 
   renderMenu: (commit = {}) ->
     commit.author =
       name:     commit.author.name
       username: commit.author.username
+
     commit.message = $.trim($(".commit > .commit-title").text())
+
     $("#ghcr-box").remove()
 
     rejectBtn =
@@ -218,15 +217,15 @@ class GHCR
         info = "Code review pending"
 
     $box = $("<div id='ghcr-box' class='ghcr__status-bar ghcr__status-bar--#{commit.status}'><span>#{info}</span></div>")
+
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
-    if (commit.author.username || commit.author.name) != @username
-      if commit.status == 'pending'
-        $box.append GHCR.generateBtn(commit, acceptBtn)
-        $box.append GHCR.generateBtn(commit, rejectBtn)
+    if commit.author.username != @username
+        $box.append @generateBtn(commit, acceptBtn)
+        $box.append @generateBtn(commit, rejectBtn)
       else
-        $box.append GHCR.generateBtn(commit, btn)
+        $box.append @generateBtn(commit, btn)
 
     $(".repo-container").prepend($box)
 
