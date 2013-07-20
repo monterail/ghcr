@@ -1,13 +1,12 @@
-# GitHub Code Review Firefox Extension
+## GitHub Code Review Firefox Extension
 
-## Installation
+### [Extension installation page](https://addons.mozilla.org/pl/firefox/addon/github-code-review/)
 
-[Firefox addon page](https://addons.mozilla.org/pl/firefox/addon/github-code-review/)
+### Development
 
-## Development
-
-* Build addon by running `cake build:firefox`
-* Install [mozilla addons SDK](https://addons.mozilla.org/en-US/developers/docs/sdk/latest/dev-guide/tutorials/installation.html)
-* Activate `cfx` and type `cfx run` in compiled addon folder
-
-Be nice and test your code before pushing.
+* Run firefox with dev profile using
+  `/Applications/Firefox.app/Contents/MacOS/firefox-bin -no-remote -P dev`
+* Setup profile with name `dev` if there isn't one yet
+* run `brew install wget` for firefox plugin reload
+* Install [Extension Auto-Installer](https://addons.mozilla.org/pl/firefox/addon/autoinstaller/)
+  to install extension automatically with `grunt watch` command.

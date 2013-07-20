@@ -1,21 +1,12 @@
 ## GitHub Code Review Chrome Extension
 
-### Installation: http://bit.ly/18yLliL
+### [Extension installation page](https://chrome.google.com/webstore/detail/github-code-reviews/flcmbgeeamenmmemjfploanoknmjomac)
 
 ### Development
 
-```bash
-$ coffee -wc .
-```
-
-### Usage
-
 * Check "Development" mode in Extensions tab in Chrome
 * Choose project's root directory in "Load unpacked extension" dialog
+* Install [Auto Extension Reloader](https://chrome.google.com/webstore/detail/auto-extension-reloader/fbdbbpminhngjejgblbbpjapahknpcpk)
+  for Chrome to automatically reload extension in browser.
 
-
-### Screenshots
-
-![](http://dl.dropbox.com/u/70986/Screenshots/5t.png)
-![](http://dl.dropbox.com/u/70986/Screenshots/5u.png)
-![](http://dl.dropbox.com/u/70986/Screenshots/5v.png)
+You need Google Chrome 29 to view sourcemaps (currently dev)

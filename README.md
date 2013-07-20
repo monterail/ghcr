@@ -29,6 +29,12 @@ no code review
 Merge branch awesome to develop
 ```
 
+### Screenshots
+
+![](http://dl.dropbox.com/u/70986/Screenshots/5t.png)
+![](http://dl.dropbox.com/u/70986/Screenshots/5u.png)
+![](http://dl.dropbox.com/u/70986/Screenshots/5v.png)
+
 ## Development
 
 ### Structure
@@ -39,16 +45,20 @@ extension. Needed structure is created during build.
 
 ### Building
 
+Firstly install all necessary dependencies.
 ```
-brew install graphicsmagick
+brew install graphicsmagick # For icon resizing
 gem install sass
 npm install
 npm install -g grunt-cli
+``
+
+Then there are several tasks.
+``
 grunt build   # build extensions along sourcemaps
-grunt release # build zip archives of extensions
+grunt release # build zip (for chrome) and xpi (for firefox) archives of extensions
 grunt watch   # continously build extensions
 ```
 
-You can install [Auto Extension Reloader](https://chrome.google.com/webstore/detail/auto-extension-reloader/fbdbbpminhngjejgblbbpjapahknpcpk) for Chrome and run following to automatically reload extension in browser.
-
-You need Google Chrome 29 to view sourcemaps (currently dev)
+For browser specific details check [chrome readme](chrome/README.md)
+and [firefox readme](firefox/README.md).
