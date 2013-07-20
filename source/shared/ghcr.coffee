@@ -10,13 +10,10 @@ class GHCR
     constructor: (@browser, @url, @repo, @access_token) ->
 
     init: ->
-      @browser.get "#{@url}/#{@repo}/github/init", {}, @access_token
+      @browser.get "#{@url}/#{@repo}", {}, @access_token
 
     commits: (params) ->
       @browser.get "#{@url}/#{@repo}/commits", params, @access_token
-
-    count: (params) ->
-      @browser.get "#{@url}/#{@repo}/commits/count", params, @access_token
 
     commit: (id, params = {}) ->
       @browser.get "#{@url}/#{@repo}/commits/#{id}", params, @access_token
@@ -53,9 +50,9 @@ class GHCR
 
   initTabs: ->
     @api.init().then (res) =>
-      @username = res.user
-      @initPendingTab(res.pending_count)
-      @initRejectedTab(res.rejected_count)
+      @username = res.username
+      @initPendingTab(res.pending.length)
+      @initRejectedTab(res.rejected.length)
 
   initPendingTab: (count) ->
       $("li#ghcr-pending-tab").remove()
