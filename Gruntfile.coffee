@@ -49,7 +49,7 @@ module.exports = (grunt) ->
       options: { atBegin: true }
       default:
         files: ['source/**']
-        tasks: ['build']
+        tasks: ['build', 'firefox:xpi', 'firefox:reload']
     multiresize:
       default:
         src: 'build/shared/icon256.png'
@@ -77,8 +77,14 @@ module.exports = (grunt) ->
   grunt.registerTask "zip", "Zip extension", ->
     exec "find build -name '*.coffee' | xargs rm"
     exec "find build -name '*.sass' | xargs rm"
-    exec "zip -r build/chrome.zip build/chrome"
-    exec "zip -r build/firefox.zip build/firefox"
+    exec "zip -r chrome.zip build/chrome"
+    grunt.task.run "firefox:xpi"
+
+  grunt.registerTask "firefox:xpi", "Pack Firefox plugin to xpi file", ->
+    exec "dev/addon-sdk/bin/cfx --pkgdir=build/firefox xpi"
+
+  grunt.registerTask "firefox:reload", "Send xpi file to Extension Auto Installer", ->
+    exec "wget --post-file=ghcr.xpi http://localhost:8888"
 
   grunt.registerTask "default", ->
     grunt.log.writeln("grunt build")
