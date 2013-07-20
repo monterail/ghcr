@@ -36,7 +36,7 @@ new class ChromeGHCR extends GHCR
         document.location.hash.substring(1)
 
     save: (key, value) ->
-      $.cookie(key, value, path: '/')
+      $.cookie('ghcr_' + key, value, path: '/')
 
     load: (key) ->
-      $.cookie(key)
+      $.cookie('ghcr_' + key)
