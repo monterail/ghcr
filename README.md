@@ -51,10 +51,10 @@ brew install graphicsmagick # For icon resizing
 gem install sass
 npm install
 npm install -g grunt-cli
-``
+```
 
 Then there are several tasks.
-``
+```
 grunt build   # build extensions along sourcemaps
 grunt release # build zip (for chrome) and xpi (for firefox) archives of extensions
 grunt watch   # continously build extensions
