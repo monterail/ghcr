@@ -5,6 +5,11 @@ class GHCR
   url: "http://ghcr-staging.herokuapp.com/api/v1"
 
   constructor: ->
+    # Authorization
+    if match = (/access_token=([^&+]+)/).exec(@browser.hash())
+      @browser.save('access_token', match[1])
+      @browser.hash('')
+    
     observer = new MutationObserver => @onLocationChange()
     observer.observe $('#js-repo-pjax-container')[0], childList: true
     @onLocationChange()
@@ -29,17 +34,11 @@ class GHCR
     @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}"
 
   onLocationChange: ->
-    console.log('Location change')
-
     @render()
 
     chunks = @browser.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
-    if match = (/access_token=([^&+]+)/).exec(@browser.hash())
-      @browser.save('access_token', match[1])
-      @browser.hash('')
-    
     if access_token = @browser.load('access_token')
       @api = new API(@browser, @url, @repo, access_token)
       @api.init().then (repo) => @render(repo)
