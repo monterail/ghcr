@@ -7,7 +7,7 @@ new class ChromeGHCR extends GHCR
     chrome.runtime.onMessage.addListener =>
       @onLocationChange()
      
-  browser: new class
+  browser:
 
     redirect: (url) ->
       document.location = url
