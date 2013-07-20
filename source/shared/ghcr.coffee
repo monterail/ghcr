@@ -56,44 +56,42 @@ class GHCR
 
   render: (repo) ->
     $('#ghcr-box').remove()
-    @initSettings()
 
     if repo?
       @username = repo.username
-      @initPendingTab(repo.pending.length)
-      @initRejectedTab(repo.rejected.length)
+      @initNav(repo.pending.length, repo.rejected.length)
+    else
+      @initNav()
 
-  initPendingTab: (count) ->
-      $("li#ghcr-pending-tab").remove()
-      $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
-      if $ul.find("li.commits").length
-        $li = $("<li id='ghcr-pending-tab' />")
-        # js-selected-navigation-item tabnav-tab
-        $a = $("<a href='#ghcr-pending'><span class='num'>#{count}</span> Pending</a>").click () => @renderPending()
-        $li.append($a)
-        $ul.append($li)
-      $('#ghcr-box button.next').remove() if count == 0
+  initNav: (pendingCount, rejectedCount) ->
+    $cont = $('.repo-nav-contents')
+    $('#ghcr-nav').remove()
+    $ul = $('<ul id="ghcr-nav" class="repo-menu"/>')
+    $cont.prepend($ul)
 
-  initRejectedTab: (count) ->
-      $("li#ghcr-rejected-tab").remove()
-      $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
-      if $ul.find("li.commits").length
-        $li = $("<li id='ghcr-rejected-tab' />")
-        # js-selected-navigation-item tabnav-tab
-        $a = $("<a href='#ghcr-rejected'><span class='num'>#{count}</span> Rejected</a>").click () => @renderRejected()
-        $li.append($a)
-        $ul.append($li)
+    if pendingCount?
+      $li = $("<li class='tooltipped leftwards' id='ghcr-pending' original-title='Pending' />")
+      $a = $("<a href='#{@browser.path()}#ghcr-pending' class=''><span style='background-color: #69B633; padding: 2px 4px; color: white; border-radius: 3px'>#{pendingCount}</span> <span class='full-word'>pending</span></a>").click (e) =>
+        @renderPending()
+        e.preventDefault()
+      $li.append($a)
+      $ul.append($li)
 
-  initSettings: ->
-    $("li#ghcr-settings").remove()
-    $ul = $('.repo-nav-contents .repo-menu:last')
-    $li = $("<li class='tooltipped leftwards' id='ghcr-settings' />")
-    $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Authorize GHCR</span></a>").click (e) =>
+    if rejectedCount?
+      $li = $("<li class='tooltipped leftwards' id='ghcr-rejected' original-title='Rejected' />")
+      $a = $("<a href='#{@browser.path()}#ghcr-rejected' class=''><span style='background-color: #B66933; padding: 2px 4px; color: white; border-radius: 3px'>#{rejectedCount}</span> <span class='full-word'>rejected</span></a>").click (e) =>
+        @renderRejected()
+        e.preventDefault()
+      $li.append($a)
+      $ul.append($li)
+
+    $li = $("<li class='tooltipped leftwards' id='ghcr-settings' original-title='GHCR settings' />")
+    $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Connect to GHCR</span></a>").click (e) =>
       e.preventDefault()
       @authorize()
     $li.append($a)
-    $ul.append($li)
-
+    $ul.prepend($li)
+      
   renderPending: ->
     @api.commits(status: 'pending', author: "!#{@username}").then (commits) =>
       $(".tabnav-tabs a").removeClass("selected")
