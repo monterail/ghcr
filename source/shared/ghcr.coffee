@@ -29,6 +29,9 @@ class GHCR
     commit: (id, params = {}) ->
       @browser.get "#{@url}/#{@repo}/commits/#{id}", params, @access_token
 
+    connect: ->
+      @browser.post "#{@url}/#{@repo}/connect", {}, @access_token
+
     save: (id, commit) ->
       @browser.put "#{@url}/#{@repo}/commits/#{id}", commit, @access_token
 
@@ -61,11 +64,32 @@ class GHCR
         @browser.save('state', '')
         @renderRejected()
 
+  notification: ($message) ->
+    $("#ghcr-notification").remove()
+    $box = $("<div id='ghcr-notification' class='flash-messages container'><div class='flash flash-notice'><span class='octicon octicon-remove-close close'></span> </div></div>")
+    $box.find('.flash-notice').append($message)
+    $(".site").prepend($box)
+
   render: (repo) ->
+
     $('#ghcr-box').remove()
 
     if repo?
-      @initNav(repo.pending.length, repo.rejected.length)
+      if !repo.connected
+        if repo.admin
+          $btn = $("<button class='minibutton'>Connect</button>").click (e) =>
+            e.preventDefault()
+            $btn.prop('disabled', true)
+
+            @api.connect().then =>
+              @notification 'Successfully connected to Github Code Review! 
+                            New commits will be added to review queue.'
+
+          @notification($('<div> this repository to Github Code Review</div>').prepend($btn))
+        else
+          @notification('Please ask an admin of this repository to connect Github Code Review.')
+      else
+        @initNav(repo.pending.length, repo.rejected.length)
     else
       @initNav()
 
