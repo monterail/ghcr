@@ -1,10 +1,9 @@
 new class ChromeGHCR extends GHCR
+  constructor: ->
+    $.extend(@browser, @extendBrowser)
+    super
 
-  browser:
-
-    redirect: (url) ->
-      document.location = url
-
+  extendBrowser:
     get: (url, data, access_token) ->
       new RSVP.Promise (resolve, reject) ->
         $.ajax
@@ -25,23 +24,3 @@ new class ChromeGHCR extends GHCR
           method: "POST", url: url, data: data,
           success: resolve, error: reject,
           headers: { "Authorization": "Bearer #{access_token}" }
-
-    href: -> document.location.href
-
-    path: -> document.location.pathname
-
-    hash: (value) ->
-      if value == ""
-        loc = window.location
-        if "pushState" of history
-          history.pushState("", document.title, loc.pathname + loc.search)
-      else if value?
-        document.location.hash = value
-      else
-        document.location.hash.substring(1)
-
-    save: (key, value) ->
-      $.cookie('ghcr_' + key, value, path: '/')
-
-    load: (key) ->
-      $.cookie('ghcr_' + key)
