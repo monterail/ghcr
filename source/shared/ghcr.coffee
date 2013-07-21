@@ -11,7 +11,7 @@ class GHCR
     if match = (/access_token=([^&+]+)/).exec(@browser.hash())
       @browser.save('access_token', match[1])
       @browser.hash('')
-    
+
     observer = new MutationObserver => @onLocationChange()
     observer.observe $('#js-repo-pjax-container')[0], childList: true
     @onLocationChange()
@@ -82,7 +82,7 @@ class GHCR
             $btn.prop('disabled', true)
 
             @api.connect().then =>
-              @notification 'Successfully connected to Github Code Review! 
+              @notification 'Successfully connected to Github Code Review!
                             New commits will be added to review queue.'
 
           @notification($('<div> this repository to Github Code Review</div>').prepend($btn))
@@ -120,7 +120,7 @@ class GHCR
         e.preventDefault()
       $li.append($a)
       $ul.append($li)
-      
+
   renderPending: ->
     @api.commits(status: 'pending', author: "!#{@username}")
       .then (commits) =>
