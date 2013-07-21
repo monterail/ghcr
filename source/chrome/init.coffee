@@ -21,6 +21,13 @@ new class ChromeGHCR extends GHCR
           success: resolve, error: reject,
           headers: { "Authorization": "Bearer #{access_token}" }
 
+    post: (url, data, access_token) ->
+      new Promise (resolve, reject) ->
+        $.ajax
+          method: "POST", url: url, data: data,
+          success: resolve, error: reject,
+          headers: { "Authorization": "Bearer #{access_token}" }
+
     href: -> document.location.href
 
     path: -> document.location.pathname
