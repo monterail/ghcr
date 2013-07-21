@@ -3,8 +3,7 @@ new class FirefoxGHCR extends GHCR
 
     sendRequest: (type, url, data, cb) ->
       callMe = Math.random().toString(36).substring(7)
-      self.port.on callMe, ->
-        cb.apply(null, arguments)
+      self.port.on callMe, cb
       self.port.emit "request:#{type}", url, decodeURIComponent($.param(data)), callMe
 
     redirect: (url) ->
