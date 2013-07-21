@@ -122,28 +122,34 @@ class GHCR
       $ul.append($li)
       
   renderPending: ->
-    @api.commits(status: 'pending', author: "!#{@username}").then (commits) =>
-      $(".tabnav-tabs a").removeClass("selected")
-      $("#ghcr-pending-tab a").addClass("selected")
-      $container = $("#js-repo-pjax-container")
-      $container.html("""
-        <h3 class="commit-group-heading">Pending commits</h3>
-      """)
-      $ol = $("<ol class='commit-group'/>")
-      @renderCommits($ol, commits)
-      $container.append($ol)
+    @api.commits(status: 'pending', author: "!#{@username}")
+      .then (commits) =>
+        $(".tabnav-tabs a").removeClass("selected")
+        $("#ghcr-pending-tab a").addClass("selected")
+        $container = $("#js-repo-pjax-container")
+        $container.html("""
+          <h3 class="commit-group-heading">Pending commits</h3>
+        """)
+        $ol = $("<ol class='commit-group'/>")
+        @renderCommits($ol, commits)
+        $container.append($ol)
+      .then undefined, =>
+        @notification 'This repository is not yet connected with Github Code Review'
 
   renderRejected: ->
-    @api.commits(status: 'rejected', author: @username).then (commits) =>
-      $(".tabnav-tabs a").removeClass("selected")
-      $("#ghcr-rejected-tab a").addClass("selected")
-      $container = $("#js-repo-pjax-container")
-      $container.html("""
-        <h3 class="commit-group-heading">Rejected commits</h3>
-      """)
-      $ol = $("<ol class='commit-group'/>")
-      @renderCommits($ol, commits)
-      $container.append($ol)
+    @api.commits(status: 'rejected', author: @username)
+      .then (commits) =>
+        $(".tabnav-tabs a").removeClass("selected")
+        $("#ghcr-rejected-tab a").addClass("selected")
+        $container = $("#js-repo-pjax-container")
+        $container.html("""
+          <h3 class="commit-group-heading">Rejected commits</h3>
+        """)
+        $ol = $("<ol class='commit-group'/>")
+        @renderCommits($ol, commits)
+        $container.append($ol)
+      .then undefined, =>
+        @notification 'This repository is not yet connected with Github Code Review'
 
   renderCommits: ($ol, commits) ->
     for commit in commits
