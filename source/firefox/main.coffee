@@ -16,7 +16,6 @@ exports.main = ->
     contentScriptFile: [self.data.url("ghcr.js")]
     contentStyleFile: [self.data.url("ghcr.css")]
     onAttach: (worker) ->
-      worker.port.emit("init")
       createRequest = (url, data, callMe) ->
         Request(
           url: url
