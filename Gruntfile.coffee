@@ -17,7 +17,7 @@ module.exports = (grunt) ->
       options: { join: true, sourceMap: true, bare: true }
       default: files:
         "build/shared/ghcr.js": ["build/shared/ghcr.coffee"]
-        "build/firefox/data/ghcr.js": ["build/firefox/init.coffee"]
+        "build/firefox/data/init.js": ["build/firefox/init.coffee"]
         "build/firefox/lib/main.js": ["build/firefox/main.coffee"]
         "build/chrome/init.js": ["build/chrome/init.coffee"]
     sass:
