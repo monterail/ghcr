@@ -75,16 +75,19 @@ class GHCR
     $('#ghcr-box').remove()
 
     if repo?
-      if !repo.connected && repo.permissions.admin
-        $btn = $("<button class='minibutton'>Connect</button>").click (e) =>
-          e.preventDefault()
-          $btn.prop('disabled', true)
+      if !repo.connected
+        if repo.permissions.admin
+          $btn = $("<button class='minibutton'>Connect</button>").click (e) =>
+            e.preventDefault()
+            $btn.prop('disabled', true)
 
-          @api.connect().then =>
-            @notification 'Successfully connected to Github Code Review! 
-                          New commits will be added to review queue.'
+            @api.connect().then =>
+              @notification 'Successfully connected to Github Code Review! 
+                            New commits will be added to review queue.'
 
-        @notification($('<div> this repository to Github Code Review</div>').prepend($btn))
+          @notification($('<div> this repository to Github Code Review</div>').prepend($btn))
+        else if repo.permissions.push
+          @notification('Please ask an admin of this repository to connect Github Code Review.')
       else
         @initNav(repo.pending.length, repo.rejected.length)
     else
