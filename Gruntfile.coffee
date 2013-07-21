@@ -55,7 +55,6 @@ module.exports = (grunt) ->
         dest: [
           'build/chrome/icon128.png',
           'build/chrome/icon48.png',
-          'build/chrome/icon19.png',
           'build/chrome/icon16.png',
         ]
         destSizes: ['128x128', '48x48', '19x19', '16x16']
