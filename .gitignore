@@ -4,3 +4,4 @@ build/
 *.zip
 *.xpi
 node_modules/
+*.pyc
