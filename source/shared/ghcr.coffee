@@ -1,118 +1,204 @@
-GHCR =
-  init: (@repo, cb) ->
-    match = (/access_token=([^&+]+)/).exec(document.location.hash)
-    if match? && match[1]?
-      @setAuthToken(match[1])
-      @removeHash()
+"use strict";
 
-    if @getAuthToken()?
-      @api = API(@getApiUrl(), repo, @getAuthToken())
-      @initTabs(cb)
-    else
-      cb
+class GHCR
 
-    @initSettings()
+  url: "http://ghcr-staging.herokuapp.com/api/v1"
 
-  removeHash: ->
-    scrollV = undefined
-    scrollH = undefined
-    loc = window.location
-    if "pushState" of history
-      history.pushState("", document.title, loc.pathname + loc.search)
-    else
-      # Prevent scrolling by storing the page's current scroll offset
-      scrollV = document.body.scrollTop
-      scrollH = document.body.scrollLeft
-      loc.hash = ""
+  constructor: ->
+    @username = $('.header a.name').text().trim()
 
-      # Restore the scroll offset, should be flicker free
-      document.body.scrollTop = scrollV
-      document.body.scrollLeft = scrollH
+    # Authorization
+    if match = (/access_token=([^&+]+)/).exec(@browser.hash())
+      @browser.save('access_token', match[1])
+      @browser.hash('')
 
-  setAuthToken: (authToken) ->
-    $.cookie('ghcr_auth_token', authToken, path: '/')
+    observer = new MutationObserver => @onLocationChange()
+    observer.observe $('#js-repo-pjax-container')[0], childList: true
+    @onLocationChange()
 
-  getAuthToken: ->
-    $.cookie('ghcr_auth_token')
+  class API
 
-  getApiUrl: ->
-    "http://ghcr-staging.herokuapp.com/api/v1"
+    constructor: (@browser, @url, @repo, @access_token) ->
 
-  setApiUrl: ->
-    newApiUrl = prompt("Set ghcr api url:", @getApiUrl())
-    if $.trim(newApiUrl) == ""
-      @getApiUrl()
-    else
-      localStorage.setItem('ghcr:apiUrl', newApiUrl)
-      window.location.reload()
-      newApiUrl
+    init: (repo) ->
+      @browser.get "#{@url}/#{repo}", {}, @access_token
 
-  setUser: (username) ->
-    @user = username
+    commits: (repo, params) ->
+      @browser.get "#{@url}/#{repo}/commits", params, @access_token
 
-  initTabs: (cb) ->
-    @api.init (res) =>
-      @setUser(res.user)
-      @initPendingTab(res.pending_count)
-      @initRejectedTab(res.rejected_count)
-      cb()
+    commit: (repo, id, params = {}) ->
+      @browser.get "#{@url}/#{repo}/commits/#{id}", params, @access_token
 
-  initPendingTab: (count) ->
-      $("li#ghcr-pending-tab").remove()
-      $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
-      if $ul.find("li.commits").length
-        $li = $("<li id='ghcr-pending-tab' />")
-        # js-selected-navigation-item tabnav-tab
-        $a = $("<a href='#ghcr-pending'><span class='num'>#{count}</span> Pending</a>").click () => @pending()
-        $li.append($a)
-        $ul.append($li)
-      $('#ghcr-box button.next').remove() if count == 0
+    connect: (repo) ->
+      @browser.post "#{@url}/#{repo}/connect", {}, @access_token
 
-  initRejectedTab: (count) ->
-      $("li#ghcr-rejected-tab").remove()
-      $ul = $("div.repository-with-sidebar div.overall-summary ul.numbers-summary")
-      if $ul.find("li.commits").length
-        $li = $("<li id='ghcr-rejected-tab' />")
-        # js-selected-navigation-item tabnav-tab
-        $a = $("<a href='#ghcr-rejected'><span class='num'>#{count}</span> Rejected</a>").click () => @rejected()
-        $li.append($a)
-        $ul.append($li)
+    save: (repo, id, commit) ->
+      @browser.put "#{@url}/#{repo}/commits/#{id}", commit, @access_token
 
-  initSettings: ->
-    $("li#ghcr-settings").remove()
-    $ul = $('.repo-nav-contents .repo-menu:last')
-    $li = $("<li class='tooltipped leftwards' id='ghcr-settings' />")
-    $a = $("<a href='' class=''><span class='octicon'>G</span> <span class='full-word'>Authorize GHCR</span></a>").click (e) =>
+  class Repository
+
+    RSVP.EventTarget.mixin(@prototype)
+
+    constructor: (@browser, @api, @name, @data) ->
+
+    update: ->
+      @api.init(@name).then (data) =>
+        @browser.storage.set(@name, data)
+        @data = data
+
+    cached_attributes: -> @browser.storage.get(@name)
+
+    attributes: ->
+      if @data
+        new RSVP.Promise (resolve) => resolve(@data)
+      else
+        if @browser.storage
+          @cached_attributes().then (data) =>
+            if data?
+              @data = data
+              @update().then (data) =>
+                @data = data
+                @render(data)
+              @data
+            else
+              @update().then (data) => @data = data
+        else
+          @update().then (data) => @data = data
+
+    commit: (sha) ->
+      @attributes().then (data) =>
+        commit = data.pending.concat(data.rejected)
+          .filter((commit) -> commit.id = sha)[0]
+
+        if commit then commit else @api.commit(@name, sha)
+
+  browser:
+
+    redirect: (url) ->
+      document.location = url
+
+    href: -> document.location.href
+
+    path: -> document.location.pathname
+
+    hash: (value) ->
+      if value == ""
+        loc = window.location
+        if "pushState" of history
+          history.pushState("", document.title, loc.pathname + loc.search)
+      else if value?
+        document.location.hash = value
+      else
+        document.location.hash.substring(1)
+
+    save: (key, value) ->
+      $.cookie('ghcr_' + key, value, path: '/')
+
+    load: (key) ->
+      $.cookie('ghcr_' + key)
+
+  authorize: (state = "") ->
+    @browser.save('state', state)
+    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
+
+  onLocationChange: ->
+    console.log('location change')
+
+    @render()
+
+    chunks = @browser.path().split("/")
+    @repo = "#{chunks[1]}/#{chunks[2]}"
+
+    if access_token = @browser.load('access_token')
+      @api = new API(@browser, @url, @repo, access_token)
+
+      @repository = new Repository(@browser, @api, @repo)
+      @repository.attributes().then (repo) =>
+        @render(repo)
+
+        if chunks[3] == 'commit'
+          @repository.commit(chunks[4])
+            .then (commit) => @renderMenu(commit)
+            .then undefined, (reason) -> console.log(reason)
+
+        if @browser.load('state') == 'pending'
+          @browser.save('state', '')
+          @renderCommits("Pending", repo.pending)
+
+        if @browser.load('state') == 'rejected'
+          @browser.save('state', '')
+          @renderCommits("Rejected", repo.rejected)
+
+  notification: ($message) ->
+    $("#ghcr-notification").remove()
+    $box = $("<div id='ghcr-notification' class='flash-messages container'><div class='flash flash-notice'><span class='octicon octicon-remove-close close'></span> </div></div>")
+    $box.find('.flash-notice').append($message)
+    $(".site").prepend($box)
+
+  render: (repo) ->
+    $('#ghcr-box').remove()
+
+    if repo?
+      if !repo.connected
+        if repo.permissions.admin
+          $btn = $("<button class='minibutton'>Connect</button>").click (e) =>
+            e.preventDefault()
+            $btn.prop('disabled', true)
+
+            @api.connect().then =>
+              @notification 'Successfully connected to Github Code Review!
+                            New commits will be added to review queue.'
+
+          @notification($('<div> this repository to Github Code Review</div>').prepend($btn))
+        else if repo.permissions.push
+          @notification('Please ask an admin of this repository to connect Github Code Review.')
+      else
+        @initNav(repo.pending, repo.rejected)
+
+  initNav: (pending, rejected) ->
+    $cont = $('.repo-nav-contents')
+    $('#ghcr-nav').remove()
+    $ul = $('<ul id="ghcr-nav" class="repo-menu"/>')
+
+    # Pending
+    $li = $("<li class='tooltipped leftwards' original-title='Pending' />")
+    $a = $("<a href='#' class=''><span style='background-color: #69B633; padding: 2px 4px; color: white; border-radius: 3px'>#{pending.length}</span> <span class='full-word'>pending</span></a>").click (e) =>
+      if @api?
+        @renderCommits('Pending', pending)
+      else
+        @authorize('pending')
       e.preventDefault()
-      API.authorize(@getApiUrl())
+      e.stopPropagation()
     $li.append($a)
     $ul.append($li)
 
-  pending: ->
-    @api.pending @user, (commits) =>
-      $(".tabnav-tabs a").removeClass("selected")
-      $("#ghcr-pending-tab a").addClass("selected")
-      $container = $("#js-repo-pjax-container")
-      $container.html("""
-        <h3 class="commit-group-heading">Pending commits</h3>
-      """)
-      $ol = $("<ol class='commit-group'/>")
-      @renderCommits($ol, commits)
-      $container.append($ol)
+    # rejected
+    $li = $("<li class='tooltipped leftwards' original-title='Rejected' />")
+    $a = $("<a href='#' class=''><span style='background-color: #B66933; padding: 2px 4px; color: white; border-radius: 3px'>#{rejected.length}</span> <span class='full-word'>rejected</span></a>").click (e) =>
+      if @api?
+        @renderCommits('Rejected', rejected)
+      else
+        @authorize('rejected')
+      e.preventDefault()
+      e.stopPropagation()
+    $li.append($a)
+    $ul.append($li)
 
-  rejected: ->
-    @api.rejected @user, (commits) =>
-      $(".tabnav-tabs a").removeClass("selected")
-      $("#ghcr-rejected-tab a").addClass("selected")
-      $container = $("#js-repo-pjax-container")
-      $container.html("""
-        <h3 class="commit-group-heading">Rejected commits</h3>
-      """)
-      $ol = $("<ol class='commit-group'/>")
-      @renderCommits($ol, commits)
-      $container.append($ol)
+    $cont.prepend($ul)
 
-  renderCommits: ($ol, commits) ->
+  renderCommits: (title, commits) ->
+    $(".tabnav-tabs a").removeClass("selected")
+    $("#ghcr-rejected-tab a").addClass("selected")
+    $container = $("#js-repo-pjax-container")
+    $container.html("""
+<div class="file-navigation">
+    <div class="breadcrumb">
+    <span class="repo-root js-repo-root"><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/#{@repo}" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">#{@repo.split('/')[1]}</span></a></span></span><span class="separator"> / </span>#{title}
+  </div>
+</div>
+      <h3 class="commit-group-heading"></h3>
+    """)
+    $ol = $("<ol class='commit-group'/>")
     for commit in commits
       diffUrl = "/#{@repo}/commit/#{commit.id}"
       treeUrl = "/#{@repo}/tree/#{commit.id}"
@@ -124,6 +210,7 @@ GHCR =
 
       $ol.append($("""
         <li class="commit commit-group-item js-navigation-item js-details-container">
+          <img class="gravatar" height="36" src="http://github.com/#{commit.author.username}.png" width="36">
           <p class="commit-title  js-pjax-commit-title">
             <a href="#{diffUrl}" class="message">#{commit.message}</a>
           </p>
@@ -152,40 +239,52 @@ GHCR =
         </li>
       """))
     $ol.find('time').timeago()
+    $container.append($ol)
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
-    @api.commits ids, (commits) ->
+    @api.commits(ids).then (commits) =>
       for commit in commits
         $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
         commit.status ||= "pending"
         $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
+  nextPending: ->
+    @api.commits(@repo, author: "!#{@username}", status: 'pending').then (commits) =>
+      if commits.length > 0
+        currentId = window.location.pathname.split('/').reverse()[0]
+        nextCommit = commits[0]
+        commitSize = commits.length
+        for index in [0..(commitSize-1)]
+          if commits[index].id == currentId
+            nextCommit = commits[index+1] if index + 1 < commitSize
+            break
+        window.location = "/#{@repo}/commit/#{nextCommit.id}"
+      else
+        window.location = "/#{@repo}"
+
   generateBtn: (commit, btn) ->
-    $btn = $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
+    $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
       if btn.status == 'next'
-        @api.pending @user, (commits) =>
-          currentId = window.location.pathname.split('/').reverse()[0]
-          nextCommit = commits[0]
-          commitSize = commits.length
-          for index in [0..(commitSize-1)]
-            if commits[index].id == currentId
-              nextCommit = commits[index+1] if index + 1 < commitSize
-              break
-          window.location = "/#{@repo}/commit/#{nextCommit.id}"
+        @nextPending()
       else
         commit.status = btn.status
-        commit.reviewer = @user
-        @api.save commit, (data) =>
-          @initTabs =>
+        commit.reviewer = @username
+        @api.save(@repo, commit.id, commit).then (data) =>
+          if $('#ghcr-auto-next').prop('checked')
+            @nextPending()
+          else
             @renderMenu(data)
-    $btn
 
   renderMenu: (commit = {}) ->
+    console.log('renderMenu')
+
     commit.author =
       name:     commit.author.name
       username: commit.author.username
+
     commit.message = $.trim($(".commit > .commit-title").text())
+
     $("#ghcr-box").remove()
 
     rejectBtn =
@@ -197,29 +296,38 @@ GHCR =
       status: 'accepted'
 
     nextPendingBtn =
-      label: 'Next Pending'
+      label: '<input type="checkbox" id="ghcr-auto-next"> Next Pending'
       status: 'next'
 
     switch commit.status
       when "accepted"
         btn = rejectBtn
-        info = "Commit <b>accepted</b> by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
+        info = "Commit <b>accepted</b> by <a href='https://github.com/#{commit.last_event.reviewer.username}'>#{commit.last_event.reviewer.username}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.last_event.created_at))}"
       when "rejected"
         btn = acceptBtn
-        info = "Commit <b>rejected</b> by <a href='https://github.com/#{commit.reviewer}'>#{commit.reviewer}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.updated_at))}"
+        info = "Commit <b>rejected</b> by <a href='https://github.com/#{commit.last_event.reviewer.username}'>#{commit.last_event.reviewer.username}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.last_event.created_at))}"
       else # pending
-        info = "Code review pending"
+        info = "Code pending review"
 
     $box = $("<div id='ghcr-box' class='ghcr__status-bar ghcr__status-bar--#{commit.status}'><span>#{info}</span></div>")
+
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
-    if (commit.author.username || commit.author.name) != @user
-      if commit.status == 'pending'
-        $box.append GHCR.generateBtn(commit, acceptBtn)
-        $box.append GHCR.generateBtn(commit, rejectBtn)
+    if commit.author.username != @username
+        $box.append @generateBtn(commit, acceptBtn)
+        $box.append @generateBtn(commit, rejectBtn)
+        $box.append @generateBtn(commit, nextPendingBtn)
       else
-        $box.append GHCR.generateBtn(commit, btn)
+        $box.append @generateBtn(commit, btn)
+        $box.append @generateBtn(commit, nextPendingBtn)
+
+    $checkbox = $box.find('#ghcr-auto-next')
+    $checkbox.prop('checked', true) if @browser.load('next_pending')
+    $checkbox.click (e) =>
+      @browser.save('next_pending', $checkbox.prop('checked'))
+      e.stopPropagation()
+
 
     $(".repo-container").prepend($box)
 
@@ -240,9 +348,3 @@ GHCR =
           width: stickyHeader.width
     setStickyHeader()
     $(window).scroll -> setStickyHeader()
-
-  commitPage: (id) ->
-    @api.commit id, (commit) =>
-      commit.id     ||= id
-      commit.status ||= "pending"
-      @renderMenu(commit)
