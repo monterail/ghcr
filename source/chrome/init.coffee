@@ -24,3 +24,15 @@ new class ChromeGHCR extends GHCR
           method: "POST", url: url, data: data,
           success: resolve, error: reject,
           headers: { "Authorization": "Bearer #{access_token}" }
+
+    storage:
+      get: (key) ->
+        new RSVP.Promise (resolve) ->
+          chrome.storage.local.get [key], (values) ->
+            resolve(values[key])
+
+      set: (key, value) ->
+        toSave = {}
+        toSave[key] = value
+        new RSVP.Promise (resolve) ->
+          chrome.storage.local.set(toSave, resolve)
