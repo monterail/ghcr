@@ -124,11 +124,11 @@ class GHCR
 
         if @browser.load('state') == 'pending'
           @browser.save('state', '')
-          @renderCommits("Pending commits", repo.pending)
+          @renderCommits("Pending", repo.pending)
 
         if @browser.load('state') == 'rejected'
           @browser.save('state', '')
-          @renderCommits("Rejected commits", repo.rejected)
+          @renderCommits("Rejected", repo.rejected)
 
   notification: ($message) ->
     $("#ghcr-notification").remove()
@@ -165,7 +165,7 @@ class GHCR
     $li = $("<li class='tooltipped leftwards' original-title='Pending' />")
     $a = $("<a href='#' class=''><span style='background-color: #69B633; padding: 2px 4px; color: white; border-radius: 3px'>#{pending.length}</span> <span class='full-word'>pending</span></a>").click (e) =>
       if @api?
-        @renderCommits('Pending commits', pending)
+        @renderCommits('Pending', pending)
       else
         @authorize('pending')
       e.preventDefault()
@@ -177,7 +177,7 @@ class GHCR
     $li = $("<li class='tooltipped leftwards' original-title='Rejected' />")
     $a = $("<a href='#' class=''><span style='background-color: #B66933; padding: 2px 4px; color: white; border-radius: 3px'>#{rejected.length}</span> <span class='full-word'>rejected</span></a>").click (e) =>
       if @api?
-        @renderCommits('Rejected commits', rejected)
+        @renderCommits('Rejected', rejected)
       else
         @authorize('rejected')
       e.preventDefault()
@@ -192,7 +192,12 @@ class GHCR
     $("#ghcr-rejected-tab a").addClass("selected")
     $container = $("#js-repo-pjax-container")
     $container.html("""
-      <h3 class="commit-group-heading">#{title}</h3>
+<div class="file-navigation">
+    <div class="breadcrumb">
+    <span class="repo-root js-repo-root"><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/#{@repo}" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">#{@repo.split('/')[1]}</span></a></span></span><span class="separator"> / </span>#{title}
+  </div>
+</div>
+      <h3 class="commit-group-heading"></h3>
     """)
     $ol = $("<ol class='commit-group'/>")
     for commit in commits
