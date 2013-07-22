@@ -17,10 +17,9 @@ module.exports = (grunt) ->
       options: { join: true, sourceMap: true, bare: true }
       default: files:
         "build/shared/ghcr.js": ["build/shared/ghcr.coffee"]
-        "build/firefox/data/ghcr.js": ["build/firefox/ghcr.coffee"]
+        "build/firefox/data/init.js": ["build/firefox/init.coffee"]
         "build/firefox/lib/main.js": ["build/firefox/main.coffee"]
-        "build/chrome/ghcr.js": ["build/chrome/ghcr.coffee"]
-        "build/chrome/main.js": ["build/chrome/main.coffee"]
+        "build/chrome/init.js": ["build/chrome/init.coffee"]
     sass:
       options: { lineNumbers: true }
       default: files:
@@ -31,12 +30,12 @@ module.exports = (grunt) ->
         "build/chrome/ghcr.js": [
           "build/shared/vendor/*.js",
           "build/shared/*.js",
-          "build/chrome/ghcr.js"
+          "build/chrome/init.js"
         ]
         "build/firefox/data/ghcr.js": [
           "build/shared/vendor/*.js",
           "build/shared/*.js",
-          "build/firefox/data/ghcr.js"
+          "build/firefox/data/init.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
         "build/firefox/data/ghcr.css": ["build/shared/*.css"]
@@ -56,7 +55,6 @@ module.exports = (grunt) ->
         dest: [
           'build/chrome/icon128.png',
           'build/chrome/icon48.png',
-          'build/chrome/icon19.png',
           'build/chrome/icon16.png',
         ]
         destSizes: ['128x128', '48x48', '19x19', '16x16']

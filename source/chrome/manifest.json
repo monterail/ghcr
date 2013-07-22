@@ -9,13 +9,9 @@
     "webNavigation",
     "background",
     "tabs",
+    "storage",
     "<all_urls>"
   ],
-
-  "browser_action": {
-    "default_icon": "icon19.png",
-    "default_title": "Github Code Review"
-  },
 
   "icons": {
     "128": "icon128.png",
@@ -23,16 +19,12 @@
     "16": "icon16.png"
   },
 
- "background": {
-    "scripts": ["main.js"],
-    "persistent": false
-  },
-
   "content_scripts": [
     {
-      "matches": ["https://github.com/*"],
+      "matches": ["https://github.com/*/*"],
       "css": ["ghcr.css"],
-      "js": ["ghcr.js"]
+      "js": ["ghcr.js"],
+      "run_at": "document_end"
     }
   ],
 
