@@ -20,20 +20,55 @@ class GHCR
 
     constructor: (@browser, @url, @repo, @access_token) ->
 
-    init: ->
-      @browser.get "#{@url}/#{@repo}", {}, @access_token
+    init: (repo) ->
+      @browser.get "#{@url}/#{repo}", {}, @access_token
 
-    commits: (params) ->
-      @browser.get "#{@url}/#{@repo}/commits", params, @access_token
+    commits: (repo, params) ->
+      @browser.get "#{@url}/#{repo}/commits", params, @access_token
 
-    commit: (id, params = {}) ->
-      @browser.get "#{@url}/#{@repo}/commits/#{id}", params, @access_token
+    commit: (repo, id, params = {}) ->
+      @browser.get "#{@url}/#{repo}/commits/#{id}", params, @access_token
 
-    connect: ->
-      @browser.post "#{@url}/#{@repo}/connect", {}, @access_token
+    connect: (repo) ->
+      @browser.post "#{@url}/#{repo}/connect", {}, @access_token
 
-    save: (id, commit) ->
-      @browser.put "#{@url}/#{@repo}/commits/#{id}", commit, @access_token
+    save: (repo, id, commit) ->
+      @browser.put "#{@url}/#{repo}/commits/#{id}", commit, @access_token
+
+  class Repository
+
+    RSVP.EventTarget.mixin(@prototype)
+
+    constructor: (@browser, @api, @name, @data) ->
+
+    update: ->
+      @api.init(@name).then (data) =>
+        @browser.storage.set(@name, data)
+        @data = data
+
+    cached_attributes: -> @browser.storage.get(@name)
+
+    attributes: ->
+      if @data
+        new RSVP.Promise (resolve) => resolve(@data)
+      else
+        if @browser.storage
+          @cached_attributes().then (data) =>
+            if data?
+              @data = data
+              @update().then (data) =>
+                @data = data
+                @render(data)
+              @data
+            else
+              @update().then (data) => @data = data
+        else
+          @update().then (data) => @data = data
+
+    commit: (sha) ->
+      @attributes().then (data) ->
+        data.pending.concat(data.rejected)
+          .filter((commit) -> commit.id = sha)[0]
 
   browser:
     redirect: (url) ->
@@ -64,6 +99,8 @@ class GHCR
     @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
 
   onLocationChange: ->
+    console.log('location change')
+
     @render()
 
     chunks = @browser.path().split("/")
@@ -72,21 +109,25 @@ class GHCR
     if access_token = @browser.load('access_token')
       @api = new API(@browser, @url, @repo, access_token)
 
-      @api.init().then (repo) => @render(repo)
+      @repository = new Repository(@browser, @api, @repo)
+      @repository.attributes().then (repo) =>
+        @render(repo)
 
-      if chunks[3] == 'commit'
-        @api.commit(chunks[4]).then (commit) =>
-          commit.id     ||= id
-          commit.status ||= "pending"
-          @renderMenu(commit)
+        if chunks[3] == 'commit'
+          @repository.commit(chunks[4])
+            .then (commit) =>
+              commit.id     ||= id
+              commit.status ||= "pending"
+              @renderMenu(commit)
+            .then undefined, (reason) -> console.log(reason)
 
-      if @browser.load('state') == 'pending'
-        @browser.save('state', '')
-        @renderPending()
+        if @browser.load('state') == 'pending'
+          @browser.save('state', '')
+          @renderCommits("Pending commits", repo.pending)
 
-      if @browser.load('state') == 'rejected'
-        @browser.save('state', '')
-        @renderRejected()
+        if @browser.load('state') == 'rejected'
+          @browser.save('state', '')
+          @renderCommits("Rejected commits", repo.rejected)
 
   notification: ($message) ->
     $("#ghcr-notification").remove()
@@ -95,7 +136,6 @@ class GHCR
     $(".site").prepend($box)
 
   render: (repo) ->
-
     $('#ghcr-box').remove()
 
     if repo?
@@ -113,69 +153,47 @@ class GHCR
         else if repo.permissions.push
           @notification('Please ask an admin of this repository to connect Github Code Review.')
       else
-        @initNav(repo.pending.length, repo.rejected.length)
-    else
-      @initNav()
+        @initNav(repo.pending, repo.rejected)
 
-  initNav: (pendingCount = 0, rejectedCount = 0) ->
+  initNav: (pending, rejected) ->
     $cont = $('.repo-nav-contents')
     $('#ghcr-nav').remove()
     $ul = $('<ul id="ghcr-nav" class="repo-menu"/>')
+
+    # Pending
+    $li = $("<li class='tooltipped leftwards' original-title='Pending' />")
+    $a = $("<a href='#' class=''><span style='background-color: #69B633; padding: 2px 4px; color: white; border-radius: 3px'>#{pending.length}</span> <span class='full-word'>pending</span></a>").click (e) =>
+      if @api?
+        @renderCommits('Pending commits', pending)
+      else
+        @authorize('pending')
+      e.preventDefault()
+      e.stopPropagation()
+    $li.append($a)
+    $ul.append($li)
+
+    # rejected
+    $li = $("<li class='tooltipped leftwards' original-title='Rejected' />")
+    $a = $("<a href='#' class=''><span style='background-color: #B66933; padding: 2px 4px; color: white; border-radius: 3px'>#{rejected.length}</span> <span class='full-word'>rejected</span></a>").click (e) =>
+      if @api?
+        @renderCommits('Rejected commits', rejected)
+      else
+        @authorize('rejected')
+      e.preventDefault()
+      e.stopPropagation()
+    $li.append($a)
+    $ul.append($li)
+
     $cont.prepend($ul)
 
-    if pendingCount?
-      $li = $("<li class='tooltipped leftwards' id='ghcr-pending' original-title='Pending' />")
-      $a = $("<a href='#{@browser.path()}#ghcr-pending' class=''><span style='background-color: #69B633; padding: 2px 4px; color: white; border-radius: 3px'>#{pendingCount}</span> <span class='full-word'>pending</span></a>").click (e) =>
-        if @api?
-          @renderPending()
-        else
-          @authorize('pending')
-        e.preventDefault()
-      $li.append($a)
-      $ul.append($li)
-
-    if rejectedCount?
-      $li = $("<li class='tooltipped leftwards' id='ghcr-rejected' original-title='Rejected' />")
-      $a = $("<a href='#{@browser.path()}#ghcr-rejected' class=''><span style='background-color: #B66933; padding: 2px 4px; color: white; border-radius: 3px'>#{rejectedCount}</span> <span class='full-word'>rejected</span></a>").click (e) =>
-        if @api?
-          @renderRejected()
-        else
-          @authorize('rejected')
-        e.preventDefault()
-      $li.append($a)
-      $ul.append($li)
-
-  renderPending: ->
-    @api.commits(status: 'pending', author: "!#{@username}")
-      .then (commits) =>
-        $(".tabnav-tabs a").removeClass("selected")
-        $("#ghcr-pending-tab a").addClass("selected")
-        $container = $("#js-repo-pjax-container")
-        $container.html("""
-          <h3 class="commit-group-heading">Pending commits</h3>
-        """)
-        $ol = $("<ol class='commit-group'/>")
-        @renderCommits($ol, commits)
-        $container.append($ol)
-      .then undefined, =>
-        @notification 'This repository is not yet connected with Github Code Review'
-
-  renderRejected: ->
-    @api.commits(status: 'rejected', author: @username)
-      .then (commits) =>
-        $(".tabnav-tabs a").removeClass("selected")
-        $("#ghcr-rejected-tab a").addClass("selected")
-        $container = $("#js-repo-pjax-container")
-        $container.html("""
-          <h3 class="commit-group-heading">Rejected commits</h3>
-        """)
-        $ol = $("<ol class='commit-group'/>")
-        @renderCommits($ol, commits)
-        $container.append($ol)
-      .then undefined, =>
-        @notification 'This repository is not yet connected with Github Code Review'
-
-  renderCommits: ($ol, commits) ->
+  renderCommits: (title, commits) ->
+    $(".tabnav-tabs a").removeClass("selected")
+    $("#ghcr-rejected-tab a").addClass("selected")
+    $container = $("#js-repo-pjax-container")
+    $container.html("""
+      <h3 class="commit-group-heading">#{title}</h3>
+    """)
+    $ol = $("<ol class='commit-group'/>")
     for commit in commits
       diffUrl = "/#{@repo}/commit/#{commit.id}"
       treeUrl = "/#{@repo}/tree/#{commit.id}"
@@ -215,6 +233,7 @@ class GHCR
         </li>
       """))
     $ol.find('time').timeago()
+    $container.append($ol)
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
@@ -239,7 +258,7 @@ class GHCR
       else
         commit.status = btn.status
         commit.reviewer = @username
-        @api.save(commit.id, commit).then (data) =>
+        @api.save(@repo, commit.id, commit).then (data) =>
           @renderMenu(data)
 
   renderMenu: (commit = {}) ->
