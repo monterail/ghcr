@@ -71,6 +71,7 @@ class GHCR
           .filter((commit) -> commit.id = sha)[0]
 
   browser:
+
     redirect: (url) ->
       document.location = url
 
@@ -205,6 +206,7 @@ class GHCR
 
       $ol.append($("""
         <li class="commit commit-group-item js-navigation-item js-details-container">
+          <img class="gravatar" height="36" src="http://github.com/#{commit.author.username}.png" width="36">
           <p class="commit-title  js-pjax-commit-title">
             <a href="#{diffUrl}" class="message">#{commit.message}</a>
           </p>
