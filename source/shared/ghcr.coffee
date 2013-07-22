@@ -66,9 +66,11 @@ class GHCR
           @update().then (data) => @data = data
 
     commit: (sha) ->
-      @attributes().then (data) ->
-        data.pending.concat(data.rejected)
+      @attributes().then (data) =>
+        commit = data.pending.concat(data.rejected)
           .filter((commit) -> commit.id = sha)[0]
+
+        if commit then commit else @api.commit(@name, sha)
 
   browser:
 
@@ -116,10 +118,7 @@ class GHCR
 
         if chunks[3] == 'commit'
           @repository.commit(chunks[4])
-            .then (commit) =>
-              commit.id     ||= id
-              commit.status ||= "pending"
-              @renderMenu(commit)
+            .then (commit) => @renderMenu(commit)
             .then undefined, (reason) -> console.log(reason)
 
         if @browser.load('state') == 'pending'
@@ -250,25 +249,36 @@ class GHCR
         commit.status ||= "pending"
         $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
+  nextPending: ->
+    @api.commits(@repo, author: "!#{@username}", status: 'pending').then (commits) =>
+      if commits.length > 0
+        currentId = window.location.pathname.split('/').reverse()[0]
+        nextCommit = commits[0]
+        commitSize = commits.length
+        for index in [0..(commitSize-1)]
+          if commits[index].id == currentId
+            nextCommit = commits[index+1] if index + 1 < commitSize
+            break
+        window.location = "/#{@repo}/commit/#{nextCommit.id}"
+      else
+        window.location = "/#{@repo}"
+
   generateBtn: (commit, btn) ->
     $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
       if btn.status == 'next'
-        @api.commits(author: "!#{@username}", status: 'pending').then (commits) =>
-          currentId = window.location.pathname.split('/').reverse()[0]
-          nextCommit = commits[0]
-          commitSize = commits.length
-          for index in [0..(commitSize-1)]
-            if commits[index].id == currentId
-              nextCommit = commits[index+1] if index + 1 < commitSize
-              break
-          window.location = "/#{@repo}/commit/#{nextCommit.id}"
+        @nextPending()
       else
         commit.status = btn.status
         commit.reviewer = @username
         @api.save(@repo, commit.id, commit).then (data) =>
-          @renderMenu(data)
+          if $('#ghcr-auto-next').prop('checked')
+            @nextPending()
+          else
+            @renderMenu(data)
 
   renderMenu: (commit = {}) ->
+    console.log('renderMenu')
+
     commit.author =
       name:     commit.author.name
       username: commit.author.username
@@ -286,7 +296,7 @@ class GHCR
       status: 'accepted'
 
     nextPendingBtn =
-      label: 'Next Pending'
+      label: '<input type="checkbox" id="ghcr-auto-next"> Next Pending'
       status: 'next'
 
     switch commit.status
@@ -297,7 +307,7 @@ class GHCR
         btn = acceptBtn
         info = "Commit <b>rejected</b> by <a href='https://github.com/#{commit.last_event.reviewer.username}'>#{commit.last_event.reviewer.username}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.last_event.created_at))}"
       else # pending
-        info = "Code review pending"
+        info = "Code pending review"
 
     $box = $("<div id='ghcr-box' class='ghcr__status-bar ghcr__status-bar--#{commit.status}'><span>#{info}</span></div>")
 
@@ -307,8 +317,17 @@ class GHCR
     if commit.author.username != @username
         $box.append @generateBtn(commit, acceptBtn)
         $box.append @generateBtn(commit, rejectBtn)
+        $box.append @generateBtn(commit, nextPendingBtn)
       else
         $box.append @generateBtn(commit, btn)
+        $box.append @generateBtn(commit, nextPendingBtn)
+
+    $checkbox = $box.find('#ghcr-auto-next')
+    $checkbox.prop('checked', true) if @browser.load('next_pending')
+    $checkbox.click (e) =>
+      @browser.save('next_pending', $checkbox.prop('checked'))
+      e.stopPropagation()
+
 
     $(".repo-container").prepend($box)
 
