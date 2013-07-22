@@ -102,8 +102,6 @@ class GHCR
     @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
 
   onLocationChange: ->
-    console.log('location change')
-
     @render()
 
     chunks = @browser.path().split("/")
@@ -154,8 +152,10 @@ class GHCR
           @notification('Please ask an admin of this repository to connect Github Code Review.')
       else
         @initNav(repo.pending, repo.rejected)
+    else
+      @initNav()
 
-  initNav: (pending, rejected) ->
+  initNav: (pending = [], rejected = []) ->
     $cont = $('.repo-nav-contents')
     $('#ghcr-nav').remove()
     $ul = $('<ul id="ghcr-nav" class="repo-menu"/>')
