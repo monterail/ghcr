@@ -87,6 +87,7 @@ module.exports = (grunt) ->
   grunt.registerTask "zip", "Zip extension", ->
     exec "find build -name '*.coffee' | xargs rm"
     exec "find build -name '*.sass' | xargs rm"
+    exec "find build -name '*.map' | xargs rm"
     exec "zip -r chrome.zip build/chrome"
     grunt.task.run "firefox:xpi"
 
