@@ -1,6 +1,6 @@
 # GitHub Code Review Extension
 
-Currently available for [chrome](chrome/README.md) and [firefox](firefox/README.md)
+Currently available for [chrome](source/chrome/README.md) and [firefox](source/firefox/README.md)
 
 ## Commit auto accept
 
