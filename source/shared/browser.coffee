@@ -8,9 +8,7 @@ class Browser
 
   hash: (value) ->
     if value == ""
-      loc = window.location
-      if "pushState" of history
-        history.pushState("", document.title, loc.pathname + loc.search)
+      @setLocation(@path + window.location.search)
     else if value?
       document.location.hash = value
     else
@@ -21,3 +19,6 @@ class Browser
 
   load: (key) ->
     $.cookie('ghcr_' + key)
+
+  setLocation: (path, title=document.title, state={}) ->
+    history.pushState(state, title, path)
