@@ -37,13 +37,11 @@ class GHCR
               => @notification("There is no such commit in GHCR database")
             )
 
-        if @browser.load('state') == 'pending'
-          @browser.save('state', '')
+        if @browser.hash() == 'pending'
           @browser.save('block_mutation', true)
           @renderCommits("Pending", repo.pending)
 
-        if @browser.load('state') == 'rejected'
-          @browser.save('state', '')
+        if @browser.hash() == 'rejected'
           @browser.save('block_mutation', true)
           @renderCommits("Rejected", repo.rejected)
 
@@ -91,9 +89,10 @@ class GHCR
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
       if @api.authorized()
         @browser.save('block_mutation', true)
+        @browser.setLocation("/#{@repo}/commits#pending")
         @renderCommits('Pending', pending)
       else
-        @api.authorize('pending')
+        @api.authorize()
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
@@ -103,10 +102,11 @@ class GHCR
     $li = Template.menu.li('Rejected')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
       if @api.authorized()
+        @browser.setLocation("/#{@repo}/commits#rejected")
         @browser.save('block_mutation', true)
         @renderCommits('Rejected', rejected)
       else
-        @api.authorize('rejected')
+        @api.authorize()
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)

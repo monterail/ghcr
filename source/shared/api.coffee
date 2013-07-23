@@ -3,9 +3,8 @@ class API
 
   constructor: (@browser, @repo, @access_token) ->
 
-  authorize: (state = "") ->
-    @browser.save('state', state)
-    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
+  authorize: ->
+    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}"
 
   authorized: -> !!@access_token
 
