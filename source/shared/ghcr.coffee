@@ -15,6 +15,10 @@ class GHCR
     @onLocationChange()
 
   onLocationChange: ->
+    if @browser.load('block_mutation') == 'true'
+      @browser.save('block_mutation', '')
+      return
+
     @api = new API(@browser, @repo, @browser.load('access_token'))
     @render()
 
@@ -35,10 +39,12 @@ class GHCR
 
         if @browser.load('state') == 'pending'
           @browser.save('state', '')
+          @browser.save('block_mutation', true)
           @renderCommits("Pending", repo.pending)
 
         if @browser.load('state') == 'rejected'
           @browser.save('state', '')
+          @browser.save('block_mutation', true)
           @renderCommits("Rejected", repo.rejected)
 
   notification: ($message) =>
@@ -84,6 +90,7 @@ class GHCR
     $li = Template.menu.li('Pending')
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
       if @api.authorized()
+        @browser.save('block_mutation', true)
         @renderCommits('Pending', pending)
       else
         @api.authorize('pending')
@@ -96,6 +103,7 @@ class GHCR
     $li = Template.menu.li('Rejected')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
       if @api.authorized()
+        @browser.save('block_mutation', true)
         @renderCommits('Rejected', rejected)
       else
         @api.authorize('rejected')
