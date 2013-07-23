@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 
 class GHCR
   constructor: ->
@@ -27,8 +27,10 @@ class GHCR
 
         if chunks[3] == 'commit'
           @repository.commit(chunks[4])
-            .then (commit) => @renderMenu(commit)
-            .then undefined, (reason) -> console.log(reason)
+            .then(
+              (commit) => @renderMenu(commit)
+              => @notification("There is no such commit in GHCR database")
+            )
 
         if @browser.load('state') == 'pending'
           @browser.save('state', '')
