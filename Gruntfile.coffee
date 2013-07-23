@@ -16,10 +16,19 @@ module.exports = (grunt) ->
     coffee:
       options: { join: true, sourceMap: true, bare: true }
       default: files:
-        "build/shared/ghcr.js": ["build/shared/ghcr.coffee"]
-        "build/firefox/data/init.js": ["build/firefox/init.coffee"]
-        "build/firefox/lib/main.js": ["build/firefox/main.coffee"]
-        "build/chrome/init.js": ["build/chrome/init.coffee"]
+        # shared
+        "build/shared/ghcr.js":       ["build/shared/ghcr.coffee"]
+        "build/shared/api.js":        ["build/shared/api.coffee"]
+        "build/shared/browser.js":    ["build/shared/browser.coffee"]
+        "build/shared/repository.js": ["build/shared/repository.coffee"]
+        # Firefox
+        "build/firefox/data/init.js":     ["build/firefox/init.coffee"]
+        "build/firefox/data/browser.js":  ["build/firefox/browser.coffee"]
+        "build/firefox/lib/main.js":      ["build/firefox/main.coffee"]
+        # Chrome
+        "build/chrome/init.js":     ["build/chrome/init.coffee"]
+        "build/chrome/browser.js":  ["build/chrome/browser.coffee"]
+        "build/chrome/storage.js":  ["build/chrome/storage.coffee"]
     sass:
       options: { lineNumbers: true }
       default: files:
@@ -28,13 +37,16 @@ module.exports = (grunt) ->
       options: { sourcesContent: true, sourceRoot: 'foobar' }
       default: files:
         "build/chrome/ghcr.js": [
-          "build/shared/vendor/*.js",
-          "build/shared/*.js",
+          "build/shared/vendor/*.js"
+          "build/shared/*.js"
+          "build/chrome/browser.js"
+          "build/chrome/storage.js"
           "build/chrome/init.js"
         ]
         "build/firefox/data/ghcr.js": [
-          "build/shared/vendor/*.js",
-          "build/shared/*.js",
+          "build/shared/vendor/*.js"
+          "build/shared/*.js"
+          "build/chrome/browser.js"
           "build/firefox/data/init.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
