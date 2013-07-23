@@ -188,12 +188,12 @@ class GHCR
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
     if commit.author.username != @username
-      $box.append @generateBtn(commit, acceptBtn)
-      $box.append @generateBtn(commit, rejectBtn)
-      $box.append @generateBtn(commit, nextPendingBtn)
-    else
-      $box.append @generateBtn(commit, oppBtns[commit.status])
-      $box.append @generateBtn(commit, nextPendingBtn)
+      if commit.status == 'pending'
+        $box.append @generateBtn(commit, acceptBtn)
+        $box.append @generateBtn(commit, rejectBtn)
+      else
+        $box.append @generateBtn(commit, oppBtns[commit.status])
+    $box.append @generateBtn(commit, nextPendingBtn)
 
     $checkbox = $box.find('#ghcr-auto-next')
     $checkbox.prop('checked', true) if @browser.load('next_pending')
