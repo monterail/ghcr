@@ -3,6 +3,7 @@
 class GHCR
   constructor: ->
     @username = $('.header a.name').text().trim()
+    @bindNotificationClose()
 
     # Authorization
     if match = (/access_token=([^&+]+)/).exec(@browser.hash())
@@ -40,11 +41,17 @@ class GHCR
           @browser.save('state', '')
           @renderCommits("Rejected", repo.rejected)
 
-  notification: ($message) ->
-    $("#ghcr-notification").remove()
+  notification: ($message) =>
+    @closeNotification()
     $box = Template.notification()
     $box.find('.flash-notice').append($message)
     $(".site").prepend($box)
+
+  bindNotificationClose: ->
+    $('.site').on 'click', '#ghcr-notification .close', @closeNotification
+
+  closeNotification: ->
+    $("#ghcr-notification").remove()
 
   render: (repo) ->
     $('#ghcr-box').remove()
