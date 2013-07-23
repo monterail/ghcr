@@ -41,7 +41,7 @@ class GHCR
 
   notification: ($message) ->
     $("#ghcr-notification").remove()
-    $box = $("<div id='ghcr-notification' class='flash-messages container'><div class='flash flash-notice'><span class='octicon octicon-remove-close close'></span> </div></div>")
+    $box = Template.notification()
     $box.find('.flash-notice').append($message)
     $(".site").prepend($box)
 
@@ -51,7 +51,7 @@ class GHCR
     if repo?
       if !repo.connected
         if repo.permissions.admin
-          $btn = $("<button class='minibutton'>Connect</button>").click (e) =>
+          $btn = Template.mini_button('Connect').click (e) =>
             e.preventDefault()
             $btn.prop('disabled', true)
 
@@ -70,11 +70,11 @@ class GHCR
   initNav: (pending = [], rejected = []) ->
     $cont = $('.repo-nav-contents')
     $('#ghcr-nav').remove()
-    $ul = $('<ul id="ghcr-nav" class="repo-menu"/>')
+    $ul = Template.menu.nav()
 
     # Pending
-    $li = $("<li class='tooltipped leftwards' original-title='Pending' />")
-    $a = $("<a href='#' class=''><span style='background-color: #69B633; padding: 2px 4px; color: white; border-radius: 3px'>#{pending.length}</span> <span class='full-word'>pending</span></a>").click (e) =>
+    $li = Template.menu.li('Pending')
+    $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
       if @api?
         @renderCommits('Pending', pending)
       else
@@ -85,8 +85,8 @@ class GHCR
     $ul.append($li)
 
     # rejected
-    $li = $("<li class='tooltipped leftwards' original-title='Rejected' />")
-    $a = $("<a href='#' class=''><span style='background-color: #B66933; padding: 2px 4px; color: white; border-radius: 3px'>#{rejected.length}</span> <span class='full-word'>rejected</span></a>").click (e) =>
+    $li = Template.menu.li('Rejected')
+    $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
       if @api?
         @renderCommits('Rejected', rejected)
       else
@@ -102,14 +102,7 @@ class GHCR
     $(".tabnav-tabs a").removeClass("selected")
     $("#ghcr-rejected-tab a").addClass("selected")
     $container = $("#js-repo-pjax-container")
-    $container.html("""
-<div class="file-navigation">
-    <div class="breadcrumb">
-    <span class="repo-root js-repo-root"><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/#{@repo}" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">#{@repo.split('/')[1]}</span></a></span></span><span class="separator"> / </span>#{title}
-  </div>
-</div>
-      <h3 class="commit-group-heading"></h3>
-    """)
+    $container.empty().append(Template.commits.header(@repo, title))
     $ol = $("<ol class='commit-group'/>")
     for commit in commits
       diffUrl = "/#{@repo}/commit/#{commit.id}"
@@ -120,36 +113,11 @@ class GHCR
       else
         """<span rel="author">#{commit.author.name}</span>"""
 
-      $ol.append($("""
-        <li class="commit commit-group-item js-navigation-item js-details-container">
-          <img class="gravatar" height="36" src="http://github.com/#{commit.author.username}.png" width="36">
-          <p class="commit-title  js-pjax-commit-title">
-            <a href="#{diffUrl}" class="message">#{commit.message}</a>
-          </p>
-          <div class="commit-meta">
-            <div class="commit-links">
-              <span class="js-zeroclipboard zeroclipboard-button" data-clipboard-text="#{commit.id}" data-copied-hint="copied!" title="Copy SHA">
-                <span class="octicon octicon-clippy"></span>
-              </span>
-
-              <a href="#{diffUrl}" class="gobutton ">
-                <span class="sha">#{commit.id.substring(0,10)}
-                  <span class="octicon octicon-arrow-small-right"></span>
-                </span>
-              </a>
-
-              <a href="#{treeUrl}" class="browse-button" title="Browse the code at this point in the history" rel="nofollow">
-                Browse code <span class="octicon octicon-arrow-right"></span>
-              </a>
-            </div>
-
-            <div class="authorship">
-              <span class="author-name">#{authorNameHtml}</span>
-              authored <time class="js-relative-date" datetime="#{commit.timestamp}" title="#{commit.timestamp}"></time>
-            </div>
-          </div>
-        </li>
-      """))
+      $ol.append(Template.commits.commit(
+        commit.id, commit.message, commit.timestamp,
+        diffUrl, treeUrl,
+        commit.author.username || octocat, authorNameHtml
+      ))
     $ol.find('time').timeago()
     $container.append($ol)
 
@@ -176,7 +144,7 @@ class GHCR
         window.location = "/#{@repo}"
 
   generateBtn: (commit, btn) ->
-    $("<button class='minibutton .ghcr__status-bar__button'>#{btn.label}</button>").click () =>
+    Template.mini_button(btn.label, '.ghcr__status-bar__button').click () =>
       if btn.status == 'next'
         @nextPending()
       else
@@ -202,37 +170,30 @@ class GHCR
     rejectBtn =
       label: 'Reject'
       status: 'rejected'
-
     acceptBtn =
       label: 'Accept'
       status: 'accepted'
-
     nextPendingBtn =
       label: '<input type="checkbox" id="ghcr-auto-next"> Next Pending'
       status: 'next'
 
-    switch commit.status
-      when "accepted"
-        btn = rejectBtn
-        info = "Commit <b>accepted</b> by <a href='https://github.com/#{commit.last_event.reviewer.username}'>#{commit.last_event.reviewer.username}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.last_event.created_at))}"
-      when "rejected"
-        btn = acceptBtn
-        info = "Commit <b>rejected</b> by <a href='https://github.com/#{commit.last_event.reviewer.username}'>#{commit.last_event.reviewer.username}<a/> at #{strftime('%R, %d %b %Y', new Date(commit.last_event.created_at))}"
-      else # pending
-        info = "Code pending review"
+    oppBtns =
+      accepted: rejectBtn
+      rejected: acceptBtn
 
-    $box = $("<div id='ghcr-box' class='ghcr__status-bar ghcr__status-bar--#{commit.status}'><span>#{info}</span></div>")
+    $box = Template.commit.box(commit.status,
+      commit.last_event.reviewer.username, commit.last_event.created_at)
 
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
     if commit.author.username != @username
-        $box.append @generateBtn(commit, acceptBtn)
-        $box.append @generateBtn(commit, rejectBtn)
-        $box.append @generateBtn(commit, nextPendingBtn)
-      else
-        $box.append @generateBtn(commit, btn)
-        $box.append @generateBtn(commit, nextPendingBtn)
+      $box.append @generateBtn(commit, acceptBtn)
+      $box.append @generateBtn(commit, rejectBtn)
+      $box.append @generateBtn(commit, nextPendingBtn)
+    else
+      $box.append @generateBtn(commit, oppBtns[commit.status])
+      $box.append @generateBtn(commit, nextPendingBtn)
 
     $checkbox = $box.find('#ghcr-auto-next')
     $checkbox.prop('checked', true) if @browser.load('next_pending')
