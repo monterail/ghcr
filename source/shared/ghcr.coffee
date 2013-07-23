@@ -55,7 +55,7 @@ class GHCR
             e.preventDefault()
             $btn.prop('disabled', true)
 
-            @api.connect().then =>
+            @api.connect(@repo).then =>
               @notification 'Successfully connected to Github Code Review!
                             New commits will be added to review queue.'
 
