@@ -14,14 +14,13 @@ class GHCR
     @onLocationChange()
 
   onLocationChange: ->
+    @api = new API(@browser, @repo, @browser.load('access_token'))
     @render()
 
     chunks = @browser.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
-    if access_token = @browser.load('access_token')
-      @api = new API(@browser, @repo, access_token)
-
+    if @api.authorized()
       @repository = new Repository(@browser, @api, @repo)
       @repository.attributes().then (repo) =>
         @render(repo)
@@ -75,7 +74,7 @@ class GHCR
     # Pending
     $li = Template.menu.li('Pending')
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
-      if @api?
+      if @api.authorized()
         @renderCommits('Pending', pending)
       else
         @api.authorize('pending')
@@ -87,7 +86,7 @@ class GHCR
     # rejected
     $li = Template.menu.li('Rejected')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
-      if @api?
+      if @api.authorized()
         @renderCommits('Rejected', rejected)
       else
         @api.authorize('rejected')
