@@ -42,6 +42,8 @@ class GHCR
               (commit) => @renderMenu(commit)
               => @notification("There is no such commit in GHCR database")
             )
+        else if chunks[3] == 'commits'
+          @commitsPage()
 
   notification: ($message) =>
     @closeNotification()
@@ -137,7 +139,7 @@ class GHCR
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
-    @api.commits(ids).then (commits) =>
+    @api.commits(@repo, {sha: ids.join(',')}).then (commits) =>
       for commit in commits
         $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
         commit.status ||= "pending"
