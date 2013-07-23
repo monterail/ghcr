@@ -3,6 +3,12 @@ class API
 
   constructor: (@browser, @repo, @access_token) ->
 
+  authorize: (state = "") ->
+    @browser.save('state', state)
+    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
+
+  authorized: -> !!@access_token
+
   init: (repo) ->
     @browser.get "#{@url}/#{repo}", {}, @access_token
 
@@ -17,7 +23,3 @@ class API
 
   save: (repo, id, commit) ->
     @browser.put "#{@url}/#{repo}/commits/#{id}", commit, @access_token
-
-  authorize: (state = "") ->
-    @browser.save('state', state)
-    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
