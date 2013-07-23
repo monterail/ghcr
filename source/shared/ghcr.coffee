@@ -195,7 +195,7 @@ class GHCR
     $box.append @generateBtn(commit, nextPendingBtn)
 
     $checkbox = $box.find('#ghcr-auto-next')
-    $checkbox.prop('checked', true) if @browser.load('next_pending')
+    $checkbox.prop('checked', @browser.load('next_pending') == 'true')
     $checkbox.click (e) =>
       @browser.save('next_pending', $checkbox.prop('checked'))
       e.stopPropagation()
