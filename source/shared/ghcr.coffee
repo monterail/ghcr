@@ -1,9 +1,6 @@
 "use strict";
 
 class GHCR
-
-  url: "http://ghcr-staging.herokuapp.com/api/v1"
-
   constructor: ->
     @username = $('.header a.name').text().trim()
 
@@ -16,91 +13,6 @@ class GHCR
     observer.observe $('#js-repo-pjax-container')[0], childList: true
     @onLocationChange()
 
-  class API
-
-    constructor: (@browser, @url, @repo, @access_token) ->
-
-    init: (repo) ->
-      @browser.get "#{@url}/#{repo}", {}, @access_token
-
-    commits: (repo, params) ->
-      @browser.get "#{@url}/#{repo}/commits", params, @access_token
-
-    commit: (repo, id, params = {}) ->
-      @browser.get "#{@url}/#{repo}/commits/#{id}", params, @access_token
-
-    connect: (repo) ->
-      @browser.post "#{@url}/#{repo}/connect", {}, @access_token
-
-    save: (repo, id, commit) ->
-      @browser.put "#{@url}/#{repo}/commits/#{id}", commit, @access_token
-
-  class Repository
-
-    RSVP.EventTarget.mixin(@prototype)
-
-    constructor: (@browser, @api, @name, @data) ->
-
-    update: ->
-      @api.init(@name).then (data) =>
-        @browser.storage.set(@name, data)
-        @data = data
-
-    cached_attributes: -> @browser.storage.get(@name)
-
-    attributes: ->
-      if @data
-        new RSVP.Promise (resolve) => resolve(@data)
-      else
-        if @browser.storage
-          @cached_attributes().then (data) =>
-            if data?
-              @data = data
-              @update().then (data) =>
-                @data = data
-                @render(data)
-              @data
-            else
-              @update().then (data) => @data = data
-        else
-          @update().then (data) => @data = data
-
-    commit: (sha) ->
-      @attributes().then (data) =>
-        commit = data.pending.concat(data.rejected)
-          .filter((commit) -> commit.id = sha)[0]
-
-        if commit then commit else @api.commit(@name, sha)
-
-  browser:
-
-    redirect: (url) ->
-      document.location = url
-
-    href: -> document.location.href
-
-    path: -> document.location.pathname
-
-    hash: (value) ->
-      if value == ""
-        loc = window.location
-        if "pushState" of history
-          history.pushState("", document.title, loc.pathname + loc.search)
-      else if value?
-        document.location.hash = value
-      else
-        document.location.hash.substring(1)
-
-    save: (key, value) ->
-      $.cookie('ghcr_' + key, value, path: '/')
-
-    load: (key) ->
-      $.cookie('ghcr_' + key)
-
-  authorize: (state = "") ->
-    @browser.save('state', state)
-    @browser.redirect "#{@url}/authorize?redirect_uri=#{@browser.href()}&state=#{state}"
-
   onLocationChange: ->
     @render()
 
@@ -108,7 +20,7 @@ class GHCR
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
     if access_token = @browser.load('access_token')
-      @api = new API(@browser, @url, @repo, access_token)
+      @api = new API(@browser, @repo, access_token)
 
       @repository = new Repository(@browser, @api, @repo)
       @repository.attributes().then (repo) =>
@@ -166,7 +78,7 @@ class GHCR
       if @api?
         @renderCommits('Pending', pending)
       else
-        @authorize('pending')
+        @api.authorize('pending')
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
@@ -178,7 +90,7 @@ class GHCR
       if @api?
         @renderCommits('Rejected', rejected)
       else
-        @authorize('rejected')
+        @api.authorize('rejected')
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
