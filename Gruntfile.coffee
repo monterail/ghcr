@@ -21,6 +21,7 @@ module.exports = (grunt) ->
         "build/shared/api.js":        ["build/shared/api.coffee"]
         "build/shared/browser.js":    ["build/shared/browser.coffee"]
         "build/shared/repository.js": ["build/shared/repository.coffee"]
+        "build/shared/template.js":   ["build/shared/template.coffee"]
         # Firefox
         "build/firefox/data/init.js":     ["build/firefox/init.coffee"]
         "build/firefox/data/browser.js":  ["build/firefox/browser.coffee"]
