@@ -17,14 +17,19 @@ module.exports = (grunt) ->
       options: { join: true, sourceMap: true, bare: true }
       default: files:
         # shared
-        "build/shared/ghcr.js":       ["build/shared/ghcr.coffee"]
-        "build/shared/app/api.js":        ["build/shared/app/api.coffee"]
-        "build/shared/app/browser.js":    ["build/shared/app/browser.coffee"]
-        "build/shared/app/repository.js": ["build/shared/app/repository.coffee"]
-        "build/shared/app/template.js":   ["build/shared/app/template.coffee"]
+        "build/shared/ghcr.js": [
+          "build/shared/app/browser.coffee"
+          "build/shared/app/api.coffee"
+          "build/shared/app/repository.coffee"
+          "build/shared/app/template.coffee"
+          "build/shared/app/user.coffee"
+          "build/shared/ghcr.coffee"
+        ]
+
         # Firefox
         "build/firefox/data/request.js":  ["build/firefox/request.coffee"]
         "build/firefox/lib/main.js":      ["build/firefox/main.coffee"]
+
         # Chrome
         "build/chrome/request.js":  ["build/chrome/request.coffee"]
         "build/chrome/storage.js":  ["build/chrome/storage.coffee"]
@@ -37,14 +42,12 @@ module.exports = (grunt) ->
       default: files:
         "build/chrome/ghcr.js": [
           "build/shared/vendor/*.js"
-          "build/shared/app/*.js"
           "build/chrome/request.js"
           "build/chrome/storage.js"
           "build/shared/ghcr.js"
         ]
         "build/firefox/data/ghcr.js": [
           "build/shared/vendor/*.js"
-          "build/shared/app/*.js"
           "build/firefox/request.js"
           "build/shared/ghcr.js"
         ]

@@ -2,44 +2,39 @@
 
 new class GHCR
   constructor: ->
-    @username = $('.header a.name').text().trim()
     @bindNotificationClose()
 
-    # Authorization
-    if match = (/access_token=([^&+]+)/).exec(Browser.hash())
-      Browser.save('access_token', match[1])
-      Browser.hash('')
+    observer = new MutationObserver =>
+      if @currentUrl != Browser.path()
+        @currentUrl = Browser.path()
+        @onLocationChange()
 
-    observer = new MutationObserver => @onLocationChange()
     observer.observe $('#js-repo-pjax-container')[0], childList: true
+
+    @currentUrl = Browser.path()
     @onLocationChange()
 
   onLocationChange: ->
-    if Browser.load('block_mutation') == 'true'
-      Browser.save('block_mutation', '')
-      return
-
-    @api = new API(@repo, Browser.load('access_token'))
-
-    @api.on 'unauthorized', =>
-      Browser.save('access_token', '')
-      @notification('You are wonderful being. You also have been disauthorized from GHCR.')
+    console.log('location change')
 
     @render()
 
     chunks = Browser.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
-    if @api.authorized()
-      @repository = new Repository(@api, @repo)
+    if User.authorized
+      User.api.on 'unauthorized', =>
+        Browser.save('access_token', '')
+        @notification('You are wonderful being. You also have been disauthorized from GHCR.')
+
+      @repository = new Repository(@repo)
       @repository.attributes().then (repo) =>
+        console.log(repo)
         @render(repo)
 
         if Browser.hash() == 'pending'
-          Browser.save('block_mutation', true)
           @renderCommits("Pending", repo.pending)
         else if Browser.hash() == 'rejected'
-          Browser.save('block_mutation', true)
           @renderCommits("Rejected", repo.rejected)
         else if chunks[3] == 'commit'
           @repository.commit(chunks[4])
@@ -72,7 +67,7 @@ new class GHCR
             e.preventDefault()
             $btn.prop('disabled', true)
 
-            @api.connect(@repo).then =>
+            User.api.connect(@repo).then =>
               @notification 'Successfully connected to Github Code Review!
                             New commits will be added to review queue.'
 
@@ -92,12 +87,11 @@ new class GHCR
     # Pending
     $li = Template.menu.li('Pending')
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
-      if @api.authorized()
-        Browser.save('block_mutation', true)
+      if User.authorized
         Browser.setLocation("/#{@repo}/commits#pending")
         @renderCommits('Pending', pending)
       else
-        @api.authorize()
+        User.authorize()
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
@@ -106,12 +100,11 @@ new class GHCR
     # rejected
     $li = Template.menu.li('Rejected')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
-      if @api.authorized()
+      if User.authorized
         Browser.setLocation("/#{@repo}/commits#rejected")
-        Browser.save('block_mutation', true)
         @renderCommits('Rejected', rejected)
       else
-        @api.authorize()
+        User.authorize()
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
@@ -144,14 +137,14 @@ new class GHCR
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
-    @api.commits(@repo, {sha: ids.join(',')}).then (commits) =>
+    User.api.commits(@repo, {sha: ids.join(',')}).then (commits) =>
       for commit in commits
         $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
         commit.status ||= "pending"
         $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
   nextPending: ->
-    @api.commits(@repo, author: "!#{@username}", status: 'pending').then (commits) =>
+    User.api.commits(@repo, author: "!#{User.username}", status: 'pending').then (commits) =>
       if commits.length > 0
         currentId = window.location.pathname.split('/').reverse()[0]
         nextCommit = commits[0]
@@ -170,8 +163,8 @@ new class GHCR
         @nextPending()
       else
         commit.status = btn.status
-        commit.reviewer = @username
-        @api.save(@repo, commit.id, commit).then (data) =>
+        commit.reviewer = User.username
+        User.api.save(@repo, commit.id, commit).then (data) =>
           if $('#ghcr-auto-next').prop('checked')
             @nextPending()
           else
@@ -208,7 +201,7 @@ new class GHCR
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
-    if commit.author.username != @username
+    if commit.author.username != User.username
       if commit.status == 'pending'
         $box.append @generateBtn(commit, acceptBtn)
         $box.append @generateBtn(commit, rejectBtn)
