@@ -18,17 +18,15 @@ module.exports = (grunt) ->
       default: files:
         # shared
         "build/shared/ghcr.js":       ["build/shared/ghcr.coffee"]
-        "build/shared/api.js":        ["build/shared/api.coffee"]
-        "build/shared/browser.js":    ["build/shared/browser.coffee"]
-        "build/shared/repository.js": ["build/shared/repository.coffee"]
-        "build/shared/template.js":   ["build/shared/template.coffee"]
+        "build/shared/app/api.js":        ["build/shared/app/api.coffee"]
+        "build/shared/app/browser.js":    ["build/shared/app/browser.coffee"]
+        "build/shared/app/repository.js": ["build/shared/app/repository.coffee"]
+        "build/shared/app/template.js":   ["build/shared/app/template.coffee"]
         # Firefox
-        "build/firefox/data/init.js":     ["build/firefox/init.coffee"]
-        "build/firefox/data/browser.js":  ["build/firefox/browser.coffee"]
+        "build/firefox/data/request.js":  ["build/firefox/request.coffee"]
         "build/firefox/lib/main.js":      ["build/firefox/main.coffee"]
         # Chrome
-        "build/chrome/init.js":     ["build/chrome/init.coffee"]
-        "build/chrome/browser.js":  ["build/chrome/browser.coffee"]
+        "build/chrome/request.js":  ["build/chrome/request.coffee"]
         "build/chrome/storage.js":  ["build/chrome/storage.coffee"]
     sass:
       options: { lineNumbers: true }
@@ -39,16 +37,16 @@ module.exports = (grunt) ->
       default: files:
         "build/chrome/ghcr.js": [
           "build/shared/vendor/*.js"
-          "build/shared/*.js"
-          "build/chrome/browser.js"
+          "build/shared/app/*.js"
+          "build/chrome/request.js"
           "build/chrome/storage.js"
-          "build/chrome/init.js"
+          "build/shared/ghcr.js"
         ]
         "build/firefox/data/ghcr.js": [
           "build/shared/vendor/*.js"
-          "build/shared/*.js"
-          "build/chrome/browser.js"
-          "build/firefox/data/init.js"
+          "build/shared/app/*.js"
+          "build/firefox/request.js"
+          "build/shared/ghcr.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
         "build/firefox/data/ghcr.css": ["build/shared/*.css"]

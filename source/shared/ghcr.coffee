@@ -1,45 +1,45 @@
 "use strict"
 
-class GHCR
+new class GHCR
   constructor: ->
     @username = $('.header a.name').text().trim()
     @bindNotificationClose()
 
     # Authorization
-    if match = (/access_token=([^&+]+)/).exec(@browser.hash())
-      @browser.save('access_token', match[1])
-      @browser.hash('')
+    if match = (/access_token=([^&+]+)/).exec(Browser.hash())
+      Browser.save('access_token', match[1])
+      Browser.hash('')
 
     observer = new MutationObserver => @onLocationChange()
     observer.observe $('#js-repo-pjax-container')[0], childList: true
     @onLocationChange()
 
   onLocationChange: ->
-    if @browser.load('block_mutation') == 'true'
-      @browser.save('block_mutation', '')
+    if Browser.load('block_mutation') == 'true'
+      Browser.save('block_mutation', '')
       return
 
-    @api = new API(@browser, @repo, @browser.load('access_token'))
+    @api = new API(Browser, @repo, Browser.load('access_token'))
 
     @api.on 'unauthorized', =>
-      @browser.save('access_token', '')
+      Browser.save('access_token', '')
       @notification('You are wonderful being. You also have been disauthorized from GHCR.')
 
     @render()
 
-    chunks = @browser.path().split("/")
+    chunks = Browser.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
     if @api.authorized()
-      @repository = new Repository(@browser, @api, @repo)
+      @repository = new Repository(Browser, @api, @repo)
       @repository.attributes().then (repo) =>
         @render(repo)
 
-        if @browser.hash() == 'pending'
-          @browser.save('block_mutation', true)
+        if Browser.hash() == 'pending'
+          Browser.save('block_mutation', true)
           @renderCommits("Pending", repo.pending)
-        else if @browser.hash() == 'rejected'
-          @browser.save('block_mutation', true)
+        else if Browser.hash() == 'rejected'
+          Browser.save('block_mutation', true)
           @renderCommits("Rejected", repo.rejected)
         else if chunks[3] == 'commit'
           @repository.commit(chunks[4])
@@ -93,8 +93,8 @@ class GHCR
     $li = Template.menu.li('Pending')
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
       if @api.authorized()
-        @browser.save('block_mutation', true)
-        @browser.setLocation("/#{@repo}/commits#pending")
+        Browser.save('block_mutation', true)
+        Browser.setLocation("/#{@repo}/commits#pending")
         @renderCommits('Pending', pending)
       else
         @api.authorize()
@@ -107,8 +107,8 @@ class GHCR
     $li = Template.menu.li('Rejected')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
       if @api.authorized()
-        @browser.setLocation("/#{@repo}/commits#rejected")
-        @browser.save('block_mutation', true)
+        Browser.setLocation("/#{@repo}/commits#rejected")
+        Browser.save('block_mutation', true)
         @renderCommits('Rejected', rejected)
       else
         @api.authorize()
@@ -217,9 +217,9 @@ class GHCR
     $box.append @generateBtn(commit, nextPendingBtn)
 
     $checkbox = $box.find('#ghcr-auto-next')
-    $checkbox.prop('checked', @browser.load('next_pending') == 'true')
+    $checkbox.prop('checked', Browser.load('next_pending') == 'true')
     $checkbox.click (e) =>
-      @browser.save('next_pending', $checkbox.prop('checked'))
+      Browser.save('next_pending', $checkbox.prop('checked'))
       e.stopPropagation()
 
 

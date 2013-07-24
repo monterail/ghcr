@@ -1,4 +1,4 @@
-class ChromeBrowser extends Browser
+Request =
   get: (url, data, access_token) ->
     new RSVP.Promise (resolve, reject) ->
       $.ajax
