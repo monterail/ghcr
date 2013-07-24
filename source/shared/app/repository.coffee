@@ -1,9 +1,9 @@
 class Repository
   RSVP.EventTarget.mixin(@prototype)
 
-  constructor: (@api, @name, @data) ->
+  constructor: (@name, @data) ->
   update: ->
-    @api.init(@name).then (data) =>
+    User.api.init(@name).then (data) =>
       Storage.set(@name, data)
       @data = data
 
@@ -31,4 +31,4 @@ class Repository
       commit = data.pending.concat(data.rejected)
         .filter((commit) -> commit.id == sha)[0]
 
-      if commit then commit else @api.commit(@name, sha)
+      if commit then commit else User.api.commit(@name, sha)
