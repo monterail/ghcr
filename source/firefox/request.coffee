@@ -1,4 +1,4 @@
-class FirefoxBrowser extends Browser
+Request =
   sendRequest: (type, url, data, resolve, reject) ->
     callMeReject  = Math.random().toString(36).substring(8)
     callMeResolve = Math.random().toString(36).substring(7)
@@ -14,12 +14,12 @@ class FirefoxBrowser extends Browser
 
   get: (url, data, access_token) ->
     new RSVP.Promise (resolve, reject) =>
-      @sendRequest 'get', url, $.extend({access_token}, data), resolve, reject
+      Request.sendRequest 'get', url, $.extend({access_token}, data), resolve, reject
 
   put: (url, data, access_token) ->
     new RSVP.Promise (resolve, reject) =>
-      @sendRequest 'put', url, $.extend({access_token}, data), resolve, reject
+      Request.sendRequest 'put', url, $.extend({access_token}, data), resolve, reject
 
   post: (url, data, access_token) ->
     new RSVP.Promise (resolve, reject) =>
-      @sendRequest 'post', url, $.extend({access_token}, data), resolve, reject
+      Request.sendRequest 'post', url, $.extend({access_token}, data), resolve, reject
