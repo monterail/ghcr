@@ -12,7 +12,7 @@
   ],
   "url": "",
   "license": "MIT/X11",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "dependencies": ["api-utils", "addon-kit"],
   "lib": "lib",
   "main": "main",
