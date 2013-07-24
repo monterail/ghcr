@@ -8,7 +8,7 @@ class Browser
 
   hash: (value) ->
     if value == ""
-      @setLocation(@path + window.location.search)
+      @setLocation(@path() + window.location.search)
     else if value?
       document.location.hash = value
     else
