@@ -19,7 +19,7 @@ new class GHCR
       Browser.save('block_mutation', '')
       return
 
-    @api = new API(Browser, @repo, Browser.load('access_token'))
+    @api = new API(@repo, Browser.load('access_token'))
 
     @api.on 'unauthorized', =>
       Browser.save('access_token', '')
@@ -31,7 +31,7 @@ new class GHCR
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
     if @api.authorized()
-      @repository = new Repository(Browser, @api, @repo)
+      @repository = new Repository(@api, @repo)
       @repository.attributes().then (repo) =>
         @render(repo)
 

@@ -1,7 +1,7 @@
 class Repository
   RSVP.EventTarget.mixin(@prototype)
 
-  constructor: (@browser, @api, @name, @data) ->
+  constructor: (@api, @name, @data) ->
   update: ->
     @api.init(@name).then (data) =>
       Storage.set(@name, data)
