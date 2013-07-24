@@ -20,6 +20,11 @@ class GHCR
       return
 
     @api = new API(@browser, @repo, @browser.load('access_token'))
+
+    @api.on 'unauthorized', =>
+      @browser.save('access_token', '')
+      @notification('You are wonderful being. You also have been disauthorized from GHCR.')
+
     @render()
 
     chunks = @browser.path().split("/")
