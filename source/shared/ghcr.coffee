@@ -15,7 +15,6 @@ new class GHCR
     @onLocationChange()
 
   onLocationChange: ->
-    console.log('location change')
 
     @render()
 
@@ -29,7 +28,6 @@ new class GHCR
 
       @repository = new Repository(@repo)
       @repository.attributes().then (repo) =>
-        console.log(repo)
         @render(repo)
 
         if Browser.hash() == 'pending'
@@ -171,7 +169,6 @@ new class GHCR
             @renderMenu(data)
 
   renderMenu: (commit = {}) ->
-    console.log('renderMenu')
 
     commit.author =
       name:     commit.author.name
