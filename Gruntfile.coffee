@@ -27,7 +27,8 @@ module.exports = (grunt) ->
         ]
 
         # Firefox
-        "build/firefox/data/request.js":  ["build/firefox/request.coffee"]
+        "build/firefox/request.js":        ["build/firefox/request.coffee"]
+        "build/firefox/storage.js":        ["build/firefox/storage.coffee"]
         "build/firefox/lib/main.js":      ["build/firefox/main.coffee"]
 
         # Chrome
@@ -48,6 +49,7 @@ module.exports = (grunt) ->
         ]
         "build/firefox/data/ghcr.js": [
           "build/shared/vendor/*.js"
+          "build/firefox/storage.js"
           "build/firefox/request.js"
           "build/shared/ghcr.js"
         ]

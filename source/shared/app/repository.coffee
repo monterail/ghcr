@@ -4,7 +4,7 @@ class Repository
   constructor: (@name, @data) ->
   update: ->
     User.api.init(@name).then (data) =>
-      Storage.set(@name, data)
+      Storage.set(@name, data) if Storage?
       @data = data
 
   cached_attributes: -> Storage.get(@name)
