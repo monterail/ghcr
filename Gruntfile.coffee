@@ -18,7 +18,7 @@ module.exports = (grunt) ->
       default: files:
         # shared
         "build/shared/ghcr.js": [
-          "build/shared/app/browser.coffee"
+          "build/shared/app/page.coffee"
           "build/shared/app/api.coffee"
           "build/shared/app/repository.coffee"
           "build/shared/app/template.coffee"

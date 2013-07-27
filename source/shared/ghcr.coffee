@@ -5,34 +5,34 @@ new class GHCR
     @bindNotificationClose()
 
     observer = new MutationObserver =>
-      if @currentUrl != Browser.path()
-        @currentUrl = Browser.path()
+      if @currentUrl != Page.path()
+        @currentUrl = Page.path()
         @onLocationChange()
 
     observer.observe $('#js-repo-pjax-container')[0], childList: true
 
-    @currentUrl = Browser.path()
+    @currentUrl = Page.path()
     @onLocationChange()
 
   onLocationChange: ->
 
     @render()
 
-    chunks = Browser.path().split("/")
+    chunks = Page.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
     if User.authorized
       User.api.on 'unauthorized', =>
-        Browser.save('access_token', '')
+        Page.save('access_token', '')
         @notification('You are wonderful being. You also have been disauthorized from GHCR.')
 
       @repository = new Repository(@repo)
       @repository.attributes().then (repo) =>
         @render(repo)
 
-        if Browser.hash() == 'pending'
+        if Page.hash() == 'pending'
           @renderCommits("Pending", repo.pending)
-        else if Browser.hash() == 'rejected'
+        else if Page.hash() == 'rejected'
           @renderCommits("Rejected", repo.rejected)
         else if chunks[3] == 'commit'
           @repository.commit(chunks[4])
@@ -86,7 +86,7 @@ new class GHCR
     $li = Template.menu.li('Pending')
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
       if User.authorized
-        Browser.setLocation("/#{@repo}/commits#pending")
+        Page.setLocation("/#{@repo}/commits#pending")
         @renderCommits('Pending', pending)
       else
         User.authorize()
@@ -99,7 +99,7 @@ new class GHCR
     $li = Template.menu.li('Rejected')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
       if User.authorized
-        Browser.setLocation("/#{@repo}/commits#rejected")
+        Page.setLocation("/#{@repo}/commits#rejected")
         @renderCommits('Rejected', rejected)
       else
         User.authorize()
@@ -207,9 +207,9 @@ new class GHCR
     $box.append @generateBtn(commit, nextPendingBtn)
 
     $checkbox = $box.find('#ghcr-auto-next')
-    $checkbox.prop('checked', Browser.load('next_pending') == 'true')
+    $checkbox.prop('checked', Page.load('next_pending') == 'true')
     $checkbox.click (e) =>
-      Browser.save('next_pending', $checkbox.prop('checked'))
+      Page.save('next_pending', $checkbox.prop('checked'))
       e.stopPropagation()
 
 
