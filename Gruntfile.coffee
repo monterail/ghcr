@@ -71,11 +71,12 @@ module.exports = (grunt) ->
       default:
         src: 'build/shared/icon256.png'
         dest: [
+          'build/firefox/icon.png',
           'build/chrome/icon128.png',
           'build/chrome/icon48.png',
           'build/chrome/icon16.png',
         ]
-        destSizes: ['128x128', '48x48', '19x19', '16x16']
+        destSizes: ['128x128', '128x128', '48x48', '16x16']
 
   grunt.registerTask "build", "Build extension", ->
     rm "-rf", "build"
