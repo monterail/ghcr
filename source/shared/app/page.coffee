@@ -1,4 +1,4 @@
-Browser =
+Page =
   redirect: (url) ->
     document.location = url
 

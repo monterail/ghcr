@@ -1,11 +1,11 @@
 User = new class
 
   constructor: ->
-    if match = (/access_token=([^&+]+)/).exec(Browser.hash())
-      Browser.save('access_token', match[1])
-      Browser.hash('')
+    if match = (/access_token=([^&+]+)/).exec(Page.hash())
+      Page.save('access_token', match[1])
+      Page.hash('')
 
-    @access_token = Browser.load('access_token')
+    @access_token = Page.load('access_token')
 
     @authorized = !!@access_token
 
@@ -14,5 +14,5 @@ User = new class
     @username = $('.header a.name').text().trim()
 
   authorize: ->
-    Browser.redirect "#{API.url}/authorize?redirect_uri=#{Browser.href()}"
+    Page.redirect "#{API.url}/authorize?redirect_uri=#{Page.href()}"
 
