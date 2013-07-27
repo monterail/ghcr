@@ -144,16 +144,16 @@ new class GHCR
   nextPending: ->
     User.api.commits(@repo, author: "!#{User.username}", status: 'pending').then (commits) =>
       if commits.length > 0
-        currentId = window.location.pathname.split('/').reverse()[0]
+        currentId = Page.path().split('/').reverse()[0]
         nextCommit = commits[0]
         commitSize = commits.length
         for index in [0..(commitSize-1)]
           if commits[index].id == currentId
             nextCommit = commits[index+1] if index + 1 < commitSize
             break
-        window.location = "/#{@repo}/commit/#{nextCommit.id}"
+        Page.redirect("/#{@repo}/commit/#{nextCommit.id}")
       else
-        window.location = "/#{@repo}"
+        Page.redirect("/#{@repo}")
 
   generateBtn: (commit, btn) ->
     Template.mini_button(btn.label, '.ghcr__status-bar__button').click () =>
