@@ -18,6 +18,10 @@ class API
     Request.get("#{API.url}/#{repo}/commits/#{id}", params, @access_token)
       .then(undefined, => @trigger('unauthorized'))
 
+  next_pending: (repo) ->
+    Request.get("#{API.url}/#{repo}/commits/next", {}, @access_token)
+      .then(undefined, => @trigger('unauthorized'))
+
   connect: (repo) ->
     Request.post("#{API.url}/#{repo}/connect", {}, @access_token)
       .then(undefined, => @trigger('unauthorized'))
