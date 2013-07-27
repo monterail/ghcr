@@ -1,9 +1,7 @@
 # The main module of the Add-on.
-Widget  = require("widget").Widget
 PageMod = require("sdk/page-mod").PageMod
 Request = require("sdk/request").Request
 self    = require("sdk/self")
-tabs    = require("sdk/tabs")
 
 exports.main = ->
   new PageMod
