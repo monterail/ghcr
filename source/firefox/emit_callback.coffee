@@ -4,7 +4,7 @@ class EmitCallback
     @_rejectID  = @_genID(8)
 
   apply: ->
-    @arguments = Array.prototype.slice.call(arguments)
+    (@arguments = Array.prototype.slice.call(arguments)) && this
 
   emit: (@resolve, @reject) ->
     @_defineCallbacks()
