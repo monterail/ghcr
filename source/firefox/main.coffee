@@ -6,11 +6,6 @@ self    = require("sdk/self")
 tabs    = require("sdk/tabs")
 
 exports.main = ->
-  new Widget
-    id: "ghcr",
-    label: "GitHub Code Review",
-    contentURL: "http://www.mozilla.org/favicon.ico",
-
   new PageMod
     include: "https://github.com/*"
     contentScriptFile: [self.data.url("ghcr.js")]
