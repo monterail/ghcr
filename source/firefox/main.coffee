@@ -15,6 +15,8 @@ exports.main = ->
         Request(
           url: url
           content: data
+          headers:
+            'X-Requested-With': 'XMLHttpRequest'
           onComplete: (res) ->
             watToDziab = if res.status < 400 then resolve else reject
             worker.port.emit watToDziab, res.json || {}
