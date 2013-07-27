@@ -142,16 +142,9 @@ new class GHCR
         $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
   nextPending: ->
-    User.api.commits(@repo, author: "!#{User.username}", status: 'pending').then (commits) =>
-      if commits.length > 0
-        currentId = Page.path().split('/').reverse()[0]
-        nextCommit = commits[0]
-        commitSize = commits.length
-        for index in [0..(commitSize-1)]
-          if commits[index].id == currentId
-            nextCommit = commits[index+1] if index + 1 < commitSize
-            break
-        Page.redirect("/#{@repo}/commit/#{nextCommit.id}")
+    User.api.next_pending(@repo).then (next) =>
+      if next.id?
+        Page.redirect("/#{@repo}/commit/#{next.id}")
       else
         Page.redirect("/#{@repo}")
 
