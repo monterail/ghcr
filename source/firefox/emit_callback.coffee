@@ -16,10 +16,10 @@ class EmitCallback
     [_rejectID, _resolveID, reject, resolve] = [@_rejectID, @_resolveID, @reject, @resolve]
     _resolve = ->
       self.port.removeListener _rejectID, _reject
-      resolve.apply(null, arguments)
+      resolve.apply(null, arguments) if resolve?
     _reject = ->
       self.port.removeListener _resolveID, _resolve
-      reject.apply(null, arguments)
+      reject.apply(null, arguments) if reject?
     [@_reject, @_resolve] = [_reject, _resolve]
 
   _genID: (length) ->
