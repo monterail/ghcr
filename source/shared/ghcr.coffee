@@ -80,6 +80,23 @@ new class GHCR
   initNav: (pending = [], rejected = []) ->
     $cont = $('.repo-nav-contents')
     $('#ghcr-nav').remove()
+    if User.authorized
+      $ul = @renderAuthorized(pending, rejected)
+    else
+      $ul = @renderUnauthorized()
+    $cont.prepend($ul)
+
+  renderUnauthorized: ->
+    $ul = Template.menu.nav()
+    $li = Template.menu.li('Authorize')
+    $a = Template.menu.a('A', 'authorize', '#696969').click (e) =>
+      User.authorize()
+      e.preventDefault()
+      e.stopPropagation()
+    $li.append($a)
+    $ul.append($li)
+
+  renderAuthorized: (pending, rejected) ->
     $ul = Template.menu.nav()
 
     # Pending
@@ -107,8 +124,6 @@ new class GHCR
       e.stopPropagation()
     $li.append($a)
     $ul.append($li)
-
-    $cont.prepend($ul)
 
   renderCommits: (title, commits) ->
     $(".tabnav-tabs a").removeClass("selected")
