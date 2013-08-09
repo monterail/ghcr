@@ -42,6 +42,8 @@ new class GHCR
             )
         else if chunks[3] == 'commits'
           @commitsPage()
+        else if chunks[3] == 'settings'
+          @adminPage(repo)
 
   notification: ($message) =>
     @closeNotification()
@@ -57,25 +59,7 @@ new class GHCR
 
   render: (repo) ->
     $('#ghcr-box').remove()
-
-    if repo?
-      if !repo.connected
-        if repo.permissions.admin
-          $btn = Template.mini_button('Connect').click (e) =>
-            e.preventDefault()
-            $btn.prop('disabled', true)
-
-            User.api.connect(@repo).then =>
-              @notification 'Successfully connected to Github Code Review!
-                            New commits will be added to review queue.'
-
-          @notification($('<div> this repository to Github Code Review</div>').prepend($btn))
-        else if repo.permissions.push
-          @notification('Please ask an admin of this repository to connect Github Code Review.')
-      else
-        @initNav(repo.pending, repo.rejected)
-    else
-      @initNav()
+    @initNav(repo.pending, repo.rejected) if repo?
 
   initNav: (pending = [], rejected = []) ->
     $cont = $('.repo-nav-contents')
@@ -132,6 +116,20 @@ new class GHCR
       ))
     $ol.find('time').timeago()
     $container.append($ol)
+
+  adminPage: (repo) ->
+    $box    = Template.admin.box()
+    $inner  = $box.find("#ghcr_admin_inner_box")
+    if repo.connected
+      $inner.append(Template.admin.token(repo.token))
+    else
+      $btn = Template.mini_button('Connect').click (e) =>
+        e.preventDefault()
+        $btn.prop('disabled', true)
+        User.api.connect(@repo).then =>
+          Page.refresh()
+      $inner.append(Template.admin.connect().prepend($btn))
+    $('#options_bucket .boxed-group:nth-child(1)').after($box)
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
