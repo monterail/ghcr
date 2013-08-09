@@ -18,6 +18,8 @@ Template =
       $('<div id="ghcr_admin_box" class="boxed-group flush"><h3>GHCR</h3><div id="ghcr_admin_inner_box" class="boxed-group-inner"></div></div>')
     connect: ->
       $('<div class="addon"> this repository to Github Code Review</div>')
+    token: (token) ->
+      $("<div class='addon'>Repository access token: <input value='#{token}' readonly></div>")
 
   commit:
     _info:
