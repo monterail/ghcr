@@ -120,7 +120,9 @@ new class GHCR
   adminPage: (repo) ->
     $box    = Template.admin.box()
     $inner  = $box.find("#ghcr_admin_inner_box")
-    unless repo.connected
+    if repo.connected
+      $inner.append(Template.admin.token(repo.token))
+    else
       $btn = Template.mini_button('Connect').click (e) =>
         e.preventDefault()
         $btn.prop('disabled', true)
