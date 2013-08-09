@@ -10,8 +10,8 @@ Template =
       $('<ul id="ghcr-nav" class="repo-menu"/>')
     li: (title) ->
       $("<li class='tooltipped leftwards' original-title='#{title}' />")
-    a: (length, text, color) ->
-      $("<a href='#' class=''><span style='background-color: #{color}; padding: 2px 4px; color: white; border-radius: 3px'>#{length}</span> <span class='full-word'>#{text}</span></a>")
+    a: (icon, text, color) ->
+      $("<a href='#' class=''><span style='background-color: #{color}; padding: 2px 4px; color: white; border-radius: 3px'>#{icon}</span> <span class='full-word'>#{text}</span></a>")
 
   admin:
     box: ->
