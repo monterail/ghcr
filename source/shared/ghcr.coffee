@@ -42,6 +42,8 @@ new class GHCR
             )
         else if chunks[3] == 'commits'
           @commitsPage()
+        else if chunks[3] == 'settings'
+          @adminPage(repo)
 
   notification: ($message) =>
     @closeNotification()
@@ -114,6 +116,18 @@ new class GHCR
       ))
     $ol.find('time').timeago()
     $container.append($ol)
+
+  adminPage: (repo) ->
+    $box    = Template.admin.box()
+    $inner  = $box.find("#ghcr_admin_inner_box")
+    unless repo.connected
+      $btn = Template.mini_button('Connect').click (e) =>
+        e.preventDefault()
+        $btn.prop('disabled', true)
+        User.api.connect(@repo).then =>
+          Page.refresh()
+      $inner.append(Template.admin.connect().prepend($btn))
+    $('#options_bucket .boxed-group:nth-child(1)').after($box)
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
