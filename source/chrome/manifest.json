@@ -10,7 +10,7 @@
     "background",
     "tabs",
     "storage",
-    "<all_urls>"
+    "http://ghcr-staging.herokuapp.com/"
   ],
 
   "icons": {
