@@ -22,3 +22,6 @@ Page =
 
   setLocation: (path, title=document.title, state={}) ->
     history.pushState(state, title, path)
+
+  refresh: ->
+    location.reload(true)

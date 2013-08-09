@@ -13,6 +13,12 @@ Template =
     a: (length, text, color) ->
       $("<a href='#' class=''><span style='background-color: #{color}; padding: 2px 4px; color: white; border-radius: 3px'>#{length}</span> <span class='full-word'>#{text}</span></a>")
 
+  admin:
+    box: ->
+      $('<div id="ghcr_admin_box" class="boxed-group flush"><h3>GHCR</h3><div id="ghcr_admin_inner_box" class="boxed-group-inner"></div></div>')
+    connect: ->
+      $('<div class="addon"> this repository to Github Code Review</div>')
+
   commit:
     _info:
       status: (status, username, created_at) -> "Commit <b>#{status}</b> by <a href='https://github.com/#{username}'>#{username}<a/> at #{strftime('%R, %d %b %Y', new Date(created_at))}"
