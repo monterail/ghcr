@@ -2,6 +2,8 @@
 
 new class GHCR
   constructor: ->
+    return unless document.location.href.match(/github\.com/)
+
     @bindNotificationClose()
 
     observer = new MutationObserver =>
