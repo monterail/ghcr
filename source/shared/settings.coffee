@@ -4,6 +4,8 @@ $.noty.defaults.layout = 'bottomRight'
 @SettingsController = ($scope, $http) ->
   $scope.user = User
 
+  return unless User.api
+
   User.api.user().then (data) ->
     $scope.user_data = data
     $scope.$apply()
