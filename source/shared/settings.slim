@@ -1,0 +1,57 @@
+doctype html
+html lang="en"
+  head
+    title GHCR Settings
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+    link rel="stylesheet" media="screen" href="/bootstrap.min.css"
+    script type="text/javascript" src="/ghcr.js"
+    script type="text/javascript" src="/settings.js"
+body ng-app=""
+  .container ng-controller="SettingsController"
+    .navbar.navbar-static-top
+      .navbar-header: a.navbar-brand GHCR Settings
+      .collapse.navbar-collapse.navbar-ex1-collapse
+        ul.nav.navbar-nav.navbar-right
+          li: button.btn.btn-primary.navbar-btn ng-click="user.authorize()" Authorize
+    div ng-show="user.authorized"
+      .panel
+        .panel-heading: h2.panel-title
+          | General info
+        .panel-body
+          .row: .col-sm-12
+            label> Access Token:
+            span ng-bind="user.access_token"
+          .row: .col-sm-12
+            label> Username:
+            span ng-bind="user_data.username || '...'"
+          .row: .col-sm-12
+            label> Rejected commits:
+            span ng-bind="totalRejected()"
+          .row: .col-sm-12
+            label> Pending commits:
+            span ng-bind="totalPending()"
+      .panel
+        .panel-heading
+          .row
+            .col-sm-6
+              h2.panel-title
+                | Repositories ({{ user_data.repositories.length || 'loading...' }})
+            .col-sm-6
+              input.pull-right type="text" ng-model="searchText"
+        .panel-body
+          table.table.table-striped.tablesorter
+            thead style="cursor: pointer": tr
+              th style="width: 55%" Name
+              th style="width: 15%" GHCR
+              th style="width: 15%" Pending
+              th style="width: 15%" Rejected
+            tbody
+              tr ng-repeat="repository in user_data.repositories | filter:searchText"
+                td
+                  a ng-href="{{repository.url}}" ng-bind="repository.full_name"
+                td
+                  a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
+                  span style="color: green" ng-show="repository.connected" yes
+                  span ng-show="!repository.permissions.admin && !repository.connected" no
+                td ng-bind="repository.pending_count"
+                td ng-bind="repository.rejected_count"

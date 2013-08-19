@@ -10,6 +10,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-multiresize')
+  grunt.loadNpmTasks('grunt-slim')
+  grunt.loadNpmTasks('grunt-contrib-copy')
 
   grunt.config.init
     pkg: grunt.file.readJSON "package.json"
@@ -31,14 +33,20 @@ module.exports = (grunt) ->
         "build/firefox/storage.js":        ["build/firefox/storage.coffee"]
         "build/firefox/emit_callback.js":  ["build/firefox/emit_callback.coffee"]
         "build/firefox/lib/main.js":       ["build/firefox/main.coffee"]
+        "build/firefox/settings.js":       ["build/shared/settings.coffee"]
 
         # Chrome
         "build/chrome/request.js":  ["build/chrome/request.coffee"]
         "build/chrome/storage.js":  ["build/chrome/storage.coffee"]
+        "build/chrome/settings.js": ["build/shared/settings.coffee"]
     sass:
       options: { lineNumbers: true }
       default: files:
         "build/shared/ghcr.css": ["build/shared/ghcr.sass"]
+    slim: default: files:
+        "build/chrome/settings.html": "source/shared/settings.slim"
+    copy: default: files:
+        "build/chrome/bootstrap.min.css": "source/shared/vendor/bootstrap.min.css"
     concat_sourcemap:
       options: { sourcesContent: true, sourceRoot: 'foobar' }
       default: files:
@@ -83,6 +91,8 @@ module.exports = (grunt) ->
     cp "-r", "source/*", "build"
     grunt.task.run "coffee"
     grunt.task.run "sass"
+    grunt.task.run "slim"
+    grunt.task.run "copy"
     grunt.task.run "concat_sourcemap"
     grunt.task.run "multiresize"
 

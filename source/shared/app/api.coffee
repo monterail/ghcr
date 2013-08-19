@@ -1,5 +1,6 @@
 class API
 
+  # @url = "http://ghcr-staging.herokuapp.com/api/v1"
   @url = "http://ghcr-staging.herokuapp.com/api/v1"
 
   RSVP.EventTarget.mixin(@prototype)
@@ -9,6 +10,10 @@ class API
       @trigger('unauthorized')
 
   constructor: (@access_token) ->
+
+  user: ->
+    Request.get("#{API.url}/init", {}, @access_token)
+      .then(undefined, @_checkUnauthorize)
 
   init: (repo) ->
     Request.get("#{API.url}/#{repo}", {}, @access_token)
