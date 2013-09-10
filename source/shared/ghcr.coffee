@@ -12,9 +12,8 @@ new class GHCR
         @onLocationChange()
 
     observer.observe $('#js-repo-pjax-container')[0], childList: true
-
     @currentUrl = Page.path()
-    @onLocationChange()
+    jQuery => @onLocationChange()
 
   onLocationChange: ->
 
@@ -65,8 +64,8 @@ new class GHCR
     $('#ghcr-nav').remove()
     $cont = $('.repo-nav-contents')
     $ul = Template.menu.nav()
-    $li = Template.menu.li('Authorize')
-    $a = Template.menu.a('A', 'authorize', '#696969').click (e) =>
+    $li = Template.menu.li('Authorize GHCR')
+    $a = Template.menu.a('★', 'Authorize GHCR', '#696969').click (e) =>
       User.authorize()
       e.preventDefault()
       e.stopPropagation()

@@ -11,7 +11,8 @@ Template =
     li: (title) ->
       $("<li class='tooltipped leftwards' original-title='#{title}' />")
     a: (icon, text, color) ->
-      $("<a href='#' class=''><span style='background-color: #{color}; padding: 2px 4px; color: white; border-radius: 3px'>#{icon}</span> <span class='full-word'>#{text}</span></a>")
+      $("<a href='#' class=''><span class='octicon' style='background-color: #{color}; color: white; border-radius: 3px; padding: 2px 0; font-size: 14px'>#{icon}</span> <span class='full-word'>#{text}</span></a>")
+
 
   admin:
     box: ->
