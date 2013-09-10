@@ -18,7 +18,7 @@ new class GHCR
 
   onLocationChange: ->
 
-    @render()
+    $('#ghcr-box').remove()
 
     chunks = Page.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
@@ -30,7 +30,7 @@ new class GHCR
 
       @repository = new Repository(@repo)
       @repository.attributes().then (repo) =>
-        @render(repo)
+        @renderAuthorized(repo.pending, repo.rejected)
 
         if Page.hash() == 'pending'
           @renderCommits("Pending", repo.pending)
@@ -46,6 +46,8 @@ new class GHCR
           @commitsPage()
         else if chunks[3] == 'settings'
           @adminPage(repo)
+    else
+      @renderUnauthorized()
 
   notification: ($message) =>
     @closeNotification()
@@ -59,20 +61,9 @@ new class GHCR
   closeNotification: ->
     $("#ghcr-notification").remove()
 
-  render: (repo) ->
-    $('#ghcr-box').remove()
-    @initNav(repo.pending, repo.rejected) if repo?
-
-  initNav: (pending = [], rejected = []) ->
-    $cont = $('.repo-nav-contents')
-    $('#ghcr-nav').remove()
-    if User.authorized
-      $ul = @renderAuthorized(pending, rejected)
-    else
-      $ul = @renderUnauthorized()
-    $cont.prepend($ul)
-
   renderUnauthorized: ->
+    $('#ghcr-nav').remove()
+    $cont = $('.repo-nav-contents')
     $ul = Template.menu.nav()
     $li = Template.menu.li('Authorize')
     $a = Template.menu.a('A', 'authorize', '#696969').click (e) =>
@@ -81,8 +72,11 @@ new class GHCR
       e.stopPropagation()
     $li.append($a)
     $ul.append($li)
+    $cont.prepend($ul)
 
   renderAuthorized: (pending, rejected) ->
+    $('#ghcr-nav').remove()
+    $cont = $('.repo-nav-contents')
     $ul = Template.menu.nav()
 
     # Pending
@@ -97,6 +91,7 @@ new class GHCR
       e.stopPropagation()
     $li.append($a)
     $ul.append($li)
+    $cont.prepend($ul)
 
     # rejected
     $li = Template.menu.li('Rejected')
