@@ -123,7 +123,7 @@ new class GHCR
       $ol.append(Template.commits.commit(
         commit.id, commit.message, commit.timestamp,
         diffUrl, treeUrl,
-        commit.author.username || octocat, authorNameHtml
+        commit.author.username || 'octocat', authorNameHtml
       ))
     $ol.find('time').timeago()
     $container.append($ol)
