@@ -7,7 +7,7 @@ class Repository
       Storage.set(@name, data) if Storage?
       @data = data
 
-  cached_attributes: -> Storage.get(@name)
+  cached_attributes: -> undefined
 
   attributes: ->
     if @data
