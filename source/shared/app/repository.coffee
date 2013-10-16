@@ -7,7 +7,8 @@ class Repository
       Storage.set(@name, data) if Storage?
       @data = data
 
-  cached_attributes: -> Storage.get(@name)
+  cached_attributes: ->
+    new RSVP.Promise (resolve) => resolve(undefined)
 
   attributes: ->
     if @data
