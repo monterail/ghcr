@@ -62,7 +62,7 @@ new class GHCR
 
   renderUnauthorized: ->
     $('#ghcr-nav').remove()
-    $cont = $('.repo-nav-contents')
+    $cont = $('.sunken-menu-contents')
     $ul = Template.menu.nav()
     $li = Template.menu.li('Authorize GHCR')
     $a = Template.menu.a('★', 'Authorize GHCR', '#696969').click (e) =>
@@ -75,11 +75,11 @@ new class GHCR
 
   renderAuthorized: (pending, rejected) ->
     $('#ghcr-nav').remove()
-    $cont = $('.repo-nav-contents')
+    $cont = $('.sunken-menu-contents')
     $ul = Template.menu.nav()
 
     # Pending
-    $li = Template.menu.li('Pending')
+    $li = Template.menu.li('Pending').attr(id: 'ghcr-pending-tab')
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
       if User.authorized
         Page.setLocation("/#{@repo}/commits#pending")
@@ -93,7 +93,7 @@ new class GHCR
     $cont.prepend($ul)
 
     # rejected
-    $li = Template.menu.li('Rejected')
+    $li = Template.menu.li('Rejected').attr(id: 'ghcr-rejected-tab')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
       if User.authorized
         Page.setLocation("/#{@repo}/commits#rejected")
@@ -106,8 +106,8 @@ new class GHCR
     $ul.append($li)
 
   renderCommits: (title, commits) ->
-    $(".tabnav-tabs a").removeClass("selected")
-    $("#ghcr-rejected-tab a").addClass("selected")
+    $(".sunken-menu-group a").removeClass("selected")
+    $("#ghcr-#{title.toLowerCase()}-tab a").addClass("selected")
     $container = $("#js-repo-pjax-container")
     $container.empty().append(Template.commits.header(@repo, title))
     $ol = $("<ol class='commit-group'/>")
