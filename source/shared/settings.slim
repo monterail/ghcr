@@ -48,7 +48,7 @@ body ng-app=""
             tbody
               tr ng-repeat="repository in user_data.repositories | filter:searchText"
                 td
-                  a ng-href="https://github.com/{{repository.full_name}}" ng-bind="repository.full_name"
+                  a ng-href="{{repository.html_url}}" ng-bind="repository.full_name"
                 td
                   a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
                   span style="color: green" ng-show="repository.connected" yes
