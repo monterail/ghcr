@@ -36,9 +36,10 @@ module.exports = (grunt) ->
         "build/firefox/settings.js":       ["build/shared/settings.coffee"]
 
         # Chrome
-        "build/chrome/request.js":  ["build/chrome/request.coffee"]
-        "build/chrome/storage.js":  ["build/chrome/storage.coffee"]
-        "build/chrome/settings.js": ["build/shared/settings.coffee"]
+        "build/chrome/request.js":    ["build/chrome/request.coffee"]
+        "build/chrome/storage.js":    ["build/chrome/storage.coffee"]
+        "build/chrome/background.js": ["build/chrome/background.coffee"]
+        "build/chrome/settings.js":   ["build/shared/settings.coffee"]
     sass:
       options: { lineNumbers: true }
       default: files:
@@ -82,9 +83,11 @@ module.exports = (grunt) ->
           'build/firefox/icon.png',
           'build/chrome/icon128.png',
           'build/chrome/icon48.png',
+          'build/chrome/icon38.png',
+          'build/chrome/icon19.png',
           'build/chrome/icon16.png',
         ]
-        destSizes: ['128x128', '128x128', '48x48', '16x16']
+        destSizes: ['128x128', '128x128', '48x48', '38x38', '19x19', '16x16']
 
   grunt.registerTask "build", "Build extension", ->
     rm "-rf", "build"
