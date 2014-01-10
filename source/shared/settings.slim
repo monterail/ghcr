@@ -33,27 +33,16 @@ body ng-app="ghcr"
             span ng-bind="totalPending()"
       .panel
         .panel-heading
-          .row
-            .col-sm-6
-              h2.panel-title
-                | Repositories ({{ user_data.repositories.length || 'loading...' }})
-            .col-sm-6
-              input.pull-right type="text" ng-model="searchText"
-          .row
-            .col-sm-6
-              p
-                strong Sorting:
-                | {{tableParams.sorting()|json}}
-            .col-sm-6
-              button ng-click="tableParams.sorting({})" class="btn btn-default btn-xs pull-right"
-                | Clear sorting
+          .row.col-sm-12
+            h2.panel-title
+              | Repositories ({{ user_data.repositories.length || 'loading...' }})
         .panel-body
-          table.table.table-striped.tablesorter ng-table="tableParams"
+          table.table.table-striped.tablesorter ng-table="tableParams" show-filter="true"
             tbody
               tr ng-repeat="repository in $data"
-                td style="width: 55%" data-title="'Name'" sortable="'full_name'"
+                td style="width: 55%" data-title="'Name'" sortable="'full_name'" filter="{ 'full_name': 'text' }"
                   a ng-href="{{repository.html_url}}" ng-bind="repository.full_name"
-                td style="width: 15%" data-title="'GHCR'" sortable="'connected'"
+                td style="width: 15%" data-title="'GHCR'" sortable="'connected'" filter="{ 'connected': 'select' }" filter-data="connectedFilterData()"
                   a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
                   span style="color: green" ng-show="repository.connected" yes
                   span ng-show="!repository.permissions.admin && !repository.connected" no
