@@ -10,8 +10,8 @@ new class GHCR
       if @currentUrl != Page.path()
         @currentUrl = Page.path()
         @onLocationChange()
-
-    observer.observe $('#js-repo-pjax-container')[0], childList: true
+    if $('#js-repo-pjax-container').length
+      observer.observe $('#js-repo-pjax-container')[0], childList: true
     @currentUrl = Page.path()
     jQuery => @onLocationChange()
 
@@ -28,23 +28,26 @@ new class GHCR
         @notification('You are wonderful being. You also have been disauthorized from GHCR.')
 
       @repository = new Repository(@repo)
-      @repository.attributes().then (repo) =>
-        @renderAuthorized(repo.pending, repo.rejected)
+      if (/Page not found · GitHub/i).test(document.title) and chunks[3] == 'commit'
+        @renderNotFound(@repo, chunks[4])
+      else
+        @repository.attributes().then (repo) =>
+          @renderAuthorized(repo.pending, repo.rejected)
 
-        if Page.hash() == 'pending'
-          @renderCommits("Pending", repo.pending)
-        else if Page.hash() == 'rejected'
-          @renderCommits("Rejected", repo.rejected)
-        else if chunks[3] == 'commit'
-          @repository.commit(chunks[4])
-            .then(
-              (commit) => @renderMenu(commit)
-              => @notification("There is no such commit in GHCR database")
-            )
-        else if chunks[3] == 'commits'
-          @commitsPage()
-        else if chunks[3] == 'settings'
-          @adminPage(repo)
+          if Page.hash() == 'pending'
+            @renderCommits("Pending", repo.pending)
+          else if Page.hash() == 'rejected'
+            @renderCommits("Rejected", repo.rejected)
+          else if chunks[3] == 'commit'
+            @repository.commit(chunks[4])
+              .then(
+                (commit) => @renderMenu(commit)
+                => @notification("There is no such commit in GHCR database")
+              )
+          else if chunks[3] == 'commits'
+            @commitsPage()
+          else if chunks[3] == 'settings'
+            @adminPage(repo)
     else
       @renderUnauthorized()
 
@@ -59,6 +62,17 @@ new class GHCR
 
   closeNotification: ->
     $("#ghcr-notification").remove()
+
+  renderNotFound: (repo, sha) ->
+    $remove_commit = Template.remove_commit()
+    $remove_commit.find('button').on 'click', (e) =>
+      e.preventDefault()
+      e.stopPropagation()
+      if confirm('Are you sure?')
+        User.api.save(repo, sha, {status: 'removed'})
+        @nextPending()
+
+    $('#parallax_wrapper').append($remove_commit)
 
   renderUnauthorized: ->
     $('#ghcr-nav').remove()

@@ -5,6 +5,9 @@ Template =
   mini_button: (text, classes = "") ->
     $("<button class='minibutton #{classes}'>#{text}</button>")
 
+  remove_commit: ->
+   $("<div class='container'><h2>This commit no longer exists.</h2><button class='button'>Remove from GHCR</button></div>")
+
   menu:
     nav: ->
       $('<ul id="ghcr-nav" class="sunken-menu-group"/>')
