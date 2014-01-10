@@ -36,7 +36,7 @@ body ng-app="ghcr"
           .row.col-sm-12
             h2.panel-title
               | Repositories ({{ user_data.repositories.length || 'loading...' }})
-        .panel-body
+        .panel-body ng-show="user_data.repositories.length"
           table.table.table-striped.tablesorter ng-table="tableParams" show-filter="true"
             tbody
               tr ng-repeat="repository in $data"
