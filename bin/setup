@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+if !(brew list | grep graphicsmagick > /dev/null); then
+  echo "* Install graphicsmagick"
+  brew install graphicsmagick
+fi
+
+if !(which sass > /dev/null); then
+  echo "* Install sass"
+  gem install sass
+fi
+
+echo "* Install node packages"
+npm install
+npm install -g grunt-cli bower
