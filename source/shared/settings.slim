@@ -42,7 +42,7 @@ body ng-app="ghcr"
               tr ng-repeat="repository in $data"
                 td style="width: 55%" data-title="'Name'" sortable="'full_name'" filter="{ 'full_name': 'text' }"
                   a ng-href="{{repository.html_url}}" ng-bind="repository.full_name" target="_blank"
-                td.text-center style="width: 15%" data-title="'GHCR'" sortable="'connected'" filter="{ 'connected': 'select' }" filter-data="connectedFilterData()"
+                td.text-center style="width: 15%" data-title="'GHCR'" sortable="'connected'" filter="{ 'connected': 'select' }" filter-data="ghcrFilter()"
                   a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
                   span style="color: green" ng-show="repository.connected" yes
                   span ng-show="!repository.permissions.admin && !repository.connected" no
