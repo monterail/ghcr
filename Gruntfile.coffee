@@ -48,6 +48,7 @@ module.exports = (grunt) ->
         "build/chrome/settings.html": "source/shared/settings.slim"
     copy: default: files:
         "build/chrome/bootstrap.min.css": "source/shared/vendor/bootstrap.min.css"
+        "build/chrome/ng-table.css": "source/shared/vendor/ng-table.css"
     concat_sourcemap:
       options: { sourcesContent: true, sourceRoot: 'foobar' }
       default: files:

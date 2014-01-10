@@ -4,9 +4,10 @@ html lang="en"
     title GHCR Settings
     meta name="viewport" content="width=device-width, initial-scale=1.0"
     link rel="stylesheet" media="screen" href="/bootstrap.min.css"
+    link rel="stylesheet" media="screen" href="/ng-table.css"
     script type="text/javascript" src="/ghcr.js"
     script type="text/javascript" src="/settings.js"
-body ng-app=""
+body ng-app="ghcr"
   .container ng-controller="SettingsController"
     .navbar.navbar-static-top
       .navbar-header: a.navbar-brand GHCR Settings
@@ -38,20 +39,23 @@ body ng-app=""
                 | Repositories ({{ user_data.repositories.length || 'loading...' }})
             .col-sm-6
               input.pull-right type="text" ng-model="searchText"
+          .row
+            .col-sm-6
+              p
+                strong Sorting:
+                | {{tableParams.sorting()|json}}
+            .col-sm-6
+              button ng-click="tableParams.sorting({})" class="btn btn-default btn-xs pull-right"
+                | Clear sorting
         .panel-body
-          table.table.table-striped.tablesorter
-            thead style="cursor: pointer": tr
-              th style="width: 55%" Name
-              th style="width: 15%" GHCR
-              th style="width: 15%" Pending
-              th style="width: 15%" Rejected
+          table.table.table-striped.tablesorter ng-table="tableParams"
             tbody
-              tr ng-repeat="repository in user_data.repositories | filter:searchText"
-                td
+              tr ng-repeat="repository in $data"
+                td style="width: 55%" data-title="'Name'" sortable="'full_name'"
                   a ng-href="{{repository.html_url}}" ng-bind="repository.full_name"
-                td
+                td style="width: 15%" data-title="'GHCR'" sortable="'connected'"
                   a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
                   span style="color: green" ng-show="repository.connected" yes
                   span ng-show="!repository.permissions.admin && !repository.connected" no
-                td ng-bind="repository.pending_count"
-                td ng-bind="repository.rejected_count"
+                td style="width: 15%" data-title="'Pending'" sortable="'pending_count'" ng-bind="repository.pending_count"
+                td style="width: 15%" data-title="'Rejected'" sortable="'rejected_count'" ng-bind="repository.rejected_count"
