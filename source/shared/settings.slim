@@ -41,10 +41,10 @@ body ng-app="ghcr"
             tbody
               tr ng-repeat="repository in $data"
                 td style="width: 55%" data-title="'Name'" sortable="'full_name'" filter="{ 'full_name': 'text' }"
-                  a ng-href="{{repository.html_url}}" ng-bind="repository.full_name"
-                td style="width: 15%" data-title="'GHCR'" sortable="'connected'" filter="{ 'connected': 'select' }" filter-data="connectedFilterData()"
+                  a ng-href="{{repository.html_url}}" ng-bind="repository.full_name" target="_blank"
+                td.text-center style="width: 15%" data-title="'GHCR'" sortable="'connected'" filter="{ 'connected': 'select' }" filter-data="connectedFilterData()"
                   a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
                   span style="color: green" ng-show="repository.connected" yes
                   span ng-show="!repository.permissions.admin && !repository.connected" no
-                td style="width: 15%" data-title="'Pending'" sortable="'pending_count'" ng-bind="repository.pending_count"
-                td style="width: 15%" data-title="'Rejected'" sortable="'rejected_count'" ng-bind="repository.rejected_count"
+                td.text-center style="width: 15%" data-title="'Pending'" sortable="'pending_count'" ng-bind="repository.pending_count"
+                td.text-center style="width: 15%" data-title="'Rejected'" sortable="'rejected_count'" ng-bind="repository.rejected_count"
