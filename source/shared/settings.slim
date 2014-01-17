@@ -44,7 +44,7 @@ body ng-app="ghcr"
           label> Pending commits:
           span ng-bind="totalPending()"
 
-    .panel
+    .panel ng-show="api.initialized()"
       .panel-heading
         .row.col-sm-12
           h2.panel-title

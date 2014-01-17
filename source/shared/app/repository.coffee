@@ -1,35 +1,17 @@
 class Repository
   RSVP.EventTarget.mixin(@prototype)
 
-  constructor: (@name, @data) ->
+  constructor: (@name, @api) ->
   update: ->
-    User.api.init(@name).then (data) =>
-      Storage.set(@name, data) if Storage?
+    @api.init(@name).then (data) =>
       @data = data
 
-  cached_attributes: ->
-    new RSVP.Promise (resolve) => resolve(undefined)
-
   attributes: ->
-    if @data
-      new RSVP.Promise (resolve) => resolve(@data)
-    else
-      if Storage
-        @cached_attributes().then (data) =>
-          if data?
-            @data = data
-            @update().then (data) =>
-              @data = data
-              @render(data)
-            @data
-          else
-            @update().then (data) => @data = data
-      else
-        @update().then (data) => @data = data
+    @update().then (data) => @data = data
 
   commit: (sha) ->
     @attributes().then (data) =>
       commit = data.pending.concat(data.rejected)
         .filter((commit) -> commit.id == sha)[0]
 
-      if commit then commit else User.api.commit(@name, sha)
+      if commit then commit else @api.commit(@name, sha)
