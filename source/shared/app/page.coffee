@@ -14,12 +14,6 @@ Page =
     else
       document.location.hash.substring(1)
 
-  save: (key, value) ->
-    $.cookie("ghcr_#{key}", value, { expires: 365, path: '/' })
-
-  load: (key) ->
-    $.cookie("ghcr_#{key}")
-
   setLocation: (path, title=document.title, state={}) ->
     history.pushState(state, title, path)
 

@@ -230,12 +230,11 @@ new class GHCR
     $box.append @generateBtn(commit, nextPendingBtn)
 
     $checkbox = $box.find('#ghcr-auto-next')
-    $checkbox.prop('checked', Page.load('next_pending') == 'true')
+    Storage.get('ghcr_next_pending').then (value) =>
+      $checkbox.prop('checked', value)
     $checkbox.click (e) =>
-      Page.save('next_pending', $checkbox.prop('checked'))
+      Storage.set('ghcr_next_pending', $checkbox.prop('checked'))
       e.stopPropagation()
-
-
     $(".repo-container").prepend($box)
 
     # sticky header
