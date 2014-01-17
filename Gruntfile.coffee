@@ -25,6 +25,7 @@ module.exports = (grunt) ->
           "build/shared/app/repository.coffee"
           "build/shared/app/template.coffee"
           "build/shared/app/user.coffee"
+          "build/shared/app/config.coffee"
           "build/shared/ghcr.coffee"
         ]
 

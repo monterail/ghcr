@@ -12,39 +12,52 @@ body ng-app="ghcr"
     .navbar.navbar-static-top
       .navbar-header: a.navbar-brand GHCR Settings
       .collapse.navbar-collapse.navbar-ex1-collapse
-        ul.nav.navbar-nav.navbar-right
-          li: button.btn.btn-primary.navbar-btn ng-click="authorize()" Authorize
-    div ng-show="authorized"
-      .panel
-        .panel-heading: h2.panel-title
-          | General info
-        .panel-body
-          .row: .col-sm-12
-            label> Access Token:
-            span ng-bind="api.access_token"
-          .row: .col-sm-12
-            label> Username:
-            span ng-bind="user_data.username || '...'"
-          .row: .col-sm-12
-            label> Rejected commits:
-            span ng-bind="totalRejected()"
-          .row: .col-sm-12
-            label> Pending commits:
-            span ng-bind="totalPending()"
-      .panel
-        .panel-heading
-          .row.col-sm-12
-            h2.panel-title
-              | Repositories ({{ user_data.repositories.length || 'loading...' }})
-        .panel-body ng-show="user_data.repositories.length"
-          table.table.table-striped.tablesorter ng-table="tableParams" show-filter="true"
-            tbody
-              tr ng-repeat="repository in $data"
-                td style="width: 55%" data-title="'Name'" sortable="'full_name'" filter="{ 'full_name': 'text' }"
-                  a ng-href="{{repository.html_url}}" ng-bind="repository.full_name" target="_blank"
-                td.text-center style="width: 15%" data-title="'GHCR'" sortable="'connected'" filter="{ 'connected': 'select' }" filter-data="ghcrFilter()"
-                  a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
-                  span style="color: green" ng-show="repository.connected" yes
-                  span ng-show="!repository.permissions.admin && !repository.connected" no
-                td.text-center style="width: 15%" data-title="'Pending'" sortable="'pending_count'" ng-bind="repository.pending_count"
-                td.text-center style="width: 15%" data-title="'Rejected'" sortable="'rejected_count'" ng-bind="repository.rejected_count"
+        ul.nav.navbar-nav.navbar-right  ng-show="api.url"
+          li: button.btn.btn-primary.navbar-btn ng-click="api.authorize()" Authorize
+    .panel
+      .panel-heading
+        h2.panel-title
+          | Options
+      .panel-body
+        form.row.form-inline role="form"
+          .form-group.col-xs-6
+            input.form-control type="url" placeholder="GHCR url" ng-model="settings.ghcr_url"
+          .form-group.col-xs-4
+            input.form-control type="text" placeholder="HipChat username" ng-model="settings.ghcr_hipchat_username"
+          .form-group.col-xs-2
+            button.btn.btn-primary.pull-right ng-click="updateSettings()" Save
+
+    .panel ng-show="api.initialized()"
+      .panel-heading: h2.panel-title
+        | General info
+      .panel-body
+        .row: .col-sm-12
+          label> Access Token:
+          span ng-bind="settings.ghcr_access_token"
+        .row: .col-sm-12
+          label> Username:
+          span ng-bind="user_data.username || '...'"
+        .row: .col-sm-12
+          label> Rejected commits:
+          span ng-bind="totalRejected()"
+        .row: .col-sm-12
+          label> Pending commits:
+          span ng-bind="totalPending()"
+
+    .panel
+      .panel-heading
+        .row.col-sm-12
+          h2.panel-title
+            | Repositories ({{ user_data.repositories.length || 'loading...' }})
+      .panel-body ng-show="user_data.repositories.length"
+        table.table.table-striped.tablesorter ng-table="tableParams" show-filter="true"
+          tbody
+            tr ng-repeat="repository in $data"
+              td style="width: 55%" data-title="'Name'" sortable="'full_name'" filter="{ 'full_name': 'text' }"
+                a ng-href="{{repository.html_url}}" ng-bind="repository.full_name" target="_blank"
+              td.text-center style="width: 15%" data-title="'GHCR'" sortable="'connected'" filter="{ 'connected': 'select' }" filter-data="ghcrFilter()"
+                a.btn.btn-primary ng-click="updateConnected(repository.full_name, true)" ng-show="repository.permissions.admin && !repository.connected" Connect
+                span style="color: green" ng-show="repository.connected" yes
+                span ng-show="!repository.permissions.admin && !repository.connected" no
+              td.text-center style="width: 15%" data-title="'Pending'" sortable="'pending_count'" ng-bind="repository.pending_count"
+              td.text-center style="width: 15%" data-title="'Rejected'" sortable="'rejected_count'" ng-bind="repository.rejected_count"
