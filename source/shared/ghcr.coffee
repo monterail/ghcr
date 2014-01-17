@@ -4,6 +4,14 @@ new class GHCR
   constructor: ->
     return unless document.location.href.match(/github\.com/)
 
+    ghcrConfig = new Config()
+    ghcrConfig.on 'dataChanged', () =>
+      @api = new API(ghcrConfig.data)
+      jQuery =>
+        @github_username = $('.header a.name').text().trim()
+        @onLocationChange()
+    ghcrConfig.init()
+
     @bindNotificationClose()
 
     observer = new MutationObserver =>
@@ -13,21 +21,19 @@ new class GHCR
     if $('#js-repo-pjax-container').length
       observer.observe $('#js-repo-pjax-container')[0], childList: true
     @currentUrl = Page.path()
-    jQuery => @onLocationChange()
 
   onLocationChange: ->
-
     $('#ghcr-box').remove()
 
     chunks = Page.path().split("/")
     @repo = "#{chunks[1]}/#{chunks[2]}"
 
-    if User.authorized
-      User.api.on 'unauthorized', =>
-        Page.save('access_token', '')
+    if @api?.initialized()
+      @api.on 'unauthorized', =>
+        Storage.set('ghcr_access_token', null)
         @notification('You are wonderful being. You also have been disauthorized from GHCR.')
 
-      @repository = new Repository(@repo)
+      @repository = new Repository(@repo, @api)
       if (/Page not found · GitHub/i).test(document.title) and chunks[3] == 'commit'
         @renderNotFound(@repo, chunks[4])
       else
@@ -49,7 +55,7 @@ new class GHCR
           else if chunks[3] == 'settings'
             @adminPage(repo)
     else
-      @renderUnauthorized()
+      @renderSetup()
 
   notification: ($message) =>
     @closeNotification()
@@ -69,18 +75,18 @@ new class GHCR
       e.preventDefault()
       e.stopPropagation()
       if confirm('Are you sure?')
-        User.api.save(repo, sha, {status: 'removed'})
+        @api.save(repo, sha, {status: 'removed'})
         @nextPending()
 
     $('#parallax_wrapper').append($remove_commit)
 
-  renderUnauthorized: ->
+  renderSetup: ->
     $('#ghcr-nav').remove()
     $cont = $('.sunken-menu-contents')
     $ul = Template.menu.nav()
-    $li = Template.menu.li('Authorize GHCR')
-    $a = Template.menu.a('★', 'Authorize GHCR', '#696969').click (e) =>
-      User.authorize()
+    $li = Template.menu.li('Setup GHCR')
+    $a = Template.menu.a('★', 'Setup GHCR', '#696969').click (e) =>
+      Page.redirect(chrome.extension.getURL("settings.html"))
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
@@ -95,11 +101,11 @@ new class GHCR
     # Pending
     $li = Template.menu.li('Pending').attr(id: 'ghcr-pending-tab')
     $a = Template.menu.a(pending.length, 'pending', '#69B633').click (e) =>
-      if User.authorized
+      if @api?.initialized()
         Page.setLocation("/#{@repo}/commits#pending")
         @renderCommits('Pending', pending)
       else
-        User.authorize()
+        @api.authorize()
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
@@ -109,11 +115,11 @@ new class GHCR
     # rejected
     $li = Template.menu.li('Rejected').attr(id: 'ghcr-rejected-tab')
     $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
-      if User.authorized
+      if @api?.initialized()
         Page.setLocation("/#{@repo}/commits#rejected")
         @renderCommits('Rejected', rejected)
       else
-        User.authorize()
+        @api.authorize()
       e.preventDefault()
       e.stopPropagation()
     $li.append($a)
@@ -151,14 +157,14 @@ new class GHCR
       $btn = Template.mini_button('Connect').click (e) =>
         e.preventDefault()
         $btn.prop('disabled', true)
-        User.api.connect(@repo).then =>
+        @api.connect(@repo).then =>
           Page.refresh()
       $inner.append(Template.admin.connect().prepend($btn))
     $('#options_bucket .boxed-group:nth-child(1)').after($box)
 
   commitsPage: ->
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
-    User.api.commits(@repo, {sha: ids.join(',')}).then (commits) =>
+    @api.commits(@repo, {sha: ids.join(',')}).then (commits) =>
       for commit in commits
         $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
         commit.status ||= "pending"
@@ -166,7 +172,7 @@ new class GHCR
 
   nextPending: ->
     currentId = Page.path().split('/').reverse()[0]
-    User.api.next_pending(@repo, currentId).then (next) =>
+    @api.next_pending(@repo, currentId).then (next) =>
       if next.id?
         Page.redirect("/#{@repo}/commit/#{next.id}")
       else
@@ -178,8 +184,8 @@ new class GHCR
         @nextPending()
       else
         commit.status = btn.status
-        commit.reviewer = User.username
-        User.api.save(@repo, commit.id, commit).then (data) =>
+        commit.reviewer = @github_username
+        @api.save(@repo, commit.id, commit).then (data) =>
           if $('#ghcr-auto-next').prop('checked')
             @nextPending()
           else
@@ -215,7 +221,7 @@ new class GHCR
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
-    if commit.author.username != User.username
+    if commit.author.username != @github_username
       if commit.status == 'pending'
         $box.append @generateBtn(commit, acceptBtn)
         $box.append @generateBtn(commit, rejectBtn)
@@ -224,12 +230,11 @@ new class GHCR
     $box.append @generateBtn(commit, nextPendingBtn)
 
     $checkbox = $box.find('#ghcr-auto-next')
-    $checkbox.prop('checked', Page.load('next_pending') == 'true')
+    Storage.get('ghcr_next_pending').then (value) =>
+      $checkbox.prop('checked', value)
     $checkbox.click (e) =>
-      Page.save('next_pending', $checkbox.prop('checked'))
+      Storage.set('ghcr_next_pending', $checkbox.prop('checked'))
       e.stopPropagation()
-
-
     $(".repo-container").prepend($box)
 
     # sticky header
