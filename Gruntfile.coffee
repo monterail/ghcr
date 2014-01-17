@@ -16,7 +16,7 @@ module.exports = (grunt) ->
   grunt.config.init
     pkg: grunt.file.readJSON "package.json"
     coffee:
-      options: { join: true, sourceMap: true, bare: true }
+      options: { join: true, sourceMap: false, bare: true }
       default: files:
         # shared
         "build/shared/ghcr.js": [
@@ -30,8 +30,8 @@ module.exports = (grunt) ->
         ]
 
         # Chrome
-        "build/chrome/request.js":    ["build/chrome/request.coffee"]
-        "build/chrome/storage.js":    ["build/chrome/storage.coffee"]
+        "build/chrome-tmp/request.js":    ["build/chrome/request.coffee"]
+        "build/chrome-tmp/storage.js":    ["build/chrome/storage.coffee"]
         "build/chrome/background.js": ["build/chrome/background.coffee"]
         "build/chrome/settings.js":   ["build/shared/settings.coffee"]
     sass:
@@ -40,19 +40,17 @@ module.exports = (grunt) ->
         "build/shared/ghcr.css": ["build/shared/ghcr.sass"]
     slim: default: files:
         "build/chrome/settings.html": "source/shared/settings.slim"
-    copy: default: files:
-        "build/chrome/bootstrap.min.css": "source/shared/vendor/bootstrap.min.css"
-        "build/chrome/ng-table.css": "source/shared/vendor/ng-table.css"
     concat_sourcemap:
       options: { sourcesContent: true, sourceRoot: 'foobar' }
       default: files:
         "build/chrome/ghcr.js": [
           "build/shared/vendor/*.js"
-          "build/chrome/request.js"
-          "build/chrome/storage.js"
+          "build/chrome-tmp/*.js"
           "build/shared/ghcr.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
+        "build/chrome/settings.css": ["build/shared/vendor/*.css"]
+
     uglify:
       options: { compress: true },
       default: files:
@@ -80,20 +78,24 @@ module.exports = (grunt) ->
     grunt.task.run "coffee"
     grunt.task.run "sass"
     grunt.task.run "slim"
-    grunt.task.run "copy"
     grunt.task.run "concat_sourcemap"
     grunt.task.run "multiresize"
+    grunt.task.run "cleanup"
 
   grunt.registerTask "release", "Release extension", ->
     grunt.task.run "build"
     grunt.task.run "uglify"
     grunt.task.run "zip"
 
-  grunt.registerTask "zip", "Zip extension", ->
+  grunt.registerTask "cleanup", "Cleanup", ->
     exec "find build -name '*.coffee' | xargs rm"
     exec "find build -name '*.sass' | xargs rm"
     exec "find build -name '*.map' | xargs rm"
-    exec "zip -r chrome.zip build/chrome"
+    rm "-rf", "build/shared"
+    rm "-rf", "build/chrome-tmp"
+
+  grunt.registerTask "zip", "Zip extension", ->
+    exec "zip -rj build/chrome.zip build/chrome"
 
   grunt.registerTask "default", ->
     grunt.log.writeln("grunt build")
