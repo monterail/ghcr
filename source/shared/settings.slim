@@ -13,15 +13,15 @@ body ng-app="ghcr"
       .navbar-header: a.navbar-brand GHCR Settings
       .collapse.navbar-collapse.navbar-ex1-collapse
         ul.nav.navbar-nav.navbar-right
-          li: button.btn.btn-primary.navbar-btn ng-click="user.authorize()" Authorize
-    div ng-show="user.authorized"
+          li: button.btn.btn-primary.navbar-btn ng-click="authorize()" Authorize
+    div ng-show="authorized"
       .panel
         .panel-heading: h2.panel-title
           | General info
         .panel-body
           .row: .col-sm-12
             label> Access Token:
-            span ng-bind="user.access_token"
+            span ng-bind="api.access_token"
           .row: .col-sm-12
             label> Username:
             span ng-bind="user_data.username || '...'"

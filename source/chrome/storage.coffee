@@ -8,4 +8,4 @@ Storage =
     toSave = {}
     toSave[key] = value
     new RSVP.Promise (resolve) ->
-      chrome.storage.local.set(toSave, resolve)
+      chrome.storage.local.set(toSave, resolve(value))
