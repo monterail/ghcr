@@ -22,7 +22,7 @@ body ng-app="ghcr"
           .form-group.col-xs-6
             input.form-control type="url" placeholder="GHCR url" ng-model="settings.ghcr_url"
           .form-group.col-xs-4
-            input.form-control type="text" placeholder="HipChat username" ng-model="settings.ghcr_hipchat_username"
+            input.form-control type="text" placeholder="HipChat username" ng-model="settings.ghcr_hipchat_username" ng-show="api.initialized()"
           .form-group.col-xs-2
             button.btn.btn-primary.pull-right ng-click="updateSettings()" Save
 
