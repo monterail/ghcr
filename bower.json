@@ -1,0 +1,23 @@
+{
+  "name": "ghcr",
+  "version": "0.2.3",
+  "homepage": "https://github.com/monterail/ghcr",
+  "description": "Add-on for code review on Github",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~> 2.0.0",
+    "angular": "~> 1.2.3",
+    "ng-table": "~> 0.3.1",
+    "noty": "~> 2.2.1",
+    "jquery-timeago": "~> 1.3.1",
+    "rsvp": "~> 3.0.1"
+  }
+}

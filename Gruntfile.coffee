@@ -40,13 +40,22 @@ module.exports = (grunt) ->
       options: { sourcesContent: true, sourceRoot: 'foobar' }
       default: files:
         "build/chrome/ghcr.js": [
-          "build/shared/vendor/*.js"
+          "bower_components/jquery/jquery.js"
+          "bower_components/jquery-timeago/jquery.timeago.js"
+          "bower_components/noty/js/noty/jquery.noty.js"
+          "bower_components/noty/js/noty/layouts/bottomRight.js"
+          "bower_components/noty/js/noty/themes/default.js"
+          "bower_components/angular/angular.js"
+          "bower_components/ng-table/ng-table.src.js"
+          "bower_components/rsvp/rsvp.js"
           "build/interface/chrome.js"
           "build/shared/ghcr.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
-        "build/chrome/settings.css": ["build/shared/vendor/*.css"]
-
+        "build/chrome/settings.css": [
+          "bower_components/ng-table/ng-table.css"
+          "build/shared/vendor/*.css"
+        ]
     uglify:
       options: { compress: true },
       default: files:

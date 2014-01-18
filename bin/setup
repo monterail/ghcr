@@ -13,3 +13,6 @@ fi
 echo "* Install node packages"
 npm install
 npm install -g grunt-cli bower
+
+echo "* Install bower components"
+bower install
