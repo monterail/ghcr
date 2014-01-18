@@ -27,7 +27,8 @@ Template =
 
   commit:
     _info:
-      status: (status, username, created_at) -> "Commit <b>#{status}</b> by <a href='https://github.com/#{username}'>#{username}<a/> at #{strftime('%R, %d %b %Y', new Date(created_at))}"
+      status: (status, username, created_at) ->
+        "Commit <b>#{status}</b> by <a href='https://github.com/#{username}'>#{username}<a/> at #{created_at}"
       accepted: (username, created_at) -> @status('accepted', username, created_at)
       rejected: (username, created_at) -> @status('rejected', username, created_at)
       pending: -> "Code pending review"
