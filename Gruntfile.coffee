@@ -16,24 +16,20 @@ module.exports = (grunt) ->
   grunt.config.init
     pkg: grunt.file.readJSON "package.json"
     coffee:
-      options: { join: true, sourceMap: false, bare: true }
+      options: { join: true, sourceMap: true, bare: true }
       default: files:
         # shared
         "build/shared/ghcr.js": [
-          "build/shared/app/page.coffee"
-          "build/shared/app/api.coffee"
-          "build/shared/app/repository.coffee"
-          "build/shared/app/template.coffee"
-          "build/shared/app/user.coffee"
-          "build/shared/app/config.coffee"
+          "build/shared/app/*.coffee"
           "build/shared/ghcr.coffee"
         ]
-
         # Chrome
-        "build/chrome-tmp/request.js":    ["build/chrome/request.coffee"]
-        "build/chrome-tmp/storage.js":    ["build/chrome/storage.coffee"]
+        "build/interface/chrome.js": [
+          "build/chrome/request.coffee"
+          "build/chrome/storage.coffee"
+        ]
         "build/chrome/background.js": ["build/chrome/background.coffee"]
-        "build/chrome/settings.js":   ["build/shared/settings.coffee"]
+        "build/chrome/settings.js": ["build/shared/settings.coffee"]
     sass:
       options: { lineNumbers: true }
       default: files:
@@ -45,7 +41,7 @@ module.exports = (grunt) ->
       default: files:
         "build/chrome/ghcr.js": [
           "build/shared/vendor/*.js"
-          "build/chrome-tmp/*.js"
+          "build/interface/chrome.js"
           "build/shared/ghcr.js"
         ]
         "build/chrome/ghcr.css": ["build/shared/*.css"]
@@ -90,11 +86,10 @@ module.exports = (grunt) ->
   grunt.registerTask "cleanup", "Cleanup", ->
     exec "find build -name '*.coffee' | xargs rm"
     exec "find build -name '*.sass' | xargs rm"
-    exec "find build -name '*.map' | xargs rm"
-    rm "-rf", "build/shared"
-    rm "-rf", "build/chrome-tmp"
+    rm "-rf", "build/shared", "build/interface"
 
   grunt.registerTask "zip", "Zip extension", ->
+    exec "find build -name '*.map' | xargs rm"
     exec "zip -rj build/chrome.zip build/chrome"
 
   grunt.registerTask "default", ->
