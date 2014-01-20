@@ -5,8 +5,8 @@ new class GHCR
     return unless document.location.href.match(/github\.com/)
 
     ghcrConfig = new Config()
-    ghcrConfig.on 'dataChanged', () =>
-      @api = new API(ghcrConfig.data)
+    ghcrConfig.on 'dataChanged', (settings) =>
+      @api = new API(settings)
       jQuery =>
         @github_username = $('.header a.name').text().trim()
         @onLocationChange()
