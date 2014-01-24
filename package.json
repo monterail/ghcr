@@ -15,6 +15,8 @@
     "grunt-contrib-watch": "~0.4.4",
     "grunt-multiresize": "~0.2.1",
     "grunt-slim": "~0.1.0",
-    "grunt-contrib-copy": "~0.4.1"
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-tagrelease": "~0.3.1",
+    "grunt-bumpup": "~0.5.0"
   }
 }
