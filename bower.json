@@ -1,6 +1,6 @@
 {
   "name": "ghcr",
-  "version": "0.2.3",
+  "version": "0.2.9",
   "homepage": "https://github.com/monterail/ghcr",
   "description": "Add-on for code review on Github",
   "license": "MIT",

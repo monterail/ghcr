@@ -1,0 +1,55 @@
+{
+  "manifest_version": 2,
+  "name": "GitHub Code Review",
+  "description": "Add-on for code review on Github",
+  "version": "0.2.9",
+  "permissions": [
+    "webNavigation",
+    "background",
+    "tabs",
+    "storage",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://github.com/*/*"
+      ],
+      "css": [
+        "ghcr.css"
+      ],
+      "js": [
+        "ghcr.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    "background.js.map",
+    "ghcr.css.map",
+    "ghcr.js.map",
+    "settings.css.map",
+    "settings.js.map",
+    "settings.html"
+  ],
+  "options_page": "settings.html",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "browser_action": {
+    "default_icon": {
+      "19": "icon19.png",
+      "38": "icon38.png"
+    }
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
+}
