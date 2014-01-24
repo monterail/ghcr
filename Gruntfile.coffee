@@ -99,7 +99,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask "zip", "Zip extension", ->
     exec "find build -name '*.map' | xargs rm"
-    exec "zip -rj build/chrome.zip build/chrome"
+    exec "zip -rj build/ghcr.zip build/chrome"
 
   grunt.registerTask "default", ->
     grunt.log.writeln("grunt build")
