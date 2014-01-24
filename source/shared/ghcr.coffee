@@ -54,6 +54,8 @@ new class GHCR
             @commitsPage()
           else if chunks[3] == 'settings'
             @adminPage(repo)
+        .catch (err) =>
+          @adminPage({connected: false}) if chunks[3] == 'settings'
     else
       @renderSetup()
 
