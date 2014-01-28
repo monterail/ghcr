@@ -29,11 +29,16 @@ Template =
     _info:
       status: (status, username, created_at) ->
         "Commit <b>#{status}</b> by <a href='https://github.com/#{username}'>#{username}<a/> at #{created_at}"
-      accepted: (username, created_at) -> @status('accepted', username, created_at)
-      rejected: (username, created_at) -> @status('rejected', username, created_at)
-      pending: -> "Code pending review"
+      'accepted'      : (username, created_at) -> @status('accepted', username, created_at)
+      'rejected'      : (username, created_at) -> @status('rejected', username, created_at)
+      'auto-accepted' : (username, created_at) -> @status('auto-accepted', username, created_at)
+      'pending'       : -> "Code pending review"
     box: (status, username, created_at) ->
-      $("<div id='ghcr-box' class='ghcr__status-bar ghcr__status-bar--#{status}'><span>#{@_info[status](username, created_at)}</span></div>")
+      _status = try
+        @_info[status](username, created_at)
+      catch e
+        "Unsupported commit status: #{status}"
+      $("<div id='ghcr-box' class='ghcr__status-bar ghcr__status-bar--#{status}'><span>#{_status}</span></div>")
 
 
   commits:
