@@ -227,7 +227,7 @@ new class GHCR
       if commit.status == 'pending'
         $box.append @generateBtn(commit, acceptBtn)
         $box.append @generateBtn(commit, rejectBtn)
-      else
+      else if ['accepted', 'rejected'].indexOf(commit.status) > -1
         $box.append @generateBtn(commit, oppBtns[commit.status])
     $box.append @generateBtn(commit, nextPendingBtn)
 
