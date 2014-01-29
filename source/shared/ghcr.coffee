@@ -242,7 +242,7 @@ new class GHCR
     # sticky header
     stickyHeader =
       top: $box.offset().top
-      width: $box.width()
+      width: "920px"
     setStickyHeader = ->
       if $(window).scrollTop() > stickyHeader.top
         $("#ghcr-box").css
