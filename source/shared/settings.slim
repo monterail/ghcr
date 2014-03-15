@@ -37,8 +37,8 @@ body ng-app="ghcr"
           label> Username:
           span ng-bind="user_data.username || '...'"
         .row: .col-sm-12
-          label> Rejected commits:
-          span ng-bind="totalRejected()"
+          label> Discuss commits:
+          span ng-bind="totalDiscuss()"
         .row: .col-sm-12
           label> Pending commits:
           span ng-bind="totalPending()"
@@ -60,4 +60,4 @@ body ng-app="ghcr"
                 span style="color: green" ng-show="repository.connected" yes
                 span ng-show="!repository.permissions.admin && !repository.connected" no
               td.text-center style="width: 15%" data-title="'Pending'" sortable="'pending_count'" ng-bind="repository.pending_count"
-              td.text-center style="width: 15%" data-title="'Rejected'" sortable="'rejected_count'" ng-bind="repository.rejected_count"
+              td.text-center style="width: 15%" data-title="'Discuss'" sortable="'discuss_count'" ng-bind="repository.discuss_count"

@@ -1,9 +1,9 @@
 $commit-background: #f7fbfc
 $commit-background--pending: #fcfcdf
 $commit-background--accepted: #dfffda
-$commit-background--rejected: #efe0e2
+$commit-background--discuss: #efe0e2
 $commit-color--accepted: #25b03c
-$commit-color--rejected: #d91c29
+$commit-color--discuss: #d91c29
 
 @mixin commit-background($color, $hover-only: false, $no-hover: false)
   @if $hover-only != true
@@ -30,9 +30,9 @@ $commit-color--rejected: #d91c29
 .ghcr__commit--accepted
   +insert-character("\2714", $commit-color--accepted)
 
-.ghcr__commit--rejected
-  +commit-background($commit-background--rejected)
-  +insert-character("\2718", $commit-color--rejected)
+.ghcr__commit--discuss
+  +commit-background($commit-background--discuss)
+  +insert-character("\2718", $commit-color--discuss)
 
   &.commit-group-item,
     &, & + .commit-group-item
@@ -62,8 +62,8 @@ $commit-color--rejected: #d91c29
   b
     color: $commit-color--accepted
 
-.ghcr__status-bar--rejected
-  background: $commit-background--rejected
+.ghcr__status-bar--discuss
+  background: $commit-background--discuss
 
   b
-    color: $commit-color--rejected
+    color: $commit-color--discuss

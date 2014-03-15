@@ -11,7 +11,7 @@ class Repository
 
   commit: (sha) ->
     @attributes().then (data) =>
-      commit = data.pending.concat(data.rejected)
+      commit = data.pending.concat(data.discuss)
         .filter((commit) -> commit.id == sha)[0]
 
       if commit then commit else @api.commit(@name, sha)

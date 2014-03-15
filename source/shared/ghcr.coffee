@@ -38,12 +38,12 @@ new class GHCR
         @renderNotFound(@repo, chunks[4])
       else
         @repository.attributes().then (repo) =>
-          @renderAuthorized(repo.pending, repo.rejected)
+          @renderAuthorized(repo.pending, repo.discuss)
 
           if Page.hash() == 'pending'
             @renderCommits("Pending", repo.pending)
-          else if Page.hash() == 'rejected'
-            @renderCommits("Rejected", repo.rejected)
+          else if Page.hash() == 'discuss'
+            @renderCommits("Discuss", repo.discuss)
           else if chunks[3] == 'commit'
             @repository.commit(chunks[4])
               .then(
@@ -95,7 +95,7 @@ new class GHCR
     $ul.append($li)
     $cont.prepend($ul)
 
-  renderAuthorized: (pending, rejected) ->
+  renderAuthorized: (pending, discuss) ->
     $('#ghcr-nav').remove()
     $cont = $('.sunken-menu-contents')
     $ul = Template.menu.nav()
@@ -114,12 +114,12 @@ new class GHCR
     $ul.append($li)
     $cont.prepend($ul)
 
-    # rejected
-    $li = Template.menu.li('Rejected').attr(id: 'ghcr-rejected-tab')
-    $a = Template.menu.a(rejected.length, 'rejected', '#B66933').click (e) =>
+    # discuss
+    $li = Template.menu.li('Discuss').attr(id: 'ghcr-discuss-tab')
+    $a = Template.menu.a(discuss.length, 'discuss', '#B66933').click (e) =>
       if @api?.initialized()
-        Page.setLocation("/#{@repo}/commits#rejected")
-        @renderCommits('Rejected', rejected)
+        Page.setLocation("/#{@repo}/commits#discuss")
+        @renderCommits('Discuss', discuss)
       else
         @api.authorize()
       e.preventDefault()
@@ -203,9 +203,9 @@ new class GHCR
 
     $("#ghcr-box").remove()
 
-    rejectBtn =
-      label: 'Reject'
-      status: 'rejected'
+    discussBtn =
+      label: 'Discuss'
+      status: 'discuss'
     acceptBtn =
       label: 'Accept'
       status: 'accepted'
@@ -214,8 +214,8 @@ new class GHCR
       status: 'next'
 
     oppBtns =
-      accepted: rejectBtn
-      rejected: acceptBtn
+      accepted: discussBtn
+      discuss: acceptBtn
 
     $box = Template.commit.box(commit.status,
       commit.last_event.reviewer.username, commit.last_event.created_at)
@@ -226,8 +226,8 @@ new class GHCR
     if commit.author.username != @github_username
       if commit.status == 'pending'
         $box.append @generateBtn(commit, acceptBtn)
-        $box.append @generateBtn(commit, rejectBtn)
-      else if ['accepted', 'rejected'].indexOf(commit.status) > -1
+        $box.append @generateBtn(commit, discussBtn)
+      else if ['accepted', 'discuss'].indexOf(commit.status) > -1
         $box.append @generateBtn(commit, oppBtns[commit.status])
     $box.append @generateBtn(commit, nextPendingBtn)
 

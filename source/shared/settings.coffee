@@ -75,10 +75,10 @@ angular.module('ghcr').controller 'SettingsController', ($scope, $filter, $q, ng
       prev + curr.pending_count
     , 0
 
-  $scope.totalRejected = ->
+  $scope.totalDiscuss = ->
     return 0 unless $scope.user_data?
     $scope.user_data.repositories.reduce (prev, curr) ->
-      prev + curr.rejected_count
+      prev + curr.discuss_count
     , 0
 
   $scope.ghcrFilter = ->

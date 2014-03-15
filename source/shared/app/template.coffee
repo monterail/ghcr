@@ -12,7 +12,7 @@ Template =
     nav: ->
       $('<ul id="ghcr-nav" class="sunken-menu-group"/>')
     li: (title) ->
-      $("<li class='tooltipped leftwards' original-title='#{title}' />")
+      $("<li class='tooltipped tooltipped-w' aria-label='#{title}' />")
     a: (icon, text, color) ->
       $("<a href='#' class='sunken-menu-item'><span class='octicon' style='background-color: #{color}; color: white; border-radius: 3px; padding: 2px 0; font-size: 14px'>#{icon}</span> <span class='full-word'>#{text}</span></a>")
 
@@ -30,7 +30,7 @@ Template =
       status: (status, username, created_at) ->
         "Commit <b>#{status}</b> by <a href='https://github.com/#{username}'>#{username}<a/> at #{created_at}"
       'accepted'      : (username, created_at) -> @status('accepted', username, created_at)
-      'rejected'      : (username, created_at) -> @status('rejected', username, created_at)
+      'discuss'       : (username, created_at) -> @status('up for discussion', username, created_at)
       'auto-accepted' : (username, created_at) -> @status('auto-accepted', username, created_at)
       'pending'       : -> "Code pending review"
     box: (status, username, created_at) ->
