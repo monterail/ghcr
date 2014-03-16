@@ -1,8 +1,12 @@
-# GitHub Code Review Extension
+## GitHub Code Review Extension
 
 Currently available for [chrome](source/chrome/README.md)
 
-## Commit auto accept
+### Requirements
+  - Chrome browser
+  - [GHCR API endpoint](https://github.com/monterail/ghcr-api)
+
+### Commit auto accept
 
 Simply add `accept shortSHA1 or longSHA1` in your commit message.
 Auto accept commit message example:
