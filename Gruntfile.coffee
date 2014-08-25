@@ -98,11 +98,11 @@ module.exports = (grunt) ->
     grunt.task.run 'cleanup'
 
   grunt.registerTask 'release', 'Release extension', (type = 'patch') ->
+    grunt.task.run "bumpup:#{type}"
+    grunt.task.run 'tagrelease'
     grunt.task.run 'build'
     grunt.task.run 'uglify'
     grunt.task.run 'zip'
-    grunt.task.run "bumpup:#{type}"
-    grunt.task.run 'tagrelease'
 
   grunt.registerTask 'cleanup', 'Cleanup', ->
     exec "find build -name '*.coffee' | xargs rm"
