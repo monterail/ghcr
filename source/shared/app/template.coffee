@@ -51,32 +51,29 @@ Template =
       <h3 class="commit-group-heading"></h3>
       """)
     commit: (id, message, timestamp, diffUrl, treeUrl, avatarUsername, authorNameHtml) -> $("""
-      <li class="commit commit-group-item js-navigation-item js-details-container">
-        <img class="gravatar" height="36" src="http://github.com/#{avatarUsername}.png" width="36">
-        <p class="commit-title  js-pjax-commit-title">
-          <a href="#{diffUrl}" class="message">#{message}</a>
-        </p>
-        <div class="commit-meta">
-          <div class="commit-links">
-            <span class="js-zeroclipboard minibutton zeroclipboard-button" data-clipboard-text="#{id}" data-copied-hint="copied!" title="Copy SHA">
-              <span class="octicon octicon-clippy"></span>
-            </span>
-
-            <a href="#{diffUrl}" class="gobutton ">
-              <span class="sha">#{id.substring(0,10)}
-                <span class="octicon octicon-arrow-small-right"></span>
-              </span>
-            </a>
-
-            <a href="#{treeUrl}" class="browse-button" title="Browse the code at this point in the history" rel="nofollow">
-              Browse code <span class="octicon octicon-arrow-right"></span>
-            </a>
-          </div>
-
+      <li class="commit commits-list-item table-list-item js-navigation-item js-details-container js-socket-channel js-updatable-content">
+        <div class="table-list-cell commit-avatar-cell">
           <div class="authorship">
-            <span class="author-name">#{authorNameHtml}</span>
-            authored <time class="js-relative-date" datetime="#{timestamp}" title="#{timestamp}"></time>
+            <a href="/#{avatarUsername}" data-skip-pjax="true" rel="contributor"><img alt="#{avatarUsername}" class="avatar" height="36" src="http://github.com/#{avatarUsername}.png" width="36"></a>
           </div>
+        </div>
+        <div class="commit-body table-list-cell">
+          <p class="commit-title">
+            <a href="#{diffUrl}" class="message">#{message}</a>
+          </p>
+          <div class="commit-meta">
+            <span class="author-name">#{authorNameHtml}</span>
+            authored <time datetime="#{timestamp}" is="relative-time" title="#{timestamp}"></time>
+          </div>
+        </div>
+        <div class="commit-links table-list-cell">
+          <div class="commit-links-group button-group">
+            <button class="js-zeroclipboard button-outline zeroclipboard-button" data-clipboard-text="#{id}" data-copied-hint="Copied!" type="button" aria-label="Copy the full SHA"><span class="octicon octicon-clippy"></span></button>
+            <a href="#{diffUrl}" class="sha button-outline">
+              #{id.substring(0,10)}
+            </a>
+          </div>
+          <a href="#{treeUrl}" aria-label="Browse the code at this point in the history" class="button-outline tooltipped tooltipped-s" rel="nofollow"><span class="octicon octicon-code"></span></a>
         </div>
       </li>
       """)

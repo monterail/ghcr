@@ -132,7 +132,7 @@ new class GHCR
     $("#ghcr-#{title.toLowerCase()}-tab a").addClass("selected")
     $container = $("#js-repo-pjax-container")
     $container.empty().append(Template.commits.header(@repo, title))
-    $ol = $("<ol class='commit-group'/>")
+    $ol = $("<ol class='commit-group table-list table-list-bordered'/>")
     for commit in commits
       diffUrl = "/#{@repo}/commit/#{commit.id}"
       treeUrl = "/#{@repo}/tree/#{commit.id}"
