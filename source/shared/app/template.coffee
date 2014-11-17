@@ -19,11 +19,11 @@ Template =
 
   admin:
     box: ->
-      $('<div id="ghcr_admin_box" class="boxed-group flush"><h3>GHCR</h3><div id="ghcr_admin_inner_box" class="boxed-group-inner"></div></div>')
+      $('<div id="ghcr_admin_box" class="boxed-group"><h3>GHCR</h3><div id="ghcr_admin_inner_box" class="boxed-group-inner"></div></div>')
     connect: ->
-      $('<div class="addon"> this repository to Github Code Review</div>')
+      $('<p> this repository to Github Code Review</p>')
     token: (token) ->
-      $("<div class='addon'>Repository access token: <input value='#{token}' readonly></div>")
+      $("<p>Repository access token: <input value='#{token}' readonly></p>")
 
   commit:
     _info:

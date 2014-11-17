@@ -84,7 +84,7 @@ new class GHCR
 
   renderSetup: ->
     $('#ghcr-nav').remove()
-    $cont = $('.sunken-menu-contents')
+    $cont = $('.sunken-menu')
     $ul = Template.menu.nav()
     $li = Template.menu.li('Setup GHCR')
     $a = Template.menu.a('★', 'Setup GHCR', '#696969').click (e) =>
@@ -97,7 +97,7 @@ new class GHCR
 
   renderAuthorized: (pending, discuss) ->
     $('#ghcr-nav').remove()
-    $cont = $('.sunken-menu-contents')
+    $cont = $('.sunken-menu')
     $ul = Template.menu.nav()
 
     # Pending
@@ -168,7 +168,7 @@ new class GHCR
     ids = ($(e).data("clipboard-text") for e in $("li.commit .commit-links .js-zeroclipboard"))
     @api.commits(@repo, {sha: ids.join(',')}).then (commits) =>
       for commit in commits
-        $item = $("li.commit .commit-links .js-zeroclipboard[data-clipboard-text=#{commit.id}]").parents("li")
+        $item = $("li.commits-list-item[data-channel='#{@repo}:commit:#{commit.id}']")
         commit.status ||= "pending"
         $item.addClass("ghcr__commit ghcr__commit--#{commit.status}")
 
