@@ -1,6 +1,6 @@
 {
   "name": "ghcr",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "repository": {
     "type": "git",
     "url": "https://github.com/monterail/ghcr-web.git"

@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "GitHub Code Review",
   "description": "Add-on for code review on Github",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "permissions": [
     "webNavigation",
     "background",
