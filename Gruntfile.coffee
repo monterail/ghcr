@@ -12,19 +12,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-multiresize')
   grunt.loadNpmTasks('grunt-slim')
   grunt.loadNpmTasks('grunt-contrib-copy')
-  grunt.loadNpmTasks('grunt-bumpup')
-  grunt.loadNpmTasks('grunt-tagrelease')
+  grunt.loadNpmTasks('grunt-release-it')
 
   grunt.config.init
-    pkg: grunt.file.readJSON 'package.json'
-    bumpup:
+    'release-it':
       options:
-         updateProps:
-          pkg: 'package.json'
-      files: ['package.json', 'bower.json', 'source/chrome/manifest.json']
-    tagrelease:
-      version: '<%= pkg.version %>'
-      message: 'Bump version to %version%'
+        pkgFiles: ['package.json', 'bower.json', 'source/chrome/manifest.json']
+        commitMessage: 'Bump version to %s'
     coffee:
       options: { join: true, sourceMap: true, bare: true }
       default: files:
@@ -98,8 +92,7 @@ module.exports = (grunt) ->
     grunt.task.run 'cleanup'
 
   grunt.registerTask 'release', 'Release extension', (type = 'patch') ->
-    grunt.task.run "bumpup:#{type}"
-    grunt.task.run 'tagrelease'
+    grunt.task.run 'release-it'
     grunt.task.run 'build'
     grunt.task.run 'uglify'
     grunt.task.run 'zip'
