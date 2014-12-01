@@ -56,7 +56,7 @@ module.exports = (grunt) ->
           'bower_components/noty/js/noty/layouts/bottomRight.js'
           'bower_components/noty/js/noty/themes/default.js'
           'bower_components/angular/angular.js'
-          'bower_components/ng-table/ng-table.src.js'
+          'bower_components/ng-table/ng-table.js'
           'bower_components/rsvp/rsvp.js'
           'build/interface/chrome.js'
           'build/shared/ghcr.js'

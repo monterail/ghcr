@@ -194,10 +194,10 @@ new class GHCR
             @renderMenu(data)
 
   renderMenu: (commit = {}) ->
-
-    commit.author =
-      name:     commit.author.name
-      username: commit.author.username
+    # TODO: looks wired problay can remove it
+    # commit.author =
+    #   name:     commit.author.name
+    #   username: commit.author.username
 
     commit.message = $.trim($(".commit > .commit-title").text())
 
@@ -223,7 +223,7 @@ new class GHCR
     if parseInt($('#ghcr-pending-tab .counter').text(), 10) > 0
       $box.append GHCR.generateBtn(commit, nextPendingBtn)
 
-    if commit.author.username != @github_username
+    if commit.committer.username != @github_username
       if commit.status == 'pending'
         $box.append @generateBtn(commit, acceptBtn)
         $box.append @generateBtn(commit, discussBtn)
