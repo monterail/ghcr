@@ -1,3 +1,7 @@
+# Project discontinued
+
+We're sorry to say that GHCR stopped being sufficient solution for code review in our growing team and we're no longer supporting it. We still think it's good solution for smaller teams, so we encourage you to try it.
+
 ## GitHub Code Review Extension
 
 Currently available for [chrome](source/chrome/README.md)
